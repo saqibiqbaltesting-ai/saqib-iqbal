@@ -2,18 +2,22 @@ import { list, put, del } from "@vercel/blob";
 
 // Persistent JSON storage on Vercel Blob — survives deploys and cold starts.
 //
-// Vercel Blob's CDN serves stale content for overwritten pathnames (the cache
-// key ignores query params), so fixed-path overwrites can't be read back fresh.
-// Instead every write creates a NEW uniquely-named blob version, and reads list
-// the versions and fetch the newest from its unique (never-cached) URL.
+// Vercel Blob limitations this design works around:
+// 1. Overwriting a fixed pathname serves STALE cached content on reads.
+// 2. The SDK inserts its random suffix before the FIRST dot in the path,
+//    so version paths must contain no dots.
+// 3. list() is fresh enough to discover the latest version right after a write.
+//
+// Each logical file gets a dot-free version folder: data/v-<key>/blob-<rand>.
 
 const onVercel = () => Boolean(process.env.BLOB_STORE_ID);
 
+const key = (name: string) => name.replace(/[^a-zA-Z0-9-]/g, "_");
+const versionPrefix = (name: string) => `data/v-${key(name)}/`;
+
 async function versionsOf(name: string) {
-  const prefix = `data/${name}`;
-  const res = await list({ prefix, limit: 50 });
+  const res = await list({ prefix: versionPrefix(name), limit: 50 });
   return res.blobs
-    .filter((b) => b.pathname.startsWith(prefix) && b.pathname !== prefix)
     .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
 }
 
@@ -33,8 +37,11 @@ export async function loadJSON(name: string): Promise<unknown | null> {
 export async function saveJSON(name: string, data: unknown): Promise<void> {
   if (!onVercel()) return;
   try {
-    await put(`data/${name}`, JSON.stringify(data), { access: "public" });
-    // prune old versions, keep the newest 3 per file
+    await put(`${versionPrefix(name)}blob`, JSON.stringify(data), {
+      access: "public",
+      addRandomSuffix: true,
+    });
+    // prune old versions, keep the newest 3
     const old = (await versionsOf(name)).slice(3);
     if (old.length) await del(old.map((b) => b.url));
   } catch (e) {
