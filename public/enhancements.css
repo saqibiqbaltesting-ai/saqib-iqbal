@@ -163,7 +163,7 @@ html.sq-a11y .hero-name,html.sq-a11y .hero-kicker,html.sq-a11y .hero-sub{transfo
 @media(min-width:720px){.sq-poetry-grid{grid-template-columns:1fr 1fr}}
 .sq-sher-card{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;padding:20px 22px;background:linear-gradient(160deg,var(--bg-soft),var(--bg));transition:border-color .25s ease,transform .25s ease}
 @media(hover:hover){.sq-sher-card:hover{border-color:var(--accent);transform:translateY(-3px)}}
-.sq-sher{font-family:var(--sq-sher-font);font-style:var(--sq-sher-style);font-weight:var(--sq-sher-weight);font-size:19px;line-height:1.7;color:var(--ink)}
+.sq-sher{font-family:var(--sq-sher-font);font-style:var(--sq-sher-style);font-weight:var(--sq-sher-weight);font-size:19px;line-height:2.2;color:var(--ink);direction:rtl;text-align:center}
 .sq-sher-emoji{font-style:normal;font-weight:400}
 .sq-mode-row{display:flex;gap:10px;justify-content:center;margin:16px 0 4px;flex-wrap:wrap}
 .sq-modebtn{min-height:40px;padding:9px 26px;border-radius:999px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink-dim);font-family:var(--serif);font-size:15px;cursor:pointer;transition:border-color .2s ease,color .2s ease,transform .2s ease}
@@ -171,6 +171,15 @@ html.sq-a11y .hero-name,html.sq-a11y .hero-kicker,html.sq-a11y .hero-sub{transfo
 @media(hover:hover){.sq-modebtn:hover{border-color:var(--accent);transform:translateY(-2px)}}
 .sq-ghazal-card{grid-column:1/-1;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;padding:18px 22px 20px;background:linear-gradient(160deg,var(--bg-soft),var(--bg));transition:border-color .25s ease,transform .25s ease}
 @media(hover:hover){.sq-ghazal-card:hover{border-color:var(--accent);transform:translateY(-3px)}}
-.sq-ghazal-title{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--ink);margin-bottom:12px;letter-spacing:.02em}
-.sq-couplet{font-family:var(--sq-sher-font);font-style:var(--sq-sher-style);font-weight:var(--sq-sher-weight);font-size:18px;line-height:1.7;color:var(--ink)}
+.sq-ghazal-title{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--ink);margin-bottom:12px;letter-spacing:0;direction:rtl;text-align:center}
+.sq-couplet{font-family:var(--sq-sher-font);font-style:var(--sq-sher-style);font-weight:var(--sq-sher-weight);font-size:18px;line-height:2.2;color:var(--ink);direction:rtl;text-align:center}
 .sq-couplet + .sq-couplet{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+@font-face{font-family:'Noto Nastaliq Urdu';src:url(assets/fonts/notonastaliq-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Noto Nastaliq Urdu';src:url(assets/fonts/notonastaliq-700.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Gulzar';src:url(assets/fonts/gulzar-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Amiri';src:url(assets/fonts/amiri-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Amiri';src:url(assets/fonts/amiri-700.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Scheherazade New';src:url(assets/fonts/scheherazade-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Scheherazade New';src:url(assets/fonts/scheherazade-700.woff2) format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Lateef';src:url(assets/fonts/lateef-400.woff2) format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Lateef';src:url(assets/fonts/lateef-700.woff2) format('woff2');font-weight:700;font-display:swap}
