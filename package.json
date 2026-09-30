@@ -12,5 +12,8 @@
     "@types/node": "^24.5.2",
     "typescript": "^5.9.2"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  }
 }

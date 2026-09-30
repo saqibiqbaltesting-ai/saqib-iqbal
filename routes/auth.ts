@@ -47,7 +47,9 @@ export async function POST(req: Request): Promise<Response> {
     const email = String(body?.email ?? "").trim().toLowerCase();
     const password = String(body?.password ?? "");
     const user = db.users.find((u) => u.email === email);
-    if (!user || user.hash !== hashPw(password, user.salt))
+    if (!user)
+      return Response.json({ ok: false, error: "not_found" }, { status: 404 });
+    if (user.hash !== hashPw(password, user.salt))
       return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
     const token = randomBytes(24).toString("hex");
     db.sessions.push({ token, email, createdAt: new Date().toISOString() });
