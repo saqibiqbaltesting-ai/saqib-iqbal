@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { readToken } from "./auth.js";
 
 export const description = "Portfolio admin stats — owner only (token + email verified)";
 
@@ -13,9 +14,9 @@ const load = (f: string): any => {
 export async function POST(req: Request): Promise<Response> {
   const body = await req.json().catch(() => ({}));
   const token = String(body?.token ?? "");
-  const db = load("portfolio-users.json") || { users: [], sessions: [] };
-  const session = (db.sessions || []).find((s: any) => s.token === token);
-  if (!session || session.email !== OWNER)
+  const db = load("portfolio-users.json") || { users: [] };
+  const claims = readToken(token);
+  if (!claims || claims.email !== OWNER)
     return Response.json({ ok: false, error: "denied" }, { status: 403 });
 
   const vis = load("visitors.json") || { count: 0 };

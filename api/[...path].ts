@@ -50,19 +50,14 @@ async function syncFromBlob() {
   }
 }
 
-// Merge helper: union two db versions (local change wins per user; sessions unioned by token).
+// Merge helper: union two users-db versions (local change wins per user).
+// Sessions are gone (stateless tokens) — only the users list matters.
 function mergeUsers(localData: any, remoteData: any): any {
   const lu: any[] = localData?.users || [];
   const ru: any[] = remoteData?.users || [];
   const lmap = new Map(lu.map((u) => [String(u.email).toLowerCase(), u]));
   const merged = [...ru.filter((u) => !lmap.has(String(u.email).toLowerCase())), ...lu];
-  const seen = new Set<string>();
-  const sessions = [...(localData?.sessions || []), ...(remoteData?.sessions || [])].filter((s: any) => {
-    if (!s || !s.token || seen.has(s.token)) return false;
-    seen.add(s.token);
-    return true;
-  });
-  return { ...(remoteData || {}), ...localData, users: merged, sessions };
+  return { ...(remoteData || {}), ...localData, users: merged };
 }
 
 // After a POST: push data files back to Blob (merge users db to avoid lost updates).

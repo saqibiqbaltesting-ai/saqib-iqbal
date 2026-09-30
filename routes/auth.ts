@@ -1,6 +1,28 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+
+// Stateless signed tokens (HMAC) — no server-side session storage needed,
+// so login/refresh work instantly even with eventually-consistent blob storage.
+const SECRET = process.env.AUTH_SECRET || "sq-portfolio-fallback-secret-2026";
+type TokenPayload = { email: string; name: string; exp: number };
+const sig = (body: string) => createHmac("sha256", SECRET).update(body).digest("base64url");
+function issueToken(email: string, name: string): string {
+  const body = Buffer.from(JSON.stringify({ email, name, exp: Date.now() + 1000 * 60 * 60 * 24 * 30 })).toString("base64url");
+  return `${body}.${sig(body)}`;
+}
+export function readToken(token: string): TokenPayload | null {
+  const parts = token.split(".");
+  if (parts.length !== 2) return null;
+  const expected = sig(parts[0]);
+  const got = parts[1];
+  if (got.length !== expected.length || !timingSafeEqual(Buffer.from(got), Buffer.from(expected))) return null;
+  try {
+    const p: TokenPayload = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf8"));
+    if (!p.email || typeof p.exp !== "number" || p.exp < Date.now()) return null;
+    return p;
+  } catch { return null; }
+}
 
 export const description = "Portfolio auth — email signup/login with token sessions";
 
@@ -37,8 +59,7 @@ export async function POST(req: Request): Promise<Response> {
       return Response.json({ ok: false, error: "exists" }, { status: 400 });
     const salt = randomBytes(16).toString("hex");
     db.users.push({ name, email, salt, hash: hashPw(password, salt) });
-    const token = randomBytes(24).toString("hex");
-    db.sessions.push({ token, email, createdAt: new Date().toISOString() });
+    const token = issueToken(email, name);
     save(db);
     return ok({ token, user: { name, email } });
   }
@@ -51,9 +72,7 @@ export async function POST(req: Request): Promise<Response> {
       return Response.json({ ok: false, error: "not_found" }, { status: 404 });
     if (user.hash !== hashPw(password, user.salt))
       return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
-    const token = randomBytes(24).toString("hex");
-    db.sessions.push({ token, email, createdAt: new Date().toISOString() });
-    save(db);
+    const token = issueToken(email, user.name);
     return ok({ token, user: { name: user.name, email: user.email } });
   }
 
@@ -73,24 +92,20 @@ export async function POST(req: Request): Promise<Response> {
     if (!user) return Response.json({ ok: false, error: "not found" }, { status: 404 });
     user.salt = randomBytes(16).toString("hex");
     user.hash = hashPw(newPassword, user.salt);
-    // force re-login everywhere for this account
-    db.sessions = db.sessions.filter((s) => s.email !== email);
     save(db);
     return ok();
   }
 
   if (action === "me") {
     const token = String(body?.token ?? "");
-    const session = db.sessions.find((s) => s.token === token);
-    if (!session) return Response.json({ ok: false }, { status: 401 });
-    const user = db.users.find((u) => u.email === session.email);
-    return ok({ user: user ? { name: user.name, email: user.email } : null });
+    const p = readToken(token);
+    if (!p) return Response.json({ ok: false }, { status: 401 });
+    const user = db.users.find((u) => u.email === p.email);
+    return ok({ user: { name: user ? user.name : p.name, email: p.email } });
   }
 
   if (action === "logout") {
-    const token = String(body?.token ?? "");
-    db.sessions = db.sessions.filter((s) => s.token !== token);
-    save(db);
+    // stateless tokens: the client just drops the token
     return ok();
   }
 
