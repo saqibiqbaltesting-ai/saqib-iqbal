@@ -1272,32 +1272,22 @@
     ]],
   ];
 
-  function build() {
-    var host = q('.hero');
-    if (!host || !host.parentNode) return false;
-    var parent = host.parentNode;
-    if (parent.querySelector('#sq-poetry')) return null; // already built
-    var sec = document.createElement('section');
-    sec.className = 'section sq-sec';
-    sec.id = 'sq-poetry';
+  function applyFont(i) {
+    var f = FONTS[i] || FONTS[0];
+    ['sq-poetry-sher', 'sq-poetry-ghazal'].forEach(function (id) {
+      var g = document.getElementById(id);
+      if (!g) return;
+      g.style.setProperty('--sq-sher-font', f[1]);
+      g.style.setProperty('--sq-sher-style', f[2]);
+      g.style.setProperty('--sq-sher-weight', f[3]);
+    });
+    allFontBtns.forEach(function (b, k) { b.classList.toggle('active', k % FONTS.length === i); });
+  }
 
-    var head = document.createElement('div');
-    head.className = 'section-header';
-    head.innerHTML = '<h2>🌿 شاعری</h2>';
-    var sub = document.createElement('p');
-    sub.className = 'sq-sec-sub';
-    sub.textContent = 'دل سے پڑھیں — اور اپنی پسند کا فونٹ چنیں';
-    head.appendChild(sub);
-    sec.appendChild(head);
-
-    // font picker
+  function fontRow() {
     var frow = document.createElement('div');
     frow.className = 'sq-poetry-fonts';
-    frow.innerHTML = '<span class="sq-poetry-flabel">🖋️ Font:</span>';
-    var saved = 0;
-    try { saved = parseInt(localStorage.getItem('sq-poetry-font') || '0', 10) || 0; } catch (e) {}
-    if (saved < 0 || saved >= FONTS.length) saved = 0;
-    var fbtns = [];
+    frow.innerHTML = '<span class="sq-poetry-flabel">\u{1F58B}\uFE0F Font:</span>';
     FONTS.forEach(function (f, i) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -1310,47 +1300,92 @@
       b.setAttribute('aria-label', 'Poetry font: ' + f[0]);
       b.onclick = function () {
         try { localStorage.setItem('sq-poetry-font', String(i)); } catch (e) {}
-        fbtns.forEach(function (x, k) { x.classList.toggle('active', k === i); });
         applyFont(i);
       };
-      fbtns.push(b);
+      allFontBtns.push(b);
       frow.appendChild(b);
     });
-    sec.appendChild(frow);
+    return frow;
+  }
 
-    // mode switch: Sher | Ghazal (gallery jaisa — ek taraf sher, doosri taraf ghazal)
-    var mode = 'sher';
-    try { mode = localStorage.getItem('sq-poetry-mode') === 'ghazal' ? 'ghazal' : 'sher'; } catch (e) {}
-    var mrow = document.createElement('div');
-    mrow.className = 'sq-mode-row';
-    [['sher','🖋️ شعر'],['ghazal','🎼 غزل']].forEach(function (m) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'sq-modebtn' + (m[0] === mode ? ' active' : '');
-      b.innerHTML = m[1];
-      b.onclick = function () {
-        mode = m[0];
-        try { localStorage.setItem('sq-poetry-mode', mode); } catch (e) {}
-        Array.prototype.forEach.call(mrow.children, function (x) { x.classList.remove('active'); });
-        b.classList.add('active');
-        render();
-      };
-      mrow.appendChild(b);
+  function makeSection(id, title, sub) {
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = id;
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>' + title + '</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = sub;
+    head.appendChild(p);
+    sec.appendChild(head);
+    return sec;
+  }
+
+  function renderShers() {
+    var cat = CATS.filter(function (c) { return c[0] === active; })[0] || CATS[0];
+    sherGrid.innerHTML = '';
+    cat[3].forEach(function (sh) {
+      var parts = sh.split(' | ');
+      var card = document.createElement('div');
+      card.className = 'sq-sher-card';
+      var p = document.createElement('p');
+      p.className = 'sq-sher';
+      var l1 = document.createElement('span');
+      l1.textContent = parts[0];
+      var br = document.createElement('br');
+      var l2 = document.createElement('span');
+      l2.textContent = parts[1];
+      p.appendChild(l1); p.appendChild(br); p.appendChild(l2);
+      if (parts[2]) {
+        var em = document.createElement('span');
+        em.className = 'sq-sher-emoji';
+        em.textContent = ' ' + parts[2];
+        p.appendChild(em);
+      }
+      card.appendChild(p);
+      sherGrid.appendChild(card);
     });
-    sec.appendChild(mrow);
+  }
 
-    // category tabs
+  function renderGhazals() {
+    ghazGrid.innerHTML = '';
+    GHAZALS.forEach(function (g) {
+      var card = document.createElement('div');
+      card.className = 'sq-ghazal-card';
+      var h = document.createElement('p');
+      h.className = 'sq-ghazal-title';
+      h.textContent = g[1] + ' ' + g[2];
+      card.appendChild(h);
+      g[3].forEach(function (cp) {
+        var parts = cp.split(' | ');
+        var p = document.createElement('p');
+        p.className = 'sq-couplet';
+        var l1 = document.createElement('span');
+        l1.textContent = parts[0];
+        p.appendChild(l1);
+        p.appendChild(document.createElement('br'));
+        var l2 = document.createElement('span');
+        l2.textContent = parts[1];
+        p.appendChild(l2);
+        card.appendChild(p);
+      });
+      ghazGrid.appendChild(card);
+    });
+  }
+
+  function build() {
+    var host = q('.hero');
+    if (!host || !host.parentNode) return false;
+    var parent = host.parentNode;
+    if (parent.querySelector('#sq-poetry-sher')) return null; // already built
+
+    /* ---- Section 1: Sher ---- */
+    var sher = makeSection('sq-poetry-sher', '\u{1F58B}\uFE0F Sher', 'Dil se parhein — aur apni pasand ka font chunein');
+    sher.appendChild(fontRow());
     var tabs = document.createElement('div');
     tabs.className = 'sq-poetry-tabs';
-    var grid = document.createElement('div');
-    grid.className = 'sq-poetry-grid';
-    var active = 'love';
-    function applyFont(i) {
-      var f = FONTS[i] || FONTS[0];
-      grid.style.setProperty('--sq-sher-font', f[1]);
-      grid.style.setProperty('--sq-sher-style', f[2]);
-      grid.style.setProperty('--sq-sher-weight', f[3]);
-    }
     CATS.forEach(function (cat) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -1360,71 +1395,35 @@
         active = cat[0];
         Array.prototype.forEach.call(tabs.children, function (x) { x.classList.remove('active'); });
         b.classList.add('active');
-        render();
+        renderShers();
       };
       tabs.appendChild(b);
     });
-    function renderGhazals() {
-      grid.innerHTML = '';
-      GHAZALS.forEach(function (g) {
-        var card = document.createElement('div');
-        card.className = 'sq-ghazal-card';
-        var h = document.createElement('p');
-        h.className = 'sq-ghazal-title';
-        h.textContent = g[1] + ' ' + g[2];
-        card.appendChild(h);
-        g[3].forEach(function (cp) {
-          var parts = cp.split(' | ');
-          var p = document.createElement('p');
-          p.className = 'sq-couplet';
-          var l1 = document.createElement('span');
-          l1.textContent = parts[0];
-          p.appendChild(l1);
-          p.appendChild(document.createElement('br'));
-          var l2 = document.createElement('span');
-          l2.textContent = parts[1];
-          p.appendChild(l2);
-          card.appendChild(p);
-        });
-        grid.appendChild(card);
-      });
-    }
-    function render() {
-      try {
-        if (mode === 'ghazal') { tabs.style.display = 'none'; renderGhazals(); return; }
-        tabs.style.display = '';
-        var cat = CATS.filter(function (c) { return c[0] === active; })[0] || CATS[0];
-        grid.innerHTML = '';
-        cat[3].forEach(function (sh) {
-          var parts = sh.split(' | ');
-          var card = document.createElement('div');
-          card.className = 'sq-sher-card';
-          var p = document.createElement('p');
-          p.className = 'sq-sher';
-          var l1 = document.createElement('span');
-          l1.textContent = parts[0];
-          var br = document.createElement('br');
-          var l2 = document.createElement('span');
-          l2.textContent = parts[1];
-          p.appendChild(l1); p.appendChild(br); p.appendChild(l2);
-          if (parts[2]) {
-            var em = document.createElement('span');
-            em.className = 'sq-sher-emoji';
-            em.textContent = ' ' + parts[2];
-            p.appendChild(em);
-          }
-          card.appendChild(p);
-          grid.appendChild(card);
-        });
-      } catch (e) {}
-    }
-    sec.appendChild(tabs);
-    sec.appendChild(grid);
+    sher.appendChild(tabs);
+    sher.appendChild(sherGrid);
+    parent.appendChild(sher);
+
+    /* ---- Section 2: Ghazal ---- */
+    var ghaz = makeSection('sq-poetry-ghazal', '\u{1F3BC} Ghazal', 'Mukammal ghazlein — apni pasand ka font yahan bhi chalega');
+    ghaz.appendChild(fontRow());
+    ghaz.appendChild(ghazGrid);
+    parent.appendChild(ghaz);
+
     applyFont(saved);
-    render();
-    parent.appendChild(sec);
+    renderShers();
+    renderGhazals();
     return true;
   }
+
+  var allFontBtns = [];
+  var saved = 0;
+  try { saved = parseInt(localStorage.getItem('sq-poetry-font') || '0', 10) || 0; } catch (e) {}
+  if (saved < 0 || saved >= FONTS.length) saved = 0;
+  var active = 'love';
+  var sherGrid = document.createElement('div');
+  sherGrid.className = 'sq-poetry-grid';
+  var ghazGrid = document.createElement('div');
+  ghazGrid.className = 'sq-poetry-grid';
 
   var tries = 0;
   var t = setInterval(function () {
