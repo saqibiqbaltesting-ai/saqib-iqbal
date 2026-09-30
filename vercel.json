@@ -1,0 +1,1 @@
+{"version":2,"rewrites":[{"source":"/v1/x/:path*","destination":"/api/:path*"}]}
