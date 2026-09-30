@@ -47,4 +47,3 @@ async function handle(req: Request): Promise<Response> {
 
 export const GET = handle;
 export const POST = handle;
-export default handle;
