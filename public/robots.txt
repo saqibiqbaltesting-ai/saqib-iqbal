@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://saqib-iqbal.vercel.app/sitemap.xml

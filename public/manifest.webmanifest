@@ -1,0 +1,12 @@
+{
+  "name": "Saqib Iqbal — Portfolio",
+  "short_name": "Saqib",
+  "description": "Portfolio of Saqib Iqbal — achievements, projects, gallery and contact.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0709",
+  "theme_color": "#f0c96a",
+  "icons": [
+    { "src": "/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
