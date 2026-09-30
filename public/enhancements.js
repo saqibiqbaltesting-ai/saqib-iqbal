@@ -595,12 +595,14 @@
 
   /* ---- content data ---- */
   var FUN = [
-    '🔭 Top student — 9th mein 88.62% aur 10th mein 89.17% marks!',
-    '📍 Layyah, Pakistan se — Superior Group of Colleges mein parhta hain',
-    '💻 Computer aur technology ka shauq bachpan se hai',
-    '🚀 Ye website khud design aur deploy ki hai',
-    '🎵 Naat sunna aur peaceful vibe pasand hai',
-    '🏆 Old The Cambridge Kids Campus Layyah mein 1st position',
+    '💻 Ye website maine khud banai — design bhi mera, code bhi mera, bugs bhi mere 😎',
+    '🥇 9th class mein 483/545 marks (88.62%) — 1st position ke saath!',
+    '🏆 1st position ki aadat Old The Cambridge Kids Campus Layyah se shuru hui',
+    '🌙 Night owl hoon — raat ko sab se achi coding hoti hai',
+    '🎵 Naat sun kar focus karna meri secret power hai',
+    '📍 Layyah se hoon — chhota shehar, bare sapne',
+    '🤖 Neeche AI chatbot sach mein baat karta hai — Gemini AI se chalta hai, jaadu nahi 😄',
+    '✍️ English practice kar raha hoon — galtiyan bhi hoti hain, magar seekh raha hoon',
   ];
   var WORKING = [
     '📚 ICS part 1 — studies par full focus',
@@ -687,7 +689,7 @@
       ));
       frag.appendChild(s7);
 
-      hero.parentNode.insertBefore(frag, hero.nextSibling);
+      hero.parentNode.appendChild(frag);
 
       /* ---- skills bar animation ---- */
       var skIO = new IntersectionObserver(function (es) {
