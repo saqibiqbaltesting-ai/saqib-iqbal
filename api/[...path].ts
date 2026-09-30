@@ -12,6 +12,7 @@ import * as qa from "../routes/qa.js";
 import * as quiz from "../routes/quiz.js";
 import * as ratings from "../routes/ratings.js";
 import * as visitors from "../routes/visitors.js";
+import * as debug from "../routes/debug.js";
 
 const DATA_ROOT = process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data";
 const DATA_DIR = join(DATA_ROOT, "data");
@@ -77,7 +78,7 @@ async function persistData() {
 }
 
 const routes: Record<string, { GET?: (req: Request) => Response | Promise<Response>; POST?: (req: Request) => Response | Promise<Response> }> = {
-  auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
+  auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook, debug,
   "photo-reactions": photoReactions, qa, quiz, ratings, visitors,
 };
 
