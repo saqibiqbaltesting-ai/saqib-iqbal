@@ -34,7 +34,7 @@ const routes: Record<string, { GET?: (req: Request) => Response | Promise<Respon
 
 export default async function handler(req: Request): Promise<Response> {
   ensureData();
-  const u = new URL(req.url);
+  const u = new URL(req.url, "http://localhost");
   const parts = u.pathname.split("/").filter(Boolean);
   const idx = parts.indexOf("x");
   const name = idx >= 0 ? parts[idx + 1] : parts[1];
