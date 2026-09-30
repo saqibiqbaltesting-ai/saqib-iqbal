@@ -12,7 +12,6 @@ import * as qa from "../routes/qa.js";
 import * as quiz from "../routes/quiz.js";
 import * as ratings from "../routes/ratings.js";
 import * as visitors from "../routes/visitors.js";
-import * as debug from "../routes/debug.js";
 
 const DATA_ROOT = process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data";
 const DATA_DIR = join(DATA_ROOT, "data");
@@ -74,7 +73,7 @@ async function persistData() {
 }
 
 const routes: Record<string, { GET?: (req: Request) => Response | Promise<Response>; POST?: (req: Request) => Response | Promise<Response> }> = {
-  auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook, debug,
+  auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
   "photo-reactions": photoReactions, qa, quiz, ratings, visitors,
 };
 
@@ -104,7 +103,7 @@ async function handle(req: Request): Promise<Response> {
   const fn = req.method === "GET" ? route.GET : req.method === "POST" ? route.POST : undefined;
   if (!fn) return Response.json({ ok: false, error: "method not allowed" }, { status: 405 });
   const res = await fn(callReq);
-  if (req.method === "POST") await persistData();
+  if (req.method === "POST" && action !== "me" && action !== "logout") await persistData();
   return res;
 }
 
