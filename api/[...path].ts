@@ -1,16 +1,16 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import * as auth from "../routes/auth";
-import * as admin from "../routes/admin";
-import * as chat from "../routes/chat";
-import * as contact from "../routes/contact";
-import * as galleryLock from "../routes/gallery-lock";
-import * as guestbook from "../routes/guestbook";
-import * as photoReactions from "../routes/photo-reactions";
-import * as qa from "../routes/qa";
-import * as quiz from "../routes/quiz";
-import * as ratings from "../routes/ratings";
-import * as visitors from "../routes/visitors";
+import * as auth from "../routes/auth.js";
+import * as admin from "../routes/admin.js";
+import * as chat from "../routes/chat.js";
+import * as contact from "../routes/contact.js";
+import * as galleryLock from "../routes/gallery-lock.js";
+import * as guestbook from "../routes/guestbook.js";
+import * as photoReactions from "../routes/photo-reactions.js";
+import * as qa from "../routes/qa.js";
+import * as quiz from "../routes/quiz.js";
+import * as ratings from "../routes/ratings.js";
+import * as visitors from "../routes/visitors.js";
 
 const DATA_ROOT = process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data";
 const DATA_DIR = join(DATA_ROOT, "data");
