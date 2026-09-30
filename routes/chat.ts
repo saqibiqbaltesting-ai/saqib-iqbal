@@ -114,6 +114,34 @@ export async function POST(req: Request): Promise<Response> {
     }
     contents.push({ role: "user", parts: [{ text: message }] });
 
+    // streaming mode: pipe Gemini's SSE straight through so text arrives word by word
+    if (body?.stream === true) {
+      const ordered = modelCache ? [modelCache, ...MODELS.filter((m) => m !== modelCache)] : [...MODELS].reverse();
+      for (const model of ordered) {
+        try {
+          const r = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${key}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                systemInstruction: { parts: [{ text: SYS }] },
+                contents,
+                generationConfig: { maxOutputTokens: 300, temperature: 0.8, thinkingConfig: { thinkingBudget: 0 } },
+              }),
+              signal: AbortSignal.timeout(20000),
+            }
+          );
+          if (!r.ok || !r.body) continue;
+          modelCache = model;
+          return new Response(r.body, {
+            headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", "X-Accel-Buffering": "no" },
+          });
+        } catch { continue; }
+      }
+      return Response.json({ error: "ai-busy" }, { status: 503 });
+    }
+
     let reply = "";
     if (modelCache) {
       try { reply = await askModel(modelCache, key, contents, 9000); } catch { modelCache = null; }
