@@ -991,6 +991,7 @@
 /* ---- 19. Poetry section — 6 categories x 30 shers, font changer ---- */
 (function poetry(){
   if (window.__sqPoetry) return; window.__sqPoetry = true;
+  var q = function (s) { return document.querySelector(s); };
 
   var CATS = [
     ['love','❤️','Love',[
