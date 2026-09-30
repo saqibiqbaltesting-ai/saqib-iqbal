@@ -970,3 +970,20 @@
     } catch(e) {}
   }, 800);
 })();
+
+/* ---- 18. Welcome/Logout row + footer line move to the very bottom of Contact ---- */
+(function contactBits(){
+  if (window.__sqContactBits) return; window.__sqContactBits = true;
+  var t = setInterval(function(){
+    try {
+      var c = document.getElementById('contact');
+      if (!c) return;
+      var w = c.querySelector('.logout-row');
+      var f = c.querySelector('.footer-note');
+      if (!w && !f) return;
+      if (w) c.appendChild(w);
+      if (f) c.appendChild(f);
+      if (w && f && w.nextElementSibling !== f) c.insertBefore(f, w);
+    } catch(e) {}
+  }, 800);
+})();
