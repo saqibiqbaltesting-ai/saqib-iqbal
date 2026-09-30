@@ -32,7 +32,7 @@ const routes: Record<string, { GET?: (req: Request) => Response | Promise<Respon
   "photo-reactions": photoReactions, qa, quiz, ratings, visitors,
 };
 
-export default async function handler(req: Request): Promise<Response> {
+async function handle(req: Request): Promise<Response> {
   ensureData();
   const u = new URL(req.url, "http://localhost");
   const parts = u.pathname.split("/").filter(Boolean);
@@ -44,3 +44,7 @@ export default async function handler(req: Request): Promise<Response> {
   if (!fn) return Response.json({ ok: false, error: "method not allowed" }, { status: 405 });
   return fn(req);
 }
+
+export const GET = handle;
+export const POST = handle;
+export default handle;
