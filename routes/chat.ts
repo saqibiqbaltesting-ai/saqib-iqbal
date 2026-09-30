@@ -21,6 +21,34 @@ Rules:
 
 
 let keyCache: string | null = null;
+let modelCache: string | null = null;
+
+async function askModel(model: string, key: string, contents: Array<{ role: string; parts: Array<{ text: string }> }>, ms: number): Promise<string> {
+  const r = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYS }] },
+        contents,
+        generationConfig: { maxOutputTokens: 300, temperature: 0.8 },
+      }),
+      signal: AbortSignal.timeout(ms),
+    }
+  );
+  if (!r.ok) { if (r.status === 401 || r.status === 403 || r.status === 400) keyCache = null; throw new Error(String(r.status)); }
+  const d = await r.json();
+  const parts = d?.candidates?.[0]?.content?.parts ?? [];
+  const reply = parts
+    .filter((p: { thought?: boolean }) => p.thought !== true)
+    .map((p: { text?: string }) => p.text ?? "")
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  if (!reply) throw new Error("empty");
+  return reply;
+}
 async function getKey(): Promise<string> {
   if (keyCache) return keyCache;
   const key = String(process.env.GEMINI_API_KEY ?? "").trim();
@@ -46,52 +74,34 @@ export async function POST(req: Request): Promise<Response> {
   if (throttled(ip)) return Response.json({ error: "slow down" }, { status: 429 });
 
   const body = await req.json().catch(() => ({} as Record<string, unknown>));
-  const message = String(body?.message ?? "").slice(0, 800).trim();
+  const message = String(body?.message ?? "").slice(0, 500).trim();
   if (!message) return Response.json({ error: "empty" }, { status: 400 });
 
-  const history = Array.isArray(body?.history) ? (body.history as Array<{ role?: string; text?: string }>).slice(-6) : [];
+  const history = Array.isArray(body?.history) ? (body.history as Array<{ role?: string; text?: string }>).slice(-4) : [];
 
   try {
     const key = await getKey();
     const contents: Array<{ role: string; parts: Array<{ text: string }> }> = [];
     for (const h of history) {
-      const t = String(h?.text ?? "").slice(0, 800);
+      const t = String(h?.text ?? "").slice(0, 500);
       if (!t) continue;
       contents.push({ role: h?.role === "ai" ? "model" : "user", parts: [{ text: t }] });
     }
     contents.push({ role: "user", parts: [{ text: message }] });
 
     let reply = "";
-    for (let pass = 0; pass < 2 && !reply; pass++) {
-    for (const model of MODELS) {
-      try {
-        const r = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              systemInstruction: { parts: [{ text: SYS }] },
-              contents,
-              generationConfig: { maxOutputTokens: 300, temperature: 0.8 },
-            }),
-            signal: AbortSignal.timeout(10000),
-          }
-        );
-        if (!r.ok) { keyCache = null; continue; }
-        const d = await r.json();
-        const parts = d?.candidates?.[0]?.content?.parts ?? [];
-        reply = parts
-          .filter((p: { thought?: boolean }) => p.thought !== true)
-          .map((p: { text?: string }) => p.text ?? "")
-          .filter(Boolean)
-          .join(" ")
-          .trim();
-        if (reply) break;
-      } catch {
-        continue;
-      }
+    if (modelCache) {
+      try { reply = await askModel(modelCache, key, contents, 9000); } catch { modelCache = null; }
     }
+    if (!reply) {
+      try {
+        reply = await Promise.any(
+          MODELS.map(async (m) => {
+            const t = await askModel(m, key, contents, 9000);
+            return { m, t };
+          })
+        ).then((w) => { modelCache = w.m; return w.t; });
+      } catch { reply = ""; }
     }
     if (!reply) return Response.json({ error: "ai-busy" }, { status: 503 });
     return Response.json({ reply: reply.slice(0, 1200) });
