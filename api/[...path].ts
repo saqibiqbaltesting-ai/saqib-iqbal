@@ -1,6 +1,6 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { loadJSON, saveJSON } from "../routes/blob-store.js";
+import { loadAll, loadJSON, saveJSON } from "../routes/blob-store.js";
 import * as auth from "../routes/auth.js";
 import * as admin from "../routes/admin.js";
 import * as chat from "../routes/chat.js";
@@ -37,17 +37,13 @@ async function ensureData() {
   }
 }
 
-// Before a POST: pull the latest blob version over the (possibly stale) /tmp copy,
-// so multiple server instances never work off stale data.
+// Before a POST that needs data: pull the latest blob versions over the
+// (possibly stale) /tmp copies. One list call for all files.
 async function syncFromBlob() {
-  if (!existsSync(SEED_DIR)) return;
-  for (const name of readdirSync(SEED_DIR)) {
-    const dst = join(DATA_DIR, name);
-    if (!statSync(join(SEED_DIR, name)).isFile()) continue;
-    const remote = await loadJSON(name).catch(() => null);
-    if (remote !== null && remote !== undefined) {
-      try { writeFileSync(dst, JSON.stringify(remote)); } catch {}
-    }
+  if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
+  const files = await loadAll();
+  for (const [name, data] of files) {
+    try { writeFileSync(join(DATA_DIR, name), JSON.stringify(data)); } catch {}
   }
 }
 
@@ -84,7 +80,13 @@ const routes: Record<string, { GET?: (req: Request) => Response | Promise<Respon
 
 async function handle(req: Request): Promise<Response> {
   await ensureData();
-  if (req.method === "POST") await syncFromBlob();
+  if (req.method === "POST") {
+    // stateless actions need no data — skip the sync so /me stays instant
+    // (the frontend boot aborts /me after 2.5s and shows the login gate)
+    let action = "";
+    try { const b = await req.clone().json(); action = String(b?.action ?? ""); } catch {}
+    if (action !== "me" && action !== "logout") await syncFromBlob();
+  }
   const u = new URL(req.url, "http://localhost");
   const parts = u.pathname.split("/").filter(Boolean);
   const idx = parts.indexOf("x");

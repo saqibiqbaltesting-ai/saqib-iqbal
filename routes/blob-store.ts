@@ -21,6 +21,28 @@ async function versionsOf(name: string) {
     .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
 }
 
+// One list call for ALL data files — much cheaper than per-file loads.
+export async function loadAll(): Promise<Map<string, unknown>> {
+  const out = new Map<string, unknown>();
+  if (!onVercel()) return out;
+  const res = await list({ prefix: "data/v-", limit: 500 });
+  const newest = new Map<string, { url: string; at: number }>();
+  for (const b of res.blobs) {
+    const m = b.pathname.match(/^data\/v-([^/]+)\//);
+    if (!m) continue;
+    const at = new Date(b.uploadedAt).getTime();
+    const prev = newest.get(m[1]);
+    if (!prev || at > prev.at) newest.set(m[1], { url: b.url, at });
+  }
+  for (const [name, v] of newest) {
+    try {
+      const r = await fetch(v.url, { cache: "no-store" });
+      if (r.ok) out.set(name, JSON.parse(await r.text()));
+    } catch {}
+  }
+  return out;
+}
+
 export async function loadJSON(name: string): Promise<unknown | null> {
   if (!onVercel()) return null;
   try {

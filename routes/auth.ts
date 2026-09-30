@@ -100,9 +100,9 @@ export async function POST(req: Request): Promise<Response> {
     const token = String(body?.token ?? "");
     const p = readToken(token);
     if (!p) return Response.json({ ok: false }, { status: 401 });
-    const user = db.users.find((u) => u.email === p.email);
-    // frontend boot expects flat { name, email } in the response body
-    return ok({ name: user ? user.name : p.name, email: p.email });
+    // frontend boot expects flat { name, email } in the response body;
+    // the signed token already carries them — no storage read needed
+    return ok({ name: p.name, email: p.email });
   }
 
   if (action === "logout") {
