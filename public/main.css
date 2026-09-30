@@ -2,3 +2,17 @@
 
 /* Desktop: wider layout so it doesn't look like a phone screen */
 @media(min-width:1100px){.page{max-width:1040px;padding-left:48px;padding-right:48px}.hero-sub{max-width:44ch}.stats{gap:18px}}
+
+/* --- desktop: hero background full-bleed (no side gaps) + tighter top --- */
+@media(min-width:1100px){
+  body{overflow-x:hidden}
+  .hero{width:100vw;margin-left:calc(50% - 50vw);padding:36px 48px 9vh;box-sizing:border-box}
+}
+/* --- social links pinned at the very top, always visible --- */
+.social-row{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:11400;margin:0}
+
+/* --- paint the page gradient on the body so it spans the full viewport
+       (kills the dark side strips on wide screens) --- */
+html{background:var(--bg,#070509)}
+body{background:var(--bg,#070509) radial-gradient(70% 45% at 80% -5%,rgba(233,123,156,.16),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(217,169,78,.08),transparent 70%),radial-gradient(45% 30% at 90% 75%,rgba(233,123,156,.08),transparent 70%);background-attachment:fixed}
+.page{background:transparent}

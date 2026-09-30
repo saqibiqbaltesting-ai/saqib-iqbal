@@ -394,4 +394,31 @@
     skip.textContent = 'Content par jayen';
     document.body.insertBefore(skip, document.body.firstChild);
   } catch (e) {}
+
+  /* ============ 14. Hero name = home link ============ */
+  try {
+    var navTries = 0;
+    var navTimer = setInterval(function () {
+      try {
+        var name = q('.hero-name');
+        navTries++;
+        if (!name) { if (navTries > 40) clearInterval(navTimer); return; }
+        clearInterval(navTimer);
+        name.style.cursor = 'pointer';
+        name.title = 'Home';
+        var clicks = 0, pend = null;
+        name.addEventListener('click', function (e) {
+          e.preventDefault();
+          clicks++;
+          // single click -> home; 5 rapid clicks still trigger the secret easter egg
+          if (pend) clearTimeout(pend);
+          pend = setTimeout(function () {
+            if (clicks === 1 && location.pathname !== '/') location.href = '/';
+            else if (clicks === 1) window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' });
+            clicks = 0;
+          }, 420);
+        });
+      } catch (e) { clearInterval(navTimer); }
+    }, 500);
+  } catch (e) {}
 })();
