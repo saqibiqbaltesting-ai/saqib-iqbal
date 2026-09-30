@@ -1,72 +1,124 @@
-import { list, put, del } from "@vercel/blob";
-
-// Persistent JSON storage on Vercel Blob — survives deploys and cold starts.
+// Persistent JSON storage — GitHub private repo backend.
 //
-// Vercel Blob limitations this design works around:
-// 1. Overwriting a fixed pathname serves STALE cached content on reads.
-// 2. The SDK inserts its random suffix before the FIRST dot in the path,
-//    so version paths must contain no dots.
-// 3. list() is fresh enough to discover the latest version right after a write.
+// Why: the Vercel Blob stores hit the free-tier limit and got suspended
+// ("limits-exceeded-suspended"), so every write silently failed and accounts
+// vanished on each deploy. This backend stores each data file as
+// data/<name>.json in the private repo GITHUB_DATA_REPO using the
+// GitHub Contents API with GITHUB_DATA_TOKEN.
 //
-// Each logical file gets a dot-free version folder: data/v-<key>/blob-<rand>.
+// Same exported interface as the old blob store (loadAll / loadJSON / saveJSON),
+// so nothing else in the app changes.
 
-const onVercel = () => Boolean(process.env.BLOB_STORE_ID);
+const REPO = process.env.GITHUB_DATA_REPO || "saqibiqbaltesting-ai/saqib-data";
+const TOKEN = process.env.GITHUB_DATA_TOKEN || "";
+const API = "https://api.github.com";
 
-const key = (name: string) => name.replace(/[^a-zA-Z0-9-]/g, "_");
-const versionPrefix = (name: string) => `data/v-${key(name)}/`;
+const active = () => Boolean(TOKEN);
 
-async function versionsOf(name: string) {
-  const res = await list({ prefix: versionPrefix(name), limit: 50 });
-  return res.blobs
-    .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+// sha cache saves one GET per file per write (invalidated on conflicts)
+const shaCache = new Map<string, string>();
+
+function headers(): Record<string, string> {
+  return {
+    Authorization: `Bearer ${TOKEN}`,
+    Accept: "application/vnd.github+json",
+    "User-Agent": "saqib-portfolio",
+  };
 }
 
-// One list call for ALL data files — much cheaper than per-file loads.
+async function ghGet(path: string): Promise<{ sha: string | null; json: unknown | null }> {
+  const r = await fetch(`${API}/repos/${REPO}/contents/${path}`, {
+    headers: headers(),
+    cache: "no-store",
+  });
+  if (!r.ok) return { sha: null, json: null };
+  const j: any = await r.json();
+  try {
+    return { sha: j.sha, json: JSON.parse(Buffer.from(j.content, "base64").toString("utf8")) };
+  } catch {
+    return { sha: j.sha, json: null };
+  }
+}
+
+async function ghPut(path: string, data: unknown, sha: string | null): Promise<boolean> {
+  const body: Record<string, unknown> = {
+    message: `data sync: ${path}`,
+    content: Buffer.from(JSON.stringify(data)).toString("base64"),
+  };
+  if (sha) body.sha = sha;
+  const r = await fetch(`${API}/repos/${REPO}/contents/${path}`, {
+    method: "PUT",
+    headers: { ...headers(), "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (r.ok) {
+    try { shaCache.set(path, ((await r.json()) as any).content.sha); } catch {}
+    return true;
+  }
+  // conflict or stale sha: refetch and retry once
+  if (r.status === 409 || r.status === 422 || r.status === 404) {
+    const fresh = await ghGet(path);
+    const body2: Record<string, unknown> = {
+      message: `data sync (retry): ${path}`,
+      content: Buffer.from(JSON.stringify(data)).toString("base64"),
+      sha: fresh.sha,
+    };
+    const r2 = await fetch(`${API}/repos/${REPO}/contents/${path}`, {
+      method: "PUT",
+      headers: { ...headers(), "Content-Type": "application/json" },
+      body: JSON.stringify(body2),
+    });
+    if (r2.ok) {
+      try { shaCache.set(path, ((await r2.json()) as any).content.sha); } catch {}
+      return true;
+    }
+  }
+  return false;
+}
+
+async function listDataFiles(): Promise<string[]> {
+  const r = await fetch(`${API}/repos/${REPO}/contents/data`, {
+    headers: headers(),
+    cache: "no-store",
+  });
+  if (!r.ok) return [];
+  const j: any = await r.json();
+  return Array.isArray(j) ? j.filter((f: any) => f.type === "file").map((f: any) => String(f.name)) : [];
+}
+
+// One sweep for ALL data files (used before POSTs that need data).
 export async function loadAll(): Promise<Map<string, unknown>> {
   const out = new Map<string, unknown>();
-  if (!onVercel()) return out;
-  const res = await list({ prefix: "data/v-", limit: 500 });
-  const newest = new Map<string, { url: string; at: number }>();
-  for (const b of res.blobs) {
-    const m = b.pathname.match(/^data\/v-([^/]+)\//);
-    if (!m) continue;
-    const at = new Date(b.uploadedAt).getTime();
-    const prev = newest.get(m[1]);
-    if (!prev || at > prev.at) newest.set(m[1], { url: b.url, at });
-  }
-  for (const [name, v] of newest) {
-    try {
-      const r = await fetch(v.url, { cache: "no-store" });
-      if (r.ok) out.set(name, JSON.parse(await r.text()));
-    } catch {}
-  }
+  if (!active()) return out;
+  const names = await listDataFiles();
+  await Promise.all(
+    names.map(async (name) => {
+      const v = await loadJSON(name);
+      if (v !== null && v !== undefined) out.set(name, v);
+    })
+  );
   return out;
 }
 
 export async function loadJSON(name: string): Promise<unknown | null> {
-  if (!onVercel()) return null;
+  if (!active()) return null;
   try {
-    const versions = await versionsOf(name);
-    if (!versions.length) return null;
-    const res = await fetch(versions[0].url, { cache: "no-store" });
-    if (!res.ok) return null;
-    return JSON.parse(await res.text());
+    const { json } = await ghGet(`data/${name}`);
+    return json;
   } catch {
     return null;
   }
 }
 
 export async function saveJSON(name: string, data: unknown): Promise<void> {
-  if (!onVercel()) return;
+  if (!active()) return;
   try {
-    await put(`${versionPrefix(name)}blob`, JSON.stringify(data), {
-      access: "public",
-      addRandomSuffix: true,
-    });
-    // prune old versions, keep the newest 3
-    const old = (await versionsOf(name)).slice(3);
-    if (old.length) await del(old.map((b) => b.url));
+    const path = `data/${name}`;
+    let sha = shaCache.get(path) ?? null;
+    if (!sha) sha = (await ghGet(path)).sha;
+    const okWrite = await ghPut(path, data, sha);
+    if (!okWrite) console.error("[data-store] save failed for", name);
   } catch (e) {
-    console.error("[blob] save failed for", name, String(e && (e as Error).message ? (e as Error).message : e));
+    console.error("[data-store] save failed for", name, e instanceof Error ? e.message : e);
   }
 }

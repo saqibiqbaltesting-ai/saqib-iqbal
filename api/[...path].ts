@@ -56,21 +56,26 @@ function mergeUsers(localData: any, remoteData: any): any {
   return { ...(remoteData || {}), ...localData, users: merged };
 }
 
-// After a POST: push data files back to Blob (merge users db to avoid lost updates).
+// After a POST: push data files back to the store (merge users db to avoid
+// lost updates). Files upload in parallel — sequential took ~6s on GitHub.
 async function persistData() {
   if (!existsSync(DATA_DIR)) return;
-  for (const name of readdirSync(DATA_DIR)) {
+  const names = readdirSync(DATA_DIR);
+  await Promise.all(names.map(async (name) => {
     const src = join(DATA_DIR, name);
-    if (!statSync(src).isFile()) continue;
+    if (!statSync(src).isFile()) return;
     let payload: unknown;
-    try { payload = JSON.parse(readFileSync(src, "utf-8")); } catch { continue; }
+    try { payload = JSON.parse(readFileSync(src, "utf-8")); } catch { return; }
     if (name === "portfolio-users.json") {
       const remote = await loadJSON(name).catch(() => null);
       if (remote && typeof remote === "object") payload = mergeUsers(payload, remote);
     }
     await saveJSON(name, payload);
-  }
+  }));
 }
+
+// POST actions that change nothing — persisting after them is pure latency.
+const READ_ONLY_ACTIONS = new Set(["me", "logout", "login", "chat"]);
 
 const routes: Record<string, { GET?: (req: Request) => Response | Promise<Response>; POST?: (req: Request) => Response | Promise<Response> }> = {
   auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
@@ -87,7 +92,8 @@ async function handle(req: Request): Promise<Response> {
   }
   let action = "";
   if (bodyText) { try { action = String(JSON.parse(bodyText)?.action ?? ""); } catch {} }
-  if (req.method === "POST" && action !== "me" && action !== "logout") {
+  const SYNC_SKIP = action === "me" || action === "logout";
+  if (req.method === "POST" && !SYNC_SKIP) {
     // stateless actions need no data — skip the sync so /me stays instant
     // (the frontend boot aborts /me after 2.5s and shows the login gate)
     await syncFromBlob();
@@ -103,7 +109,8 @@ async function handle(req: Request): Promise<Response> {
   const fn = req.method === "GET" ? route.GET : req.method === "POST" ? route.POST : undefined;
   if (!fn) return Response.json({ ok: false, error: "method not allowed" }, { status: 405 });
   const res = await fn(callReq);
-  if (req.method === "POST" && action !== "me" && action !== "logout") await persistData();
+  // login/chat change nothing — persisting after them is pure latency
+  if (req.method === "POST" && !READ_ONLY_ACTIONS.has(action)) await persistData();
   return res;
 }
 

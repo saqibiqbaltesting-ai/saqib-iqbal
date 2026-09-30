@@ -33,7 +33,7 @@
 @keyframes sqOrb2{to{transform:translate(-8vmax,10vmax) scale(.9)}}
 @keyframes sqOrb3{to{transform:translate(6vmax,-9vmax) scale(1.1)}}
 #sq-anim-bg.sq-off{display:none}
-#sq-anim-toggle{position:fixed;left:62px;bottom:132px;z-index:9400;width:40px;height:40px;border-radius:50%;border:1px solid rgba(240,201,106,.5);background:rgba(10,7,14,.85);color:var(--sq-accent);font-size:15px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#sq-anim-toggle{position:fixed;left:14px;bottom:118px;z-index:9400;width:40px;height:40px;border-radius:50%;border:1px solid rgba(240,201,106,.5);background:rgba(10,7,14,.85);color:var(--sq-accent);font-size:15px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.5)}
 
 /* ---------- cookie pill ---------- */
 #sq-cookie{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:11400;display:flex;gap:10px;align-items:center;padding:9px 14px;border-radius:99px;background:rgba(20,12,26,.96);border:1px solid rgba(240,201,106,.45);color:#fff;font-size:12.5px;font-family:inherit;box-shadow:0 6px 24px rgba(0,0,0,.45)}
@@ -46,9 +46,8 @@
 
 /* ---------- dashboard ---------- */
 #sq-dash-btn{position:fixed;right:23px;bottom:188px;z-index:11004;width:40px;height:40px;border-radius:50%;border:1px solid rgba(240,201,106,.5);background:rgba(18,8,28,.85);color:var(--sq-accent);font-size:15px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(0,0,0,.45)}
-/* keep the owner crown + anim toggle clear of the clock (clock: left:14 bottom:78) */
-#sq-admin-btn{bottom:132px!important}
-#sq-anim-toggle{left:62px}
+/* keep the owner crown clear of the clock + anim toggle (left column stack) */
+#sq-admin-btn{bottom:170px!important}
 #sq-dash-ov{position:fixed;inset:0;z-index:11200;background:rgba(5,3,8,.78);display:flex;align-items:center;justify-content:center;padding:16px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 #sq-dash-card{background:rgba(24,10,34,.98);border:1px solid var(--sq-accent);border-radius:14px;padding:18px 16px;width:min(92vw,380px);max-height:84vh;overflow-y:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6);font-family:inherit}
 #sq-dash-card h3{margin:0 0 4px;font-size:17px;color:var(--sq-accent)}
