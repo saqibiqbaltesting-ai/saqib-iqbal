@@ -987,3 +987,326 @@
     } catch(e) {}
   }, 800);
 })();
+
+/* ---- 19. Poetry section — 6 categories x 30 shers, font changer ---- */
+(function poetry(){
+  if (window.__sqPoetry) return; window.__sqPoetry = true;
+
+  var CATS = [
+    ['love','❤️','Love',[
+      'Teri aankhon mein jo jaadu hai | Har nazar mein nayi dastaan likhi hai ❤️',
+      'Dil ne tujh ko chun liya hai | Ab koi aur soojhta hi nahi',
+      'Tere naam se shuru hoti hai | Har subah, har dua meri 🌅',
+      'Ishq wo aag hai jo | Jalati bhi hai, roshan bhi karti hai 🔥',
+      'Tum haso to lagta hai | Baharon ne ghar kar liya 🌸',
+      'Teri ek muskurahat ke liye | Main duniya se lar jaaon ga',
+      'Mohabbat apni kam nahi | Sab se badi daulat hai',
+      'Dil ki gehraiyon mein | Tera hi naam likha hai ✍️',
+      'Tere bina to zindagi | Aadhi si lagti hai',
+      'Nazar jahan se uthti hai | Teri tasveer wahan milti hai 🖼️',
+      'Chand ko dekh kar tujhe yaad aata hai | Ye ishq ka asar hai 🌙',
+      'Tera hona hi kaafi hai | Baqi sab duniya ki marzi',
+      'Mohabbat wo nahi ke mil jaye | Mohabbat wo hai ke na toot jaye 💗',
+      'Teri baaton mein wo baat hai | Jo kahin aur nahi milti',
+      'Dil ne tujh se hi poocha hai | Ye pyar kya hota hai 💞',
+      'Tum aa jao to | Kaliyan bhi khil jayen 🌷',
+      'Ishq mein doobne ka maza | Doob kar hi pata chalta hai 🌊',
+      'Tere naam ki dhool bhi | Mere liye zevar hai',
+      'Pyar wo jo nazron se | Dil tak jata hai 👀',
+      'Teri kami khalti hai | Har khushi mein thori si',
+      'Tu jo mile to | Manzilein khud chalein aayen 🛤️',
+      'Ek tum ho jo sab ho | Ek ye duniya hai jis mein kuch nahi',
+      'Mohabbat mein sab kuch dena | Magar apna hona sab se pyara hai 🎁',
+      'Tere hone se hi | Ghar ko ghar kehte hain 🏡',
+      'Dil ki duniya basi hai | Tere naam ke nagar mein 🏰',
+      'Wo shaks meri duaon mein | Sab se gehri jagah rakhta hai 🤲',
+      'Ishq bann kar reh jata hai | Jo dil mein utar jaye 💓',
+      'Tere sath har raat | Jaise chandni ka shabab ho ✨',
+      'Mohabbat parhti nahi | Mohabbat kar dikhayi jati hai 📖',
+      'Mujhe tumsa koi | Doosra nahi chahiye tha kabhi',
+    ]],
+    ['sad','😢','Sad',[
+      'Aansu bhi ajeeb hote hain | Aksar tanhai mein nikalte hain 😢',
+      'Khamoshi bhi bohot kuch kehti hai | Sunne wala koi hota to',
+      'Dard ki had wo hai | Jab muskurana bhi majboori lage 💔',
+      'Log badal nahi jaate | Nazariya badal jata hai',
+      'Wo to chale gaye | Yaadein peeche reh gayin',
+      'Dil toota hai abhi | Awaz bhi nahi aayi',
+      'Zakhm gehre hote hain | Jo nazar nahi aate',
+      'Tanhai ka maza wo hi janta hai | Jis ne sab ko jate dekha ho 🌙',
+      'Umeed ka diya na bujhne do | Chahe hawa tez ho 🪔',
+      'Muskurana seekh liya | Magar dil rota reh gaya',
+      'Jo apne hue nahi | Unki yaad bhi apni nahi hoti',
+      'Kuch log ja kar | Khali jagah chhor jate hain 🪑',
+      'Dard batane ka koi haq nahi | Har kisi ko apna haal',
+      'Raaton ko neend kahan | Aankhein aayen to so jayen 🌃',
+      'Gham bhi ghareeb hota hai | Saath kabhi kisi ke nahi nibhata',
+      'Dil ne chaha jo | Muqaddar ne likha kuch aur tha ✍️',
+      'Toot kar bhi khada hoon | Ye aadat achi nahi 🥀',
+      'Log mile bhi to | Wafa milti nahi',
+      'Apne hi chehre par | Parda pad gaya hai ab',
+      'Ye dard bhi sath chalta hai | Jis ko chhora uska nahi 🚶',
+      'Beachh se pehle soch lein | Rishton ki qeematein 💸',
+      'Mai toot bhi jaaon | To mujh se sambhal lena 🫂',
+      'Khushiyan baant raha tha | Sab ne hissa le liya',
+      'Ab to adat si hai | Apne dukh chhupana 🎭',
+      'Rona nahi hai mujhe | Bas thakan si reh gayi hai',
+      'Koi poochh nahi leta | Dil kaisa hai yahan 🏙️',
+      'Har koi apna safar | Tanhai mein katta hai',
+      'Muskurahat ka mol | Kabhi sab ko nahi milta',
+      'Bichharne wale | Yaadon mein reh jate hain 🌫️',
+      'Dard ka saudagar | Sab se sasta tha main',
+    ]],
+    ['romantic','💕','Romantic',[
+      'Teri saanson ki khushboo | Mere dil ka qarar hai 🌬️',
+      'Haath mein haath rakh kar | Chalna seekh lein hum 💑',
+      'Tere honton pe jo naam hai | Wo mera zaroor hona chahiye 💋',
+      'Palkon pe bitha loonga | Har wo baat jo keh na sakhon 🥰',
+      'Baarish ho aur tum saath ho | Bas ye maang liye hum ne 🌧️',
+      'Tere kaan ke pass | Sirf mohabbat ki baatein karni hain 🤫',
+      'Angdayi mein bhi tu | Neend mein bhi tu 🌙',
+      'Meri duniya ka sunehra waqt | Tere aane wali sham hai 🌇',
+      'Tum se mil kar lagta hai | Safar manzil tak pohnch gaya 🛖',
+      'Tere liye likhi har pankti | Khud tere hue hai 💌',
+      'Teri ungli pakad loon | To raasta bhool jaaon 🤝',
+      'Mohabbat ka pehla paath | Teri hansi se shuru hota hai 📿',
+      'Tere sath bitaya har lamha | Meri favorite kahani hai 📚',
+      'Aankh mein aankh dhal kar | Baat karne ka maza hi aur hai 👁️',
+      'Tu jahan bhi ho | Mera dil wahan tikka hai 📍',
+      'Tere liye chand tak | Jaane ka irada tha 🚀',
+      'Tera rona bhi pyara | Magar hasana zyada pyara 😊',
+      'Hum dono ki kahani | Sitare bhi likhte hain ⭐',
+      'Teri baahon ki garmi | Seharon ki chaaon si 🌴',
+      'Milne ki fursat nahi | Magar yaad ka waqt nahi milta kabhi',
+      'Tere naam ki chai | Sab se zyada strong chai ☕',
+      'Tu hasse to main | Puray din ki thakan bhool jaaon 😌',
+      'Mohabbat mein ye kya kya | Karein hum majboor ho kar 🎠',
+      'Tere liye har ghazal | Har sher, har kitaab 📖',
+      'Teri aankhon ka na hona | Meri raaton ki daulat hai 🌌',
+      'Pyar mein thakne ka | Koi raasta nahi hota',
+      'Tum ho to main hoon | Warna kuch bhi nahi 🫧',
+      'Teri yaad se khushbu | Aati hai phoolon ki tarah 🌺',
+      'Ek tu hai ek main hai | Aur bas mohabbat ki raat hai 🌃',
+      'Tere sath jeena | Sirf jeena nahi, jee uthna hai 🕊️',
+    ]],
+    ['happy','😊','Happy',[
+      'Khushi apne andar dhoondo | Bahar sab batate phiren ge 🔍',
+      'Muskurana sasta hai | Is se mehnga koi naqab nahi 😄',
+      'Aaj ka din tofa hai | Ise kholo aur jiyo 🎁',
+      'Hanste hue jeene walon ke | Raste khud sanwar jate hain 🛣️',
+      'Chhoti chhoti khushiyon mein | Bari raahat hai 🍵',
+      'Jo mila hansi se | Wo agar se behtar hai 😌',
+      'Zindagi ka maza | Chai aur dosti mein hai ☕',
+      'Dil halka rakho | Saman baad mein utha lena 🎒',
+      'Har subah naya mauka hai | Kal ka drama bhool jao 🌞',
+      'Khud se mohabbat | Sab se pehli mohabbat hai 🪞',
+      'Khush rehna bhi | Ek hunar hai 🎨',
+      'Muskurahat muft mein milti hai | Ise waste na karo 😁',
+      'Jo hua achha hua | Jo ho raha behtar ho raha hai 🌈',
+      'Apni hansi se | Doosron ko bhi hansa do 🎉',
+      'Zindagi ko zindagi kehne ka | Haq hanse walon ka hai 🤣',
+      'Har mushkil ka jawab | Muskurahat se do 😎',
+      'Khushiyon ki khoj mein | Matt bhatko, ye saath hai 🔆',
+      'Din bhar ki thakan | Raat ki neend se dhul jati hai 😴',
+      'Acha socho | Acha hoga — ye formula chalta hai 🧪',
+      'Hansta hua banda | Kam se kam apna zaroor hota hai 😆',
+      'Pareshaniyan aati jati hain | Hum to hamesha hain 💪',
+      'Chai garam aur dil sada | Bas yehi zindagi hai ☕',
+      'Har koi khush hai | Bas mood ka masla hai 🎭',
+      'Aaj kuch acha kiya? | Kal ke liye target hai 🎯',
+      'Khushi bantne se | Barhti hai — accounting nahi samajhi 📈',
+      'Sar utha kar jiyo | Magar garden seedhi rakho 🦒',
+      'Qismat ka likha bhi | Muskura kar padha jata hai 📜',
+      'Har imtihan mein pass hone zaroori nahi | Seekhna zaroori hai 📚',
+      'Zindagi ek playlist hai | Apne gaane khud chuno 🎧',
+      'Bas jiyo | Baaqi sab excuses hain 🌞',
+    ]],
+    ['life','🌱','Life',[
+      'Zindagi wo nahi jo mili hai | Zindagi wo hai jo banai hai 🌱',
+      'Waqt sab ka badalta hai | Sabr ka phal meetha hota hai ⏳',
+      'Manzil unhi ko milti hai | Jin ke sapnon mein jaan hoti hai 🎯',
+      'Girna zindagi ka hissa hai | Uthna apna hosla hai 💪',
+      'Kamyab log wo nahi jo kabhi na gire | Wo hain jo har gir kar uthe 🏔️',
+      'Zindagi ka sab se bara aaina | Aap ke apne kaam hai 🪞',
+      'Har raat ke baad | Subah zaroor aati hai 🌅',
+      'Log aate jate rahenge | Aap ka kaam aapki pehchan hai 🛠️',
+      'Jitna gehra paiyar karo | Utne gehre rahe ge 🌳',
+      'Waqt ka ehtaram karo | Ye sab kuch le kar aata hai ⌛',
+      'Mushkilein darwaze band karti nahi | Naye darwaze khol deti hain 🚪',
+      'Jo aaj mehnat kar rahe ho | Kal wo kahani banegi 📖',
+      'Zindagi chhoti hai | Magar asar gehra hota hai 🌊',
+      'Apne sapno ko | Zaroorat se zyada izzat do 💭',
+      'Taufeeq har kisi ko nahi | Achay ban kar rehne ki 🌟',
+      'Sabar aur mehnat | In dono se bara jadu nahi 🪄',
+      'Zindagi ko masla na samjho | Ye ek mouka hai 🎟️',
+      'Har koi apni qismat | Khud likh sakta hai ✍️',
+      'Doosron ke sapno mein aag lagane se acha hai | Apna diya khud jalao 🪔',
+      'Koshish karne walon ki | Har nakaam koshish bhi kaam aati hai 🧗',
+      'Ilm wo khazana hai | Jis ko lootna mushkil hai 📚',
+      'Waqt sab ka ilaaj hai | Magar dosh bhi waqt ka hai ⚖️',
+      'Achi soch se achi zindagi | Banti hai 🧠',
+      'Zindagi mein wo mat karo | Jo kal sharminda kar de 🙈',
+      'Dosti aur waqt | In dono ki qadar baad mein hoti hai ⏰',
+      'Apni pehchan banane ke liye | Rukna mana nahi 🚩',
+      'Har din thora behtar | Bas yehi formula hai ➕',
+      'Aadatein aapki kismat | Banati hain 🔁',
+      'Sach ki raah mushkil hai | Magar is se seedhi koi nahi 🛤️',
+      'Zindagi ko samjho | Warna ye samajh jaye gi 🎲',
+    ]],
+    ['attitude','🦁','Attitude',[
+      'Hum woh nahi jo sab se mile | Hum woh hain jo apne rakhein 🦁',
+      'Zubaan chhoti hai | Magar baat bari hai 🗣️',
+      'Chup rehna hamari kamzori nahi | Hoshiyari hai 🤐',
+      'Level sab ka pata hai | Magar hum ghor nahi karte 😏',
+      'Apni value khud rakho | Warna bazaar bata dein ge 🏷️',
+      'Hum se panga | Waqt ki Nazar mein bohot mehnga hai ⚠️',
+      'Do tareeqay hain | Hamara aur sab ka 🛣️',
+      'Aqal mand apni baat se | Nahi apne amal se pehchana jata hai 🧠',
+      'Jitna bhi bhaago | Apne aap se nahi bach paoge 🏃',
+      'Sar uncha rakho | Magar shoulders seedhi 👑',
+      'Hum duniya se nahi lagte | Duniya hum se lagti hai 🌍',
+      'Jo zubaan samjhe nahi | Us ko khamoshi samjha deti hai 🤫',
+      'Mehnat apni | Tariffein rab ki 💪',
+      'Dushman jitna bara | Utna hi acha counter attack 🎯',
+      'Hum rutbe se nahi | Akhlaq se baray hain 🎖️',
+      'Apne liye jiyo | Log to kisi ka khair nahi 🙃',
+      'Number ek hona zaroori nahi | Behtareen hona zaroori hai 🥇',
+      'Jo aaj mehsoos ho raha hai | Kal ki kahani ban jayega 📖',
+      'Apni fee | Khud tay karo 💼',
+      'Har cheez ki qeemat | Har kisi se nahi pouchhi jati 💰',
+      'Tehzeeb hamari pehchan hai | Magar hoshiyari bhi zaroori 🎭',
+      'Do waqt ka khana kha kar | Sapne dekhna band nahi karna 🍽️',
+      'Jo mila us par khush | Magar jo chahiye tha wo bhi yaad rakhna 🔥',
+      'Himmat mand hi | Bara shahanshah hota hai 🦁',
+      'Dosti mein sach | Dushmani mein izzat 🤝',
+      'Hum apne sardar hain | Kisi ke tahat nahi rehna 🚩',
+      'Jo guzri hum par | Wo kisi par na guzre 🙏',
+      'Khamosh rah kar bhi | Sab kuch keh gaye 🎩',
+      'Zamana jitna bharas ho | Hamari chandni ka asar nahi 🌕',
+      'Apna waqt aayega | Magar aaj se tayyar hain ⏳',
+    ]],
+  ];
+
+  var FONTS = [
+    ['Bold Italic', 'Georgia, serif', 'italic', '700'],
+    ['Dancing', "'Dancing Script', cursive", 'normal', '700'],
+    ['Signature', "'Great Vibes', cursive", 'normal', '400'],
+    ['Handy', "'Caveat', cursive", 'normal', '700'],
+    ['Playfair', "'Playfair Display', Georgia, serif", 'italic', '700'],
+  ];
+
+  function build() {
+    var host = q('.hero');
+    if (!host || !host.parentNode) return false;
+    var parent = host.parentNode;
+    if (parent.querySelector('#sq-poetry')) return null; // already built
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = 'sq-poetry';
+
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>🌿  Poetry</h2>';
+    var sub = document.createElement('p');
+    sub.className = 'sq-sec-sub';
+    sub.textContent = 'Dil se parhen — aur apne pasand ka font chunein';
+    head.appendChild(sub);
+    sec.appendChild(head);
+
+    // font picker
+    var frow = document.createElement('div');
+    frow.className = 'sq-poetry-fonts';
+    frow.innerHTML = '<span class="sq-poetry-flabel">🖋️ Font:</span>';
+    var saved = 0;
+    try { saved = parseInt(localStorage.getItem('sq-poetry-font') || '0', 10) || 0; } catch (e) {}
+    if (saved < 0 || saved >= FONTS.length) saved = 0;
+    var fbtns = [];
+    FONTS.forEach(function (f, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sq-poetry-fontbtn' + (i === saved ? ' active' : '');
+      b.style.fontFamily = f[1];
+      b.style.fontStyle = f[2];
+      b.style.fontWeight = f[3];
+      b.textContent = 'Aa';
+      b.title = f[0];
+      b.setAttribute('aria-label', 'Poetry font: ' + f[0]);
+      b.onclick = function () {
+        try { localStorage.setItem('sq-poetry-font', String(i)); } catch (e) {}
+        fbtns.forEach(function (x, k) { x.classList.toggle('active', k === i); });
+        applyFont(i);
+      };
+      fbtns.push(b);
+      frow.appendChild(b);
+    });
+    sec.appendChild(frow);
+
+    // category tabs
+    var tabs = document.createElement('div');
+    tabs.className = 'sq-poetry-tabs';
+    var grid = document.createElement('div');
+    grid.className = 'sq-poetry-grid';
+    var active = 'love';
+    function applyFont(i) {
+      var f = FONTS[i] || FONTS[0];
+      grid.style.setProperty('--sq-sher-font', f[1]);
+      grid.style.setProperty('--sq-sher-style', f[2]);
+      grid.style.setProperty('--sq-sher-weight', f[3]);
+    }
+    CATS.forEach(function (cat) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sq-poetry-tab' + (cat[0] === active ? ' active' : '');
+      b.innerHTML = cat[1] + ' ' + cat[2];
+      b.onclick = function () {
+        active = cat[0];
+        Array.prototype.forEach.call(tabs.children, function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        render();
+      };
+      tabs.appendChild(b);
+    });
+    function render() {
+      try {
+        var cat = CATS.filter(function (c) { return c[0] === active; })[0] || CATS[0];
+        grid.innerHTML = '';
+        cat[3].forEach(function (sh) {
+          var parts = sh.split(' | ');
+          var card = document.createElement('div');
+          card.className = 'sq-sher-card';
+          var p = document.createElement('p');
+          p.className = 'sq-sher';
+          var l1 = document.createElement('span');
+          l1.textContent = parts[0];
+          var br = document.createElement('br');
+          var l2 = document.createElement('span');
+          l2.textContent = parts[1];
+          p.appendChild(l1); p.appendChild(br); p.appendChild(l2);
+          if (parts[2]) {
+            var em = document.createElement('span');
+            em.className = 'sq-sher-emoji';
+            em.textContent = ' ' + parts[2];
+            p.appendChild(em);
+          }
+          card.appendChild(p);
+          grid.appendChild(card);
+        });
+      } catch (e) {}
+    }
+    sec.appendChild(tabs);
+    sec.appendChild(grid);
+    applyFont(saved);
+    render();
+    parent.appendChild(sec);
+    return true;
+  }
+
+  var tries = 0;
+  var t = setInterval(function () {
+    try {
+      tries++;
+      var r = build();
+      if (r !== false || tries > 60) clearInterval(t);
+    } catch (e) { try { clearInterval(t); } catch (x) {} }
+  }, 600);
+})();

@@ -148,3 +148,20 @@ html.sq-a11y .hero-name,html.sq-a11y .hero-kicker,html.sq-a11y .hero-sub{transfo
 :root.theme-light .sq-pj-tools input,:root.theme-light .sq-pj-tools select,body.light-mode .sq-pj-tools input,body.light-mode .sq-pj-tools select{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.18);color:#241419}
 :root.theme-light .sq-cmp th,:root.theme-light .sq-cmp td,body.light-mode .sq-cmp th,body.light-mode .sq-cmp td{border-bottom-color:rgba(0,0,0,.12)}
 @media(max-width:700px){.sq-grid{grid-template-columns:1fr 1fr}}
+
+/* ---- Poetry section ---- */
+.sq-poetry-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.sq-poetry-tab{min-height:40px;padding:8px 18px;border-radius:999px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink-dim);font-family:var(--serif);font-size:14px;cursor:pointer;transition:border-color .2s ease,color .2s ease,transform .2s ease}
+.sq-poetry-tab:hover{transform:translateY(-2px)}
+.sq-poetry-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;border-color:transparent}
+.sq-poetry-fonts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
+.sq-poetry-flabel{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute)}
+.sq-poetry-fontbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink);font-size:17px;cursor:pointer;transition:border-color .2s ease,transform .2s ease}
+.sq-poetry-fontbtn:hover{transform:translateY(-2px)}
+.sq-poetry-fontbtn.active{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(224,164,88,.25)}
+.sq-poetry-grid{display:grid;grid-template-columns:1fr;gap:12px;--sq-sher-font:Georgia,serif;--sq-sher-style:italic;--sq-sher-weight:700}
+@media(min-width:720px){.sq-poetry-grid{grid-template-columns:1fr 1fr}}
+.sq-sher-card{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;padding:20px 22px;background:linear-gradient(160deg,var(--bg-soft),var(--bg));transition:border-color .25s ease,transform .25s ease}
+@media(hover:hover){.sq-sher-card:hover{border-color:var(--accent);transform:translateY(-3px)}}
+.sq-sher{font-family:var(--sq-sher-font);font-style:var(--sq-sher-style);font-weight:var(--sq-sher-weight);font-size:19px;line-height:1.7;color:var(--ink)}
+.sq-sher-emoji{font-style:normal;font-weight:400}
