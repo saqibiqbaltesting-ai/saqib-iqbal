@@ -93,7 +93,11 @@ async function handle(req: Request): Promise<Response> {
   }
   let action = "";
   if (bodyText) { try { action = String(JSON.parse(bodyText)?.action ?? ""); } catch {} }
-  const SYNC_SKIP = action === "me" || action === "logout";
+  const parts0 = u.pathname.split("/").filter(Boolean);
+  const idx0 = parts0.indexOf("x");
+  const name0 = idx0 >= 0 ? parts0[idx0 + 1] : parts0[1];
+  // chat is read-only and high-frequency — never sync or persist around it
+  const SYNC_SKIP = action === "me" || action === "logout" || name0 === "chat";
   if (req.method === "POST" && !SYNC_SKIP) {
     // stateless actions need no data — skip the sync so /me stays instant
     // (the frontend boot aborts /me after 2.5s and shows the login gate)
@@ -102,9 +106,7 @@ async function handle(req: Request): Promise<Response> {
   const callReq = bodyText !== null
     ? new Request(u.href, { method: "POST", headers: { "content-type": "application/json" }, body: bodyText })
     : req;
-  const parts = u.pathname.split("/").filter(Boolean);
-  const idx = parts.indexOf("x");
-  const name = idx >= 0 ? parts[idx + 1] : parts[1];
+  const name = name0;
   const route = routes[name];
   if (!route) return Response.json({ ok: false, error: "not found" }, { status: 404 });
   const fn = req.method === "GET" ? route.GET : req.method === "POST" ? route.POST : undefined;
@@ -113,7 +115,7 @@ async function handle(req: Request): Promise<Response> {
   // login/chat touch only the users file — persist just that (fast), skip read-only actions
   if (req.method === "POST") {
     if (action === "login") await persistData(["portfolio-users.json"]);
-    else if (!READ_ONLY_ACTIONS.has(action)) await persistData();
+    else if (!READ_ONLY_ACTIONS.has(action) && name !== "chat") await persistData();
   }
   return res;
 }
