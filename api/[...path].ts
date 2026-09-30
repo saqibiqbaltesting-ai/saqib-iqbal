@@ -80,14 +80,22 @@ const routes: Record<string, { GET?: (req: Request) => Response | Promise<Respon
 
 async function handle(req: Request): Promise<Response> {
   await ensureData();
+  const u = new URL(req.url, "http://localhost");
+  // read the body once (Request.clone() is unreliable on Vercel's runtime)
+  let bodyText: string | null = null;
   if (req.method === "POST") {
+    try { bodyText = await req.text(); } catch { bodyText = null; }
+  }
+  let action = "";
+  if (bodyText) { try { action = String(JSON.parse(bodyText)?.action ?? ""); } catch {} }
+  if (req.method === "POST" && action !== "me" && action !== "logout") {
     // stateless actions need no data — skip the sync so /me stays instant
     // (the frontend boot aborts /me after 2.5s and shows the login gate)
-    let action = "";
-    try { const b = await req.clone().json(); action = String(b?.action ?? ""); } catch {}
-    if (action !== "me" && action !== "logout") await syncFromBlob();
+    await syncFromBlob();
   }
-  const u = new URL(req.url, "http://localhost");
+  const callReq = bodyText !== null
+    ? new Request(u.href, { method: "POST", headers: { "content-type": "application/json" }, body: bodyText })
+    : req;
   const parts = u.pathname.split("/").filter(Boolean);
   const idx = parts.indexOf("x");
   const name = idx >= 0 ? parts[idx + 1] : parts[1];
@@ -95,7 +103,7 @@ async function handle(req: Request): Promise<Response> {
   if (!route) return Response.json({ ok: false, error: "not found" }, { status: 404 });
   const fn = req.method === "GET" ? route.GET : req.method === "POST" ? route.POST : undefined;
   if (!fn) return Response.json({ ok: false, error: "method not allowed" }, { status: 405 });
-  const res = await fn(req);
+  const res = await fn(callReq);
   if (req.method === "POST") await persistData();
   return res;
 }
