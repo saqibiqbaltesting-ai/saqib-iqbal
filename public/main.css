@@ -9,7 +9,7 @@
   .hero{width:100vw;margin-left:calc(50% - 50vw);padding:36px 48px 9vh;box-sizing:border-box}
 }
 /* --- social links pinned at the very top, always visible --- */
-.social-row{position:fixed;top:calc(max(12px,env(safe-area-inset-top)) + 10px);right:calc(max(12px,env(safe-area-inset-right)) + 92px);left:auto;transform:none;z-index:11400;margin:0}
+.social-row{position:fixed;top:calc(max(12px,env(safe-area-inset-top)) + 4px);right:calc(max(12px,env(safe-area-inset-right)) + 92px);left:auto;transform:none;z-index:11400;margin:0}
 
 /* --- paint the page gradient on the body so it spans the full viewport
        (kills the dark side strips on wide screens) --- */
