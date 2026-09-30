@@ -58,9 +58,10 @@ function mergeUsers(localData: any, remoteData: any): any {
 
 // After a POST: push data files back to the store (merge users db to avoid
 // lost updates). Files upload in parallel — sequential took ~6s on GitHub.
-async function persistData() {
+async function persistData(only?: string[]) {
   if (!existsSync(DATA_DIR)) return;
-  const names = readdirSync(DATA_DIR);
+  let names = readdirSync(DATA_DIR);
+  if (only) names = names.filter((n) => only.includes(n));
   await Promise.all(names.map(async (name) => {
     const src = join(DATA_DIR, name);
     if (!statSync(src).isFile()) return;
@@ -75,7 +76,7 @@ async function persistData() {
 }
 
 // POST actions that change nothing — persisting after them is pure latency.
-const READ_ONLY_ACTIONS = new Set(["me", "logout", "login", "chat"]);
+const READ_ONLY_ACTIONS = new Set(["me", "logout", "chat"]);
 
 const routes: Record<string, { GET?: (req: Request) => Response | Promise<Response>; POST?: (req: Request) => Response | Promise<Response> }> = {
   auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
@@ -109,8 +110,11 @@ async function handle(req: Request): Promise<Response> {
   const fn = req.method === "GET" ? route.GET : req.method === "POST" ? route.POST : undefined;
   if (!fn) return Response.json({ ok: false, error: "method not allowed" }, { status: 405 });
   const res = await fn(callReq);
-  // login/chat change nothing — persisting after them is pure latency
-  if (req.method === "POST" && !READ_ONLY_ACTIONS.has(action)) await persistData();
+  // login/chat touch only the users file — persist just that (fast), skip read-only actions
+  if (req.method === "POST") {
+    if (action === "login") await persistData(["portfolio-users.json"]);
+    else if (!READ_ONLY_ACTIONS.has(action)) await persistData();
+  }
   return res;
 }
 

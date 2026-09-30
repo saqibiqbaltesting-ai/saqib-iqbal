@@ -26,9 +26,12 @@ export function readToken(token: string): TokenPayload | null {
 
 export const description = "Portfolio auth — email signup/login with token sessions";
 
+const OWNER = "fizanali6267@gmail.com";
+
 const FILE = join(process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data", "data", "portfolio-users.json");
 
-type User = { name: string; email: string; salt: string; hash: string };
+type LoginRec = { ts: number; ip?: string; ua?: string };
+type User = { name: string; email: string; salt: string; hash: string; lastLogins?: LoginRec[]; joined?: number };
 type Session = { token: string; email: string; createdAt: string };
 
 const load = (): { users: User[]; sessions: Session[] } => {
@@ -58,7 +61,7 @@ export async function POST(req: Request): Promise<Response> {
     if (db.users.some((u) => u.email === email))
       return Response.json({ ok: false, error: "exists" }, { status: 400 });
     const salt = randomBytes(16).toString("hex");
-    db.users.push({ name, email, salt, hash: hashPw(password, salt) });
+    db.users.push({ name, email, salt, hash: hashPw(password, salt), lastLogins: [], joined: Date.now() });
     const token = issueToken(email, name);
     save(db);
     return ok({ token, user: { name, email } });
@@ -72,8 +75,43 @@ export async function POST(req: Request): Promise<Response> {
       return Response.json({ ok: false, error: "not_found" }, { status: 404 });
     if (user.hash !== hashPw(password, user.salt))
       return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
+    // login history — latest 10 (device management / session info)
+    if (!Array.isArray(user.lastLogins)) user.lastLogins = [];
+    user.lastLogins.unshift({
+      ts: Date.now(),
+      ip: String(req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
+      ua: String(req.headers.get("user-agent") ?? "").slice(0, 120),
+    });
+    user.lastLogins = user.lastLogins.slice(0, 10);
+    save(db);
     const token = issueToken(email, user.name);
     return ok({ token, user: { name: user.name, email: user.email } });
+  }
+
+  if (action === "account-info") {
+    const p = readToken(String(body?.token ?? ""));
+    if (!p) return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    const user = db.users.find((u) => u.email === p.email.toLowerCase());
+    return ok({
+      email: p.email,
+      name: p.name,
+      joined: user?.joined ?? null,
+      lastLogins: (user?.lastLogins ?? []).slice(0, 10),
+    });
+  }
+
+  if (action === "delete-account") {
+    const email = String(body?.email ?? "").trim().toLowerCase();
+    const password = String(body?.password ?? "");
+    const idx = db.users.findIndex((u) => u.email === email);
+    if (idx === -1) return Response.json({ ok: false, error: "not_found" }, { status: 404 });
+    const user = db.users[idx];
+    if (email === OWNER) return Response.json({ ok: false, error: "owner_protected" }, { status: 403 });
+    if (user.hash !== hashPw(password, user.salt))
+      return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
+    db.users.splice(idx, 1);
+    save(db);
+    return ok();
   }
 
   if (action === "forgot") {

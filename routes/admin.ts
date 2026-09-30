@@ -34,6 +34,7 @@ export async function GET(): Promise<Response> {
       heroSub: String(s.heroSub ?? ""),
       social: s.social && typeof s.social === "object" ? s.social : {},
       accent: String(s.accent ?? ""),
+      maintenance: Boolean(s.maintenance),
     },
   });
 }
@@ -57,6 +58,7 @@ export async function POST(req: Request): Promise<Response> {
       next.social = social;
     }
     if (typeof body.accent === "string") next.accent = body.accent.slice(0, 20);
+    if (typeof body.maintenance === "boolean") next.maintenance = body.maintenance;
     const ok = saveSettings(next);
     return Response.json({ ok, settings: next });
   }
