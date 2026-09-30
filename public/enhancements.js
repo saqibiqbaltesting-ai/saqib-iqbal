@@ -955,3 +955,18 @@
     } catch(e) { try { clearInterval(t); } catch(_){} }
   }, 400);
 })();
+
+/* ---- 17. keep 09-Contact as the VERY last section (right after Growth Hub) ---- */
+(function contactLast(){
+  if (window.__sqContactLast) return; window.__sqContactLast = true;
+  var t = setInterval(function(){
+    try {
+      var c = document.getElementById('contact');
+      if (!c || !c.parentNode) return;
+      var p = c.parentNode;
+      var g = document.getElementById('growth-hub');
+      if (p.lastElementChild !== c) p.appendChild(c);
+      if (g && g !== c && g.nextSibling !== c) p.insertBefore(g, c);
+    } catch(e) {}
+  }, 800);
+})();
