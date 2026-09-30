@@ -1196,6 +1196,81 @@
     ['Playfair', "'Playfair Display', Georgia, serif", 'italic', '700'],
   ];
 
+  var GHAZALS = [
+    ['gh1','🌹','Pehli Mohabbat',[
+      'Wo chand si mehbooba hai | Magar meri dua hai',
+      'Usi ka to zikr hai | Har baat mein wafa hai',
+      'Nazar bhi hat ti nahi | Bas ek hi ada hai',
+      'Mile to kya kahun kaise | Ye ishq ka asar hai',
+    ]],
+    ['gh2','🌙','Raat Ke Sitare',[
+      'Ye raat bhi ajeeb hai | Taare bhi saath hain',
+      'Sitare gin kar main ne | Kuch khwab sajaye hain',
+      'Koi to hoga paas | Dil mein ye aas hai',
+      'Tanhai bhi bhali lage | Jab tera khyal hai',
+    ]],
+    ['gh3','🔥','Zid To Dekho',[
+      'Hum apni hi dhun mein hain | Ye aadat purani hai',
+      'Mehnat hamari taaqat hai | Ye pehchan purani hai',
+      'Gir kar uthna sikh liya | Ye daastaan purani hai',
+      'Manzil door nahi ab | Bas himmat jawan hai',
+    ]],
+    ['gh4','😢','Bichharne Ka Dard',[
+      'Log milte hain, jaate hain | Ye silsila chalta hai',
+      'Dil se jo gaya wo phir | Yaadon mein rehta hai',
+      'Aansu bhi kabhi kabhi | Muskurahat ban jata hai',
+      'Zakhm waqt ke sath sath | Dard bhi kam karta hai',
+    ]],
+    ['gh5','😊','Khushi Ka Nazrana',[
+      'Chhoti si khushi pe bhi | Shukar ada karen',
+      'Har din nayi umeed | Naya savera karen',
+      'Mushkil jo aaye raah mein | Hans kar utaren',
+      'Zindagi ko apni bana | Aise hi jiyen',
+    ]],
+    ['gh6','🌱','Zindagi Ka Dastoor',[
+      'Zindagi ek kitab hai | Har din naya safha hai',
+      'Jo beet gaya so baat hai | Aane wala waqt hai',
+      'Ghabrana kya is mein | Himmat hi jawan hai',
+      'Mehnat ka phal ye hai | Wo apne aap aata hai',
+    ]],
+    ['gh7','💖','Dil Ki Baat',[
+      'Ye dil bhi ajeeb hai | Shikwa nahi karta',
+      'Chup chaap sa reh kar bhi | Sab kuch hi kehta hai',
+      'Pyar chhupana chaha | Nazar ne le aaya',
+      'Chahne wale ka chehra | Sab kuch bata deta hai',
+    ]],
+    ['gh8','🦁','Kaam Ki Baat',[
+      'Hum baat kam karte hain | Kaam ziyada karte hain',
+      'Girne wale girte rahen | Hum uthaya karte hain',
+      'Mehnat mein jo laga hai | Waqt katata nahi hai',
+      'Phal apne aap aata hai | Jab dum bharta hai',
+    ]],
+    ['gh9','🌸','Dosti',[
+      'Dosti ka matlab lo | Haq ka pata chalta hai',
+      'Mushkil jab ghire to | Sath wo hi khalta hai',
+      'Duniya bhale bhool jaye | Yaar nahi bhoolta',
+      'Chand se bhi qareeb hai | Ye jo naam hai',
+    ]],
+    ['gh10','🖼️','Yaadein',[
+      'Purani yaadein ajeeb hain | Saath chalti hain',
+      'Bichhde hue lamhon ko | Phir se milati hain',
+      'Har gali, har mod par | Kuch to bachi hai',
+      'Wohi purana chehra | Yaad mein muskurati hain',
+    ]],
+    ['gh11','✨','Sapne',[
+      'Sapne bade rakho | Hausla buland rakho',
+      'Neend kam, khwab zyada | Ye pehchan rakho',
+      'Thak kar jo gir jao | Phir se uth jana',
+      'Jeet unhi ko hoti hai | Jo larna jaante hain',
+    ]],
+    ['gh12','🤲','Dua',[
+      'Meri duaon mein sab | Khushyan teri hain',
+      'Har ik subah tere liye | Dua meri hai',
+      'Raah mein har ik se | Sach bolna seekha hai',
+      'Maa ki dua jannat | Ye to sab ko pata hai',
+    ]],
+  ];
+
   function build() {
     var host = q('.hero');
     if (!host || !host.parentNode) return false;
@@ -1242,6 +1317,27 @@
     });
     sec.appendChild(frow);
 
+    // mode switch: Sher | Ghazal (gallery jaisa — ek taraf sher, doosri taraf ghazal)
+    var mode = 'sher';
+    try { mode = localStorage.getItem('sq-poetry-mode') === 'ghazal' ? 'ghazal' : 'sher'; } catch (e) {}
+    var mrow = document.createElement('div');
+    mrow.className = 'sq-mode-row';
+    [['sher','🖋️ Sher'],['ghazal','🎼 Ghazal']].forEach(function (m) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sq-modebtn' + (m[0] === mode ? ' active' : '');
+      b.innerHTML = m[1];
+      b.onclick = function () {
+        mode = m[0];
+        try { localStorage.setItem('sq-poetry-mode', mode); } catch (e) {}
+        Array.prototype.forEach.call(mrow.children, function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        render();
+      };
+      mrow.appendChild(b);
+    });
+    sec.appendChild(mrow);
+
     // category tabs
     var tabs = document.createElement('div');
     tabs.className = 'sq-poetry-tabs';
@@ -1267,8 +1363,35 @@
       };
       tabs.appendChild(b);
     });
+    function renderGhazals() {
+      grid.innerHTML = '';
+      GHAZALS.forEach(function (g) {
+        var card = document.createElement('div');
+        card.className = 'sq-ghazal-card';
+        var h = document.createElement('p');
+        h.className = 'sq-ghazal-title';
+        h.textContent = g[1] + ' ' + g[2];
+        card.appendChild(h);
+        g[3].forEach(function (cp) {
+          var parts = cp.split(' | ');
+          var p = document.createElement('p');
+          p.className = 'sq-couplet';
+          var l1 = document.createElement('span');
+          l1.textContent = parts[0];
+          p.appendChild(l1);
+          p.appendChild(document.createElement('br'));
+          var l2 = document.createElement('span');
+          l2.textContent = parts[1];
+          p.appendChild(l2);
+          card.appendChild(p);
+        });
+        grid.appendChild(card);
+      });
+    }
     function render() {
       try {
+        if (mode === 'ghazal') { tabs.style.display = 'none'; renderGhazals(); return; }
+        tabs.style.display = '';
         var cat = CATS.filter(function (c) { return c[0] === active; })[0] || CATS[0];
         grid.innerHTML = '';
         cat[3].forEach(function (sh) {
