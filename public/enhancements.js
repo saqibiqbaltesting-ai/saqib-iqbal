@@ -938,3 +938,18 @@
     document.head.appendChild(ld);
   } catch (e) {}
 })();
+
+/* ---- 16. pin social-row to body so position:fixed is viewport-relative ---- */
+(function socialFix(){
+  if (window.__sqSocialFix) return; window.__sqSocialFix = true;
+  var tries = 0;
+  var t = setInterval(function(){
+    try {
+      tries++;
+      var row = document.querySelector('.social-row');
+      if (!row) { if (tries > 60) clearInterval(t); return; }
+      clearInterval(t);
+      if (row.parentNode !== document.body) document.body.appendChild(row);
+    } catch(e) { try { clearInterval(t); } catch(_){} }
+  }, 400);
+})();
