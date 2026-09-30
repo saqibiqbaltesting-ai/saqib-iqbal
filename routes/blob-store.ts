@@ -1,15 +1,17 @@
-import { get, put } from "@vercel/blob";
+import { put } from "@vercel/blob";
 
 // Persistent JSON storage on Vercel Blob — survives deploys and cold starts.
-// Uses OIDC auth inside Vercel functions (BLOB_STORE_ID env), no-op locally.
+// Writes go through the SDK (OIDC auth inside Vercel functions).
+// Reads bypass the CDN cache with a cache-buster, so fresh writes are visible instantly.
 const onVercel = () => Boolean(process.env.BLOB_STORE_ID);
 
 export async function loadJSON(name: string): Promise<unknown | null> {
   if (!onVercel()) return null;
   try {
-    const res = await get(`data/${name}`, { access: "public" });
-    if (!res || res.statusCode !== 200) return null;
-    return JSON.parse(await new Response(res.stream).text());
+    const host = `${process.env.BLOB_STORE_ID!.replace(/^store_/, "")}.public.blob.vercel-storage.com`;
+    const res = await fetch(`https://${host}/data/${name}?cb=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return JSON.parse(await res.text());
   } catch {
     return null;
   }
