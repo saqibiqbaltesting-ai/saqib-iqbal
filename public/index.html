@@ -43,7 +43,10 @@
 /* top bar: language + theme side by side at the start corner */
 .lang-toggle{inset-inline-start:8px!important;inset-inline-end:auto!important;min-width:96px;text-align:center}
 .theme-toggle{inset-inline-start:112px!important;inset-inline-end:auto!important}
-.nav-toggle{inset-inline-start:auto!important;inset-inline-end:8px!important}
+.nav-toggle:not(.font-toggle){inset-inline-start:auto!important;inset-inline-end:8px!important}
+body.sq-dock-open #sq-top-btn{opacity:0!important;visibility:hidden!important}
+.lb-tools{flex-wrap:wrap;justify-content:center;max-width:94vw}
+@media (max-width:620px){#sq-cookie{bottom:112px!important;max-width:calc(100vw - 24px)}}
 /* social icons: small, tight, right after the toggles */
 .social-row{top:calc(max(8px,env(safe-area-inset-top)) + 4px)!important;inset-inline-start:164px!important;inset-inline-end:auto!important;gap:5px!important}
 .wa-top{width:30px!important;height:30px!important}
