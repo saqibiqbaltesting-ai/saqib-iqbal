@@ -1,6 +1,6 @@
 export const description = "Portfolio live AI chat (Gemini, key from vault)";
 
-const MODELS = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash", "gemini-3.1-flash-lite"];
+const MODELS = ["gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-3.8-flash"];
 
 const SYS = `You are "Saqib AI", the friendly assistant on Saqib Iqbal's personal portfolio website. Visitors chat with you here.
 
@@ -32,12 +32,37 @@ async function askModel(model: string, key: string, contents: Array<{ role: stri
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: SYS }] },
         contents,
-        generationConfig: { maxOutputTokens: 300, temperature: 0.8 },
+        generationConfig: { maxOutputTokens: 300, temperature: 0.8, thinkingConfig: { thinkingBudget: 0 } },
       }),
       signal: AbortSignal.timeout(ms),
     }
   );
-  if (!r.ok) { if (r.status === 401 || r.status === 403 || r.status === 400) keyCache = null; throw new Error(String(r.status)); }
+  if (!r.ok) {
+    if (r.status === 400) {
+      // model may not accept thinkingConfig — retry once without it
+      const r2 = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: SYS }] },
+            contents,
+            generationConfig: { maxOutputTokens: 300, temperature: 0.8 },
+          }),
+          signal: AbortSignal.timeout(ms),
+        }
+      );
+      if (!r2.ok) throw new Error(String(r2.status));
+      const d2 = await r2.json();
+      const p2 = d2?.candidates?.[0]?.content?.parts ?? [];
+      const t2 = p2.filter((p: { thought?: boolean }) => p.thought !== true).map((p: { text?: string }) => p.text ?? "").filter(Boolean).join(" ").trim();
+      if (!t2) throw new Error("empty");
+      return t2;
+    }
+    if (r.status === 401 || r.status === 403) keyCache = null;
+    throw new Error(String(r.status));
+  }
   const d = await r.json();
   const parts = d?.candidates?.[0]?.content?.parts ?? [];
   const reply = parts
