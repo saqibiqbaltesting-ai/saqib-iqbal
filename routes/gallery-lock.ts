@@ -9,7 +9,7 @@ const getPass = (): string => {
   try {
     return String(JSON.parse(readFileSync(FILE, "utf-8")).pass ?? "");
   } catch {
-    return "saqib";
+    return "Love";
   }
 };
 

@@ -116,7 +116,7 @@ export async function POST(req: Request): Promise<Response> {
 
     // streaming mode: pipe Gemini's SSE straight through so text arrives word by word
     if (body?.stream === true) {
-      const ordered = modelCache ? [modelCache, ...MODELS.filter((m) => m !== modelCache)] : [...MODELS].reverse();
+      const ordered = modelCache ? [modelCache, ...MODELS.filter((m) => m !== modelCache)] : MODELS;
       for (const model of ordered) {
         try {
           const r = await fetch(
@@ -139,7 +139,6 @@ export async function POST(req: Request): Promise<Response> {
           });
         } catch { continue; }
       }
-      return Response.json({ error: "ai-busy" }, { status: 503 });
     }
 
     let reply = "";
