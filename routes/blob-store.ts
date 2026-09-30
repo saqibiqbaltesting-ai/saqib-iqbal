@@ -21,8 +21,9 @@ export async function saveJSON(name: string, data: unknown): Promise<void> {
     await put(`data/${name}`, JSON.stringify(data), {
       access: "public",
       addRandomSuffix: false,
+      allowOverwrite: true,
     });
-  } catch {
-    // non-fatal: next request will retry the sync
+  } catch (e) {
+    console.error("[blob] save failed for", name, String(e && (e as Error).message ? (e as Error).message : e));
   }
 }
