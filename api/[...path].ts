@@ -17,8 +17,7 @@ const DATA_ROOT = process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data";
 const DATA_DIR = join(DATA_ROOT, "data");
 const SEED_DIR = join(process.cwd(), "data");
 
-// Restore data files from Vercel Blob (persistent) or repo seeds (fallback).
-// Route handlers keep reading/writing plain files, so no route changes needed.
+// On cold start: restore data files from Vercel Blob (persistent), falling back to repo seeds.
 async function ensureData() {
   mkdirSync(DATA_DIR, { recursive: true });
   if (!existsSync(SEED_DIR)) return;
@@ -37,13 +36,48 @@ async function ensureData() {
   }
 }
 
-// Push the current data files back to Blob so they survive restarts/deploys.
+// Before a POST: pull the latest blob version over the (possibly stale) /tmp copy,
+// so multiple server instances never work off stale data.
+async function syncFromBlob() {
+  if (!existsSync(SEED_DIR)) return;
+  for (const name of readdirSync(SEED_DIR)) {
+    const dst = join(DATA_DIR, name);
+    if (!statSync(join(SEED_DIR, name)).isFile()) continue;
+    const remote = await loadJSON(name).catch(() => null);
+    if (remote !== null && remote !== undefined) {
+      try { writeFileSync(dst, JSON.stringify(remote)); } catch {}
+    }
+  }
+}
+
+// Merge helper: union two db versions (local change wins per user; sessions unioned by token).
+function mergeUsers(localData: any, remoteData: any): any {
+  const lu: any[] = localData?.users || [];
+  const ru: any[] = remoteData?.users || [];
+  const lmap = new Map(lu.map((u) => [String(u.email).toLowerCase(), u]));
+  const merged = [...ru.filter((u) => !lmap.has(String(u.email).toLowerCase())), ...lu];
+  const seen = new Set<string>();
+  const sessions = [...(localData?.sessions || []), ...(remoteData?.sessions || [])].filter((s: any) => {
+    if (!s || !s.token || seen.has(s.token)) return false;
+    seen.add(s.token);
+    return true;
+  });
+  return { ...(remoteData || {}), ...localData, users: merged, sessions };
+}
+
+// After a POST: push data files back to Blob (merge users db to avoid lost updates).
 async function persistData() {
   if (!existsSync(DATA_DIR)) return;
   for (const name of readdirSync(DATA_DIR)) {
     const src = join(DATA_DIR, name);
     if (!statSync(src).isFile()) continue;
-    try { await saveJSON(name, JSON.parse(readFileSync(src, "utf-8"))); } catch {}
+    let payload: unknown;
+    try { payload = JSON.parse(readFileSync(src, "utf-8")); } catch { continue; }
+    if (name === "portfolio-users.json") {
+      const remote = await loadJSON(name).catch(() => null);
+      if (remote && typeof remote === "object") payload = mergeUsers(payload, remote);
+    }
+    await saveJSON(name, payload);
   }
 }
 
@@ -54,6 +88,7 @@ const routes: Record<string, { GET?: (req: Request) => Response | Promise<Respon
 
 async function handle(req: Request): Promise<Response> {
   await ensureData();
+  if (req.method === "POST") await syncFromBlob();
   const u = new URL(req.url, "http://localhost");
   const parts = u.pathname.split("/").filter(Boolean);
   const idx = parts.indexOf("x");
