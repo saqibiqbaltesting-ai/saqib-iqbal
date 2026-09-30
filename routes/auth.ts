@@ -101,7 +101,8 @@ export async function POST(req: Request): Promise<Response> {
     const p = readToken(token);
     if (!p) return Response.json({ ok: false }, { status: 401 });
     const user = db.users.find((u) => u.email === p.email);
-    return ok({ user: { name: user ? user.name : p.name, email: p.email } });
+    // frontend boot expects flat { name, email } in the response body
+    return ok({ name: user ? user.name : p.name, email: p.email });
   }
 
   if (action === "logout") {
