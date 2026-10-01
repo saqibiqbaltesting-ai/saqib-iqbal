@@ -2544,3 +2544,82 @@
     });
   }, 350);
 })();
+
+/* ===== Kit: "App download" button — har page par, bottom-left (overlap-free) ===== */
+(function () {
+  'use strict';
+  if (window.__sqAppBtn) return;
+  window.__sqAppBtn = true;
+  var deferred = null;
+  try {
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferred = e;
+      var b = document.getElementById('sq-app-btn');
+      if (b) b.textContent = '\uD83D\uDCF2 App install karein';
+    });
+  } catch (e) {}
+
+  var st = document.createElement('style');
+  st.textContent = [
+    '#sq-app-btn{position:fixed;bottom:18px;left:18px;z-index:11000;border:1px solid rgba(233,123,156,.45);',
+    'background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:10px 16px;',
+    'font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 18px #0008;transition:transform .15s}',
+    '#sq-app-btn:active{transform:scale(.94)}',
+    '#sq-app-btn.sq-installed{display:none}',
+    '#sq-app-overlay{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}',
+    '#sq-app-card{background:#12121a;border:1px solid rgba(233,123,156,.4);border-radius:16px;max-width:420px;width:100%;padding:22px;color:#e8e2d6;font:inherit}',
+    '#sq-app-card h3{color:#f0c96a;margin:0 0 10px;font-size:17px}',
+    '#sq-app-card li{margin:8px 0;font-size:14px;line-height:1.5}',
+    '#sq-app-card .sq-app-x{float:right;background:none;border:none;color:#9a937f;font-size:20px;cursor:pointer}',
+    '#sq-app-card .sq-app-note{margin-top:12px;font-size:12px;color:#9a937f}'
+  ].join('');
+  document.head.appendChild(st);
+
+  function close() { var o = document.getElementById('sq-app-overlay'); if (o) o.remove(); }
+
+  function openHowTo() {
+    close();
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var steps = isIOS
+      ? '<li>\u2460 Safari mein neeche <b>Share</b> \u29C9 button dabayen</li>' +
+        '<li>\u2461 <b>"Add to Home Screen"</b> chunein</li>' +
+        '<li>\u2462 <b>Add</b> dabayen \u2014 app ban jayegi \uD83C\uDF1F</li>'
+      : '<li>\u2460 Chrome mein upar right \u22EE <b>(teen dot)</b> dabayen</li>' +
+        '<li>\u2461 <b>"Add to Home screen"</b> ya <b>"Install app"</b> chunein</li>' +
+        '<li>\u2462 <b>Install</b> dabayen \u2014 app ban jayegi \uD83C\uDF1F</li>';
+    var ov = document.createElement('div');
+    ov.id = 'sq-app-overlay';
+    ov.innerHTML = '<div id="sq-app-card">' +
+      '<button class="sq-app-x" type="button" aria-label="Band karein">\u00D7</button>' +
+      '<h3>\uD83D\uDCF2 App ban jayen \u2014 10 second mein</h3>' +
+      '<ol style="padding-left:18px">' + steps + '</ol>' +
+      '<div class="sq-app-note">Ye website aap ke phone par app ki tarah install ho jayegi \u2014 apna icon, full screen, bilkul app jaisi.</div>' +
+      '</div>';
+    ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+    ov.querySelector('.sq-app-x').addEventListener('click', close);
+    document.body.appendChild(ov);
+  }
+
+  function build() {
+    if (!document.body) return false;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'sq-app-btn';
+    b.textContent = '\uD83D\uDCF2 App';
+    b.setAttribute('aria-label', 'Website ko app ki tarah install karein');
+    b.addEventListener('click', function () {
+      if (deferred) { deferred.prompt(); deferred = null; }
+      else openHowTo();
+    });
+    document.body.appendChild(b);
+    try {
+      if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+        b.classList.add('sq-installed');
+      }
+    } catch (e) {}
+    return true;
+  }
+  var tries = 0;
+  var t = setInterval(function () { tries++; if (build() || tries > 40) clearInterval(t); }, 500);
+})();
