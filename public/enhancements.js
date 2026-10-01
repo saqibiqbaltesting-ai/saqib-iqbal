@@ -1414,6 +1414,33 @@
     var parent = host.parentNode;
     if (parent.querySelector('#sq-poetry-sher')) return null; // already built
 
+    /* ---- Lock: poetry password se protected hai (Kit: user request) ---- */
+    var LOCK_PW = 'love';
+    var unlocked = false;
+    try { unlocked = localStorage.getItem('sq-poetry-unlocked') === '1'; } catch (e) {}
+    var lockBox = document.createElement('div');
+    lockBox.id = 'sq-poetry-lock';
+    lockBox.innerHTML = '<p class="sq-lock-title">\u{1F512} Poetry locked hai \u2014 dekhne ke liye password likhein</p>'
+      + '<div class="sq-lock-row"><input type="password" id="sq-poetry-pw" placeholder="Password" aria-label="Poetry password">'
+      + '<button type="button" id="sq-poetry-unlock">Unlock</button></div>'
+      + '<p class="sq-lock-err" style="display:none"></p>';
+
+    /* ---- Cards (My Memories pattern): Sher pehle, phir Ghazal ---- */
+    var cards = document.createElement('div');
+    cards.className = 'sq-poetry-cards';
+    var sherTotal = CATS.reduce(function (n, c) { return n + c[3].length; }, 0);
+    function makeCard(title, sub) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sq-poetry-card';
+      b.innerHTML = '<span class="sq-poetry-cardtitle">' + title + '</span><span class="sq-poetry-cardsub">' + sub + '</span>';
+      return b;
+    }
+    var cardSher = makeCard('Sher', sherTotal + ' SHERS \u00B7 ' + CATS.length + ' CATEGORIES');
+    var cardGhaz = makeCard('Ghazal', GHAZALS.length + ' GHAZALS \u00B7 CATEGORIZED');
+    cards.appendChild(cardSher);
+    cards.appendChild(cardGhaz);
+
     /* ---- Section 1: Sher ---- */
     var sher = makeSection('sq-poetry-sher', 'Sher', 'Dil se parhein — aur apni pasand ka font chunein');
     sher.appendChild(fontRow());
@@ -1440,7 +1467,50 @@
     ghaz.appendChild(fontRow());
     ghaz.appendChild(ghazGrid);
 
-    /* ---- Poetry wrapper (like My Memories): Sher pehle, phir Ghazal ---- */
+    /* ---- Card clicks: ek waqt mein ek panel khulta hai, dobara click par band ---- */
+    function closePanels() {
+      sher.style.display = 'none';
+      ghaz.style.display = 'none';
+      cardSher.classList.remove('active');
+      cardGhaz.classList.remove('active');
+    }
+    function openPanel(which) {
+      closePanels();
+      (which === 'sher' ? sher : ghaz).style.display = '';
+      (which === 'sher' ? cardSher : cardGhaz).classList.add('active');
+      try { (which === 'sher' ? sher : ghaz).scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    }
+    cardSher.onclick = function () {
+      if (sher.style.display !== 'none') { closePanels(); return; }
+      openPanel('sher');
+    };
+    cardGhaz.onclick = function () {
+      if (ghaz.style.display !== 'none') { closePanels(); return; }
+      openPanel('ghazal');
+    };
+
+    function applyLock() {
+      lockBox.style.display = unlocked ? 'none' : '';
+      cards.style.display = unlocked ? '' : 'none';
+      if (!unlocked) closePanels();
+    }
+    lockBox.querySelector('#sq-poetry-unlock').onclick = function () {
+      var inp = lockBox.querySelector('#sq-poetry-pw');
+      var err = lockBox.querySelector('.sq-lock-err');
+      if (String(inp.value || '').trim().toLowerCase() === LOCK_PW) {
+        unlocked = true;
+        try { localStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {}
+        applyLock();
+      } else {
+        err.textContent = 'Ghalat password — dobara koshish karein.';
+        err.style.display = '';
+      }
+    };
+    lockBox.querySelector('#sq-poetry-pw').onkeydown = function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); lockBox.querySelector('#sq-poetry-unlock').click(); }
+    };
+
+    /* ---- Poetry wrapper (like My Memories) ---- */
     var wrap = document.createElement('section');
     wrap.className = 'section sq-sec';
     wrap.id = 'sq-poetry';
@@ -1452,10 +1522,14 @@
     wsub.textContent = 'Sher aur Ghazal — ek hi chhat ke neeche';
     whead.appendChild(wsub);
     wrap.appendChild(whead);
+    wrap.appendChild(lockBox);
+    wrap.appendChild(cards);
     wrap.appendChild(sher);
     wrap.appendChild(ghaz);
     parent.appendChild(wrap);
 
+    closePanels();
+    applyLock();
     applyFont(saved);
     renderShers();
     renderGhazals();
