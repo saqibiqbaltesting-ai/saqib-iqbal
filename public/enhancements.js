@@ -2576,7 +2576,7 @@
 
   var st = document.createElement('style');
   st.textContent = [
-    '#sq-app-btn{position:fixed;bottom:18px;left:18px;z-index:11000;border:1px solid rgba(233,123,156,.45);',
+    '#sq-app-btn{position:fixed;bottom:168px;left:14px;z-index:11000;border:1px solid rgba(233,123,156,.45);',
     'background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:10px 16px;',
     'font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 18px #0008;transition:transform .15s}',
     '#sq-app-btn:active{transform:scale(.94)}',
