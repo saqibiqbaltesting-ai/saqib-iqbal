@@ -3659,3 +3659,58 @@
     else if (prev) prev(key);
   };
 })();
+
+/* ===== Kit: Global error helper — error dikhaye + Contact Saqib (WhatsApp) ===== */
+(function () {
+  'use strict';
+  if (window.__sqErrHelper) return;
+  window.__sqErrHelper = true;
+  var lastShow = 0;
+  function banner(msg) {
+    var now = Date.now();
+    if (now - lastShow < 20000) return;
+    lastShow = now;
+    var old = document.getElementById('sq-err-banner'); if (old) old.remove();
+    var b = document.createElement('div'); b.id = 'sq-err-banner';
+    b.setAttribute('role', 'alert');
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:13000;background:#5c1220;color:#ffe3e3;padding:12px 14px;font-size:13px;box-shadow:0 4px 16px #000a;direction:ltr';
+    var t = document.createElement('div');
+    t.style.cssText = 'max-width:640px;margin:0 auto';
+    var line1 = document.createElement('div');
+    line1.style.cssText = 'font-weight:600;margin-bottom:2px';
+    line1.textContent = '\u26A0\uFE0F Oops \u2014 website mein ek masla hua';
+    var line2 = document.createElement('div');
+    line2.style.cssText = 'font-family:monospace;font-size:11px;word-break:break-all;opacity:.85;margin-bottom:3px';
+    line2.textContent = String(msg || 'Unknown error').slice(0, 160);
+    var line3 = document.createElement('div');
+    line3.textContent = 'Contact Saqib to resolve this issue.';
+    var row = document.createElement('div');
+    row.style.cssText = 'margin-top:8px;display:flex;gap:8px;flex-wrap:wrap';
+    var ok = document.createElement('button');
+    ok.type = 'button';
+    ok.style.cssText = 'background:#2fb967;color:#fff;border:0;border-radius:99px;padding:7px 16px;font-size:13px;cursor:pointer';
+    ok.textContent = '\u2705 Okay \u2014 WhatsApp par baat karein';
+    ok.onclick = function () {
+      var txt = 'Assalam o Alaikum! Website par ye error aa raha hai:\n\n' + String(msg).slice(0, 300) + '\n\nPage: ' + location.href;
+      window.open('https://wa.me/923134182952?text=' + encodeURIComponent(txt), '_blank');
+      b.remove();
+    };
+    var no = document.createElement('button');
+    no.type = 'button';
+    no.style.cssText = 'background:transparent;color:#ffe3e3;border:1px solid #ffe3e355;border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer';
+    no.textContent = '\u2716 Band karein';
+    no.onclick = function () { b.remove(); };
+    row.appendChild(ok); row.appendChild(no);
+    t.appendChild(line1); t.appendChild(line2); t.appendChild(line3); t.appendChild(row);
+    b.appendChild(t);
+    document.body ? document.body.appendChild(b) : document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(b); });
+  }
+  window.addEventListener('error', function (e) {
+    if (e && e.target && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO' || e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) return;
+    banner((e && e.message ? e.message : 'Error') + (e && e.filename ? ' @ ' + String(e.filename).split('/').pop() + ':' + e.lineno : ''));
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e && e.reason;
+    banner(r && r.message ? r.message : String(r).slice(0, 160));
+  });
+})();
