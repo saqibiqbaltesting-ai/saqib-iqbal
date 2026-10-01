@@ -2535,7 +2535,7 @@
 
 /* ===== Section order (user-chosen): bio, achievements, My Memories, Poetry, Quote, Music, Aap ka Sher, [CV], Guestbook, Quiz, Q&A, Deewar e Dil, Contact ===== */
 (function reorderSections(){
-  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-daily-sher','sq-music','music','sq-user-sher','guestbook','quiz','qa','sq-hearts','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-github','sq-status','contact'];
+  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-music','music','sq-user-sher','sq-daily-sher','guestbook','quiz','qa','sq-hearts','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-github','sq-status','contact'];
   var tries = 0;
   var t = setInterval(function(){
     tries++;
