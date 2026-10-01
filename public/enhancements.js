@@ -2473,7 +2473,17 @@
       ['\uD83C\uDFB0', 'Sher Roulette', 'sqx:roulette'],
       ['\uD83C\uDFA7', 'Scratch Card', 'sqx:scratch'],
       ['\uD83C\uDF19', 'Raat/Subah', 'sqx:daypart'],
-      ['\uD83D\uDD10', 'Secret Vault', 'sqx:vault']
+      ['\uD83D\uDD10', 'Secret Vault', 'sqx:vault'],
+      ['\u2764\uFE0F', 'Heartbeat Game', 'sqx:heartbeat'],
+      ['\uD83D\uDC8B', 'Kiss Counter', 'sqx:kisses'],
+      ['\uD83C\uDF9F\uFE0F', 'Date Tickets', 'sqx:tickets'],
+      ['\uD83C\uDF7F', 'Movie Night', 'sqx:movie'],
+      ['\uD83C\uDFB0', 'Surprise Machine', 'sqx:machine'],
+      ['\uD83D\uDCF0', 'Postbox', 'sqx:postbox'],
+      ['\uD83E\uDDF8', 'Memory Teddy', 'sqx:teddy'],
+      ['\uD83E\uDE84', 'Magic Button', 'sqx:magic'],
+      ['\uD83D\uDCF7', 'Then vs Now', 'sqx:thennow'],
+      ['\u270D\uFE0F', 'Reply Back', 'sqx:replyback']
     ];
     TILES.forEach(function (t) {
       var tile = document.createElement('button');
@@ -3338,6 +3348,290 @@
     else if (key === 'scratch') scratch();
     else if (key === 'daypart') daypartMsg();
     else if (key === 'vault') vault();
+    else if (prev) prev(key);
+  };
+})();
+
+/* ===== Kit: Saqib World phase-3 — 10 creative features (heartbeat, kisses, tickets, movie, machine, postbox, teddy, magic, then-now, replyback) ===== */
+(function () {
+  'use strict';
+  var prev = window.__sqHubFeature;
+  function lsS(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsG(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function dayIndex() { var d = new Date(); return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000) + d.getFullYear(); }
+  function modal3(title, build) {
+    var old = document.getElementById('sq-feat-ov'); if (old) old.remove();
+    var ov = document.createElement('div'); ov.id = 'sq-feat-ov';
+    var card = document.createElement('div'); card.id = 'sq-feat-card';
+    var x = document.createElement('button'); x.className = 'sq-fx'; x.type = 'button'; x.innerHTML = '\u00D7';
+    x.setAttribute('aria-label', 'Band karein'); x.onclick = function () { ov.remove(); };
+    var h = document.createElement('h3'); h.textContent = title; h.appendChild(x);
+    card.appendChild(h); build(card);
+    ov.appendChild(card);
+    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+    document.body.appendChild(ov);
+    var mo = new MutationObserver(function () {
+      if (!document.body.contains(ov)) { mo.disconnect(); if (window.__sqPhase3Timer) { clearInterval(window.__sqPhase3Timer); window.__sqPhase3Timer = null; } }
+    });
+    mo.observe(document.body, { childList: true });
+  }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function sherPool() {
+    var cats = window.__sqPoetryCats || []; var all = [];
+    cats.forEach(function (c) { all = all.concat(c[3] || []); });
+    return all;
+  }
+
+  /* 31 — Heartbeat Synchronizer */
+  function heartbeat() {
+    modal3('\u2764\uFE0F Heartbeat Synchronizer', function (c) {
+      var info = document.createElement('div'); info.className = 'sq-f-note';
+      info.textContent = 'Dil ki raftan (beat) par tap karo \u2014 dekhein aap ke dil kitne sync hain! 10 taps.';
+      var heart = document.createElement('div');
+      heart.style.cssText = 'font-size:52px;text-align:center;user-select:none;cursor:pointer;animation:sq-beat .86s ease-in-out infinite';
+      heart.textContent = '\u2764\uFE0F';
+      if (!document.getElementById('sq-beat-kf')) {
+        var st = document.createElement('style'); st.id = 'sq-beat-kf';
+        st.textContent = '@keyframes sq-beat{0%,100%{transform:scale(1)}50%{transform:scale(1.22)}}';
+        document.head.appendChild(st);
+      }
+      var res = document.createElement('div'); res.className = 'sq-f-big'; res.style.textAlign = 'center';
+      var taps = 0, hits = 0, lastBeat = performance.now();
+      heart.onpointerdown = function () {
+        if (taps >= 10) return;
+        taps++;
+        var phase = (performance.now() - lastBeat) % 860;
+        var off = Math.min(phase, 860 - phase);
+        if (off < 200) { hits++; heart.style.filter = 'drop-shadow(0 0 12px #ff5f8f)'; } else { heart.style.filter = 'none'; }
+        info.textContent = taps + '/10 taps \u2014 ' + hits + ' sync';
+        if (taps === 10) {
+          var pct = Math.round(hits * 10);
+          res.textContent = pct >= 80 ? '\uD83D\uDC9E ' + pct + '% \u2014 dil bilkul ek raftan par! \uD83D\uDE0D' : pct >= 40 ? '\u2764\uFE0F ' + pct + '% \u2014 acha hai, thori aur practice!' : '\uD83D\uDC94 ' + pct + '% \u2014 dil ki raftan pakarna mushkil hai, dobara try?';
+          info.textContent = 'Dobara khelne ke liye modal dobara kholen.';
+        }
+      };
+      c.appendChild(info); c.appendChild(heart); c.appendChild(res);
+    });
+  }
+
+  /* 32 — Kiss Counter */
+  function kisses() {
+    modal3('\uD83D\uDC8B Kiss Counter', function (c) {
+      var n = document.createElement('div'); n.className = 'sq-f-big'; n.style.textAlign = 'center'; n.style.fontSize = '34px';
+      var b = document.createElement('button'); b.className = 'sq-f-btn'; b.type = 'button'; b.style.cssText += 'font-size:16px'; 
+      b.textContent = '\uD83D\uDC8B Kiss bhejein';
+      function paint() { n.textContent = lsG('sq-kisses') ? lsG('sq-kisses') + ' kisses \uD83D\uDC8B' : '0 kisses'; }
+      b.onclick = function () { lsS('sq-kisses', String((parseInt(lsG('sq-kisses') || '0', 10) || 0) + 1)); paint();
+        var bonus = ['', '', '', '', '', '', '', '', '', '', '\u2728 10 kisses ho gaye!', '', '', '', '', '', '', '', '', '\uD83C\uDF1F 20!', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '\uD83C\uDF89 50!!'];
+        var i = parseInt(lsG('sq-kisses'), 10);
+        if (bonus[i]) n.textContent += ' ' + bonus[i];
+      };
+      paint(); c.appendChild(n); c.appendChild(b);
+    });
+  }
+
+  /* 33 — Digital Date Tickets */
+  function tickets() {
+    modal3('\uD83C\uDF9F\uFE0F Digital Date Tickets', function (c) {
+      var used = JSON.parse(lsG('sq-tickets-used') || '[]');
+      var T = [['\uD83C\uDFAC', 'Movie Night', 'Aaj raat movie \u2014 popcorn zaroori hai'], ['\uD83C\uDF5B', 'Dinner', 'Ek khaas shaam, khaas jagah'], ['\uD83C\uDF19', 'Late Night Call', 'Raat ki baatein, subah tak']];
+      T.forEach(function (t, i) {
+        var isUsed = used.indexOf(i) >= 0;
+        var b = document.createElement('button'); b.className = 'sq-f-btn2'; b.type = 'button'; b.style.cssText += 'display:block;width:100%;text-align:left;margin:6px 0;opacity:' + (isUsed ? '.55' : '1');
+        b.textContent = (isUsed ? '\u2713 ' : '') + t[0] + '  ' + t[1] + ' \u2014 ' + t[2];
+        b.onclick = function () {
+          if (used.indexOf(i) >= 0) { alert('Ye ticket use ho chuki hai.'); return; }
+          used.push(i); lsS('sq-tickets-used', JSON.stringify(used));
+          modal3('\uD83C\uDF9F\uFE0F ' + t[1], function (cc) {
+            var tk = document.createElement('div');
+            tk.style.cssText = 'border:2px dashed #f0c96a;border-radius:12px;padding:18px;text-align:center;margin-top:10px';
+            tk.innerHTML = '<div style="font-size:30px">' + t[0] + '</div><div style="font-size:18px;color:#f0c96a;margin:6px 0">ADMIT ONE</div><div style="font-size:14px">' + t[2] + '</div><div style="font-size:11px;color:#888;margin-top:8px">\u2014 Saqib \u2014</div>';
+            cc.appendChild(tk);
+          });
+          setTimeout(function () { modal3('\uD83C\uDF9F\uFE0F Digital Date Tickets', tickets); }, 100);
+        };
+        c.appendChild(b);
+      });
+      var n = document.createElement('div'); n.className = 'sq-f-note';
+      n.textContent = 'Ticket use karne ke liye click karein.';
+      c.appendChild(n);
+    });
+  }
+
+  /* 34 — Virtual Movie Night */
+  function movie() {
+    modal3('\uD83C\uDF7F Virtual Movie Night', function (c) {
+      var linkIn = document.createElement('input'); linkIn.className = 'sq-f-in'; linkIn.type = 'url';
+      linkIn.placeholder = 'Movie/playlist ka link (optional)...';
+      linkIn.value = lsG('sq-movielink') || '';
+      var row = document.createElement('div'); row.style.cssText = 'display:flex;gap:8px;margin-top:8px;flex-wrap:wrap';
+      var cd = document.createElement('div'); cd.className = 'sq-f-big'; cd.style.textAlign = 'center';
+      var note = document.createElement('div'); note.className = 'sq-f-note'; note.style.textAlign = 'center';
+      note.textContent = 'Countdown shuru karein \u2014 dono ek sath ready ho jayen.';
+      function start(mins) {
+        if (window.__sqPhase3Timer) clearInterval(window.__sqPhase3Timer);
+        var end = Date.now() + mins * 60000;
+        window.__sqPhase3Timer = setInterval(function () {
+          var left = end - Date.now();
+          if (left <= 0) { clearInterval(window.__sqPhase3Timer); window.__sqPhase3Timer = null; cd.textContent = '\uD83C\uDF7F Shuru!'; if (lsG('sq-movielink')) { try { window.open(lsG('sq-movielink'), '_blank'); } catch (e) {} } return; }
+          var m = Math.floor(left / 60000), s = Math.floor(left % 60000 / 1000);
+          cd.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+        }, 1000);
+      }
+      [['30 min', 30], ['60 min', 60]].forEach(function (o) {
+        var b = document.createElement('button'); b.className = 'sq-f-btn2'; b.type = 'button'; b.textContent = '\u25B6 ' + o[0];
+        b.onclick = function () { lsS('sq-movielink', linkIn.value.trim()); start(o[1]); note.textContent = 'Countdown chal raha hai...'; };
+        row.appendChild(b);
+      });
+      c.appendChild(linkIn); c.appendChild(row); c.appendChild(cd); c.appendChild(note);
+    });
+  }
+
+  /* 35 — Surprise Machine */
+  var MEMORIES = [
+    'Wo pehli mulaqat jab sab kuch ruk sa gaya tha...',
+    'Wo lambi baatein jo khatam hi nahi hoti theen.',
+    'Ek adhoora message aur poori raat ka intezaar.',
+    'Wo hansti hui tasveer jo aaj bhi sab se pyari hai.',
+    'Wo chhoti si baat jo din bana gayi.'
+  ];
+  function machine() {
+    modal3('\uD83C\uDFB0 Surprise Machine', function (c) {
+      var win = document.createElement('div');
+      win.style.cssText = 'border:2px solid #f0c96a;border-radius:12px;padding:16px;text-align:center;font-family:\'Noto Nastaliq Urdu\',\'Gulzar\',serif;min-height:70px;margin-top:10px;white-space:pre-line;direction:rtl';
+      win.textContent = '...';
+      var busy = false;
+      var b = document.createElement('button'); b.className = 'sq-f-btn'; b.type = 'button'; b.textContent = '\uD83C\uDFB0 Lever kheencho!';
+      b.onclick = function () {
+        if (busy) return; busy = true;
+        var frames = 0;
+        var iv = setInterval(function () {
+          win.textContent = Math.random() < .5 ? pick(MEMORIES) : pick(sherPool()).replace(' | ', '\n');
+          if (++frames > 15) { clearInterval(iv); busy = false; }
+        }, 90);
+      };
+      c.appendChild(win); c.appendChild(b);
+      var n = document.createElement('div'); n.className = 'sq-f-note'; n.style.textAlign = 'center';
+      n.textContent = 'Har pull par ek romantic yaad ya sher.';
+      c.appendChild(n);
+    });
+  }
+
+  /* 36 — Digital Postbox (rozana ek envelope) */
+  var POSTBOX = [
+    'Aaj ka envelope: ek baat jo din bhar sochti rahi \u2014 aap se baat kiye bagair din adhoora hai. \u2764\uFE0F',
+    'Aaj ka envelope: aap ki hansi meri favorite awaz hai. Sach mein. \uD83D\uDE04',
+    'Aaj ka envelope: jo log aap ko jaise samajhte hain, wo sirf aap ka surface dekhte hain \u2014 andar ka aap aur bhi khoobsurat hai. \u2728',
+    'Aaj ka envelope: aaj kuch aisa kiya jo pehle nahi kiya? Main hoon sath. \uD83C\uDF1F',
+    'Aaj ka envelope: ruk jao, ek lamba saans lo \u2014 aap bohat acha kar rahi hain. \uD83C\uDFB5',
+    'Aaj ka envelope: mujhe aap par garv hai \u2014 roz, har haal mein. \uD83E\uDD70',
+    'Aaj ka envelope: chand ko dekho \u2014 wo bhi aap ko dekh raha hoga, is tarah milte hain \uD83C\uDF19'
+  ];
+  function postbox() {
+    modal3('\uD83D\uDCF0 Digital Postbox', function (c) {
+      var today = dayIndex() % POSTBOX.length;
+      for (var i = 0; i < POSTBOX.length; i++) {
+        (function (i) {
+          var open = i === today;
+          var b = document.createElement('button'); b.className = 'sq-f-btn2'; b.type = 'button';
+          b.style.cssText += 'display:block;width:100%;text-align:left;margin:5px 0;opacity:' + (open ? '1' : '.5');
+          b.textContent = (open ? '\uD83D\uDC-E' : '\uD83D\uDD12') + ' Envelope ' + (i + 1) + (open ? ' \u2014 aaj ka!' : ' \u2014 abhi band');
+          b.onclick = function () {
+            if (!open) { alert('Ye envelope kal khulega \u2014 roz ek naya letter aata hai.'); return; }
+            modal3('\uD83D\uDCF0 Envelope ' + (i + 1), function (cc) {
+              var body = document.createElement('div'); body.className = 'sq-f-big';
+              body.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif"; body.style.whiteSpace = 'pre-line';
+              body.textContent = POSTBOX[i];
+              cc.appendChild(body);
+            });
+          };
+          c.appendChild(b);
+        })(i);
+      }
+    });
+  }
+
+  /* 37 — Memory Teddy */
+  function teddy() {
+    modal3('\uD83E\uDDF8 Memory Teddy', function (c) {
+      var ted = document.createElement('div'); ted.style.cssText = 'font-size:56px;text-align:center;margin:8px 0';
+      var lvl = document.createElement('div'); lvl.className = 'sq-f-note'; lvl.style.textAlign = 'center';
+      function accessories(n) {
+        var a = '';
+        if (n >= 5) a += '\uD83C\uDF80'; if (n >= 12) a += '\uD83C\uDFA9'; if (n >= 20) a += '\u2764\uFE0F'; if (n >= 35) a += '\uD83D\uDC51'; if (n >= 50) a += '\uD83C\uDF1F';
+        return a;
+      }
+      function paint() {
+        var n = parseInt(lsG('sq-teddy') || '0', 10) || 0;
+        ted.textContent = accessories(n) + '\uD83E\uDDF8' + accessories(n);
+        lvl.textContent = n + ' treats \u2014 ' + (n >= 50 ? 'Teddy SHAHI ho gaya! \uD83D\uDC51' : n >= 35 ? 'Teddy crown ke qareeb...' : n >= 20 ? 'Teddy khush hai \u2764\uFE0F' : n >= 12 ? 'Teddy ko topi mil gayi \uD83C\uDFA9' : n >= 5 ? 'Teddy ko ribbon mil gaya \uD83C\uDF80' : 'Teddy ko treats khila kar accessories unlock karein');
+      }
+      var b = document.createElement('button'); b.className = 'sq-f-btn'; b.type = 'button'; b.textContent = '\uD83C\uDF69 Khilao';
+      b.onclick = function () { lsS('sq-teddy', String((parseInt(lsG('sq-teddy') || '0', 10) || 0) + 1)); paint(); ted.style.transform = 'scale(1.15)'; setTimeout(function () { ted.style.transform = ''; }, 200); };
+      ted.style.transition = 'transform .2s';
+      paint(); c.appendChild(ted); c.appendChild(b); c.appendChild(lvl);
+    });
+  }
+
+  /* 38 — Magic Button */
+  function magic() {
+    modal3('\uD83E\uDE84 Magic Button', function (c) {
+      var out = document.createElement('div'); out.className = 'sq-f-big'; out.style.textAlign = 'center'; out.style.minHeight = '60px'; out.style.whiteSpace = 'pre-line';
+      out.textContent = '\u2728';
+      var b = document.createElement('button'); b.className = 'sq-f-btn'; b.type = 'button'; b.textContent = '\uD83E\uDE84 Make me smile';
+      b.onclick = function () { out.textContent = Math.random() < .4 ? pick(sherPool()).replace(' | ', '\n') : pick(MEMORIES) + '\n\u2728'; };
+      c.appendChild(out); c.appendChild(b);
+    });
+  }
+
+  /* 39 — Then vs Now slider */
+  function thennow() {
+    modal3('\uD83D\uDCF7 Then vs Now', function (c) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;width:100%;max-width:340px;height:340px;margin:10px auto;border-radius:12px;overflow:hidden';
+      var now = document.createElement('img'); now.src = 'assets/photos/1000943911.jpg';
+      now.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+      var then = document.createElement('img'); then.src = 'assets/photos/1000943915.jpg';
+      then.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;clip-path:inset(0 50% 0 0)';
+      var lab1 = document.createElement('div'); lab1.textContent = '\u2190 Phir'; lab1.style.cssText = 'position:absolute;top:10px;left:10px;background:#000a;color:#fff;padding:2px 10px;border-radius:99px;font-size:12px';
+      var lab2 = document.createElement('div'); lab2.textContent = 'Ab \u2192'; lab2.style.cssText = 'position:absolute;top:10px;right:10px;background:#000a;color:#fff;padding:2px 10px;border-radius:99px;font-size:12px';
+      var rng = document.createElement('input'); rng.type = 'range'; rng.min = '0'; rng.max = '100'; rng.value = '50';
+      rng.style.cssText = 'width:100%;max-width:340px;margin-top:10px';
+      rng.oninput = function () { then.style.clipPath = 'inset(0 ' + (100 - rng.value) + '% 0 0)'; };
+      wrap.appendChild(now); wrap.appendChild(then); wrap.appendChild(lab1); wrap.appendChild(lab2);
+      c.appendChild(wrap); c.appendChild(rng);
+      var n = document.createElement('div'); n.className = 'sq-f-note'; n.style.textAlign = 'center';
+      n.textContent = 'Slider ghumao \u2014 pehli yaad se aaj tak.';
+      c.appendChild(n);
+    });
+  }
+
+  /* 40 — Reply Back */
+  function replyback() {
+    modal3('\u270D\uFE0F Reply Back', function (c) {
+      var ta = document.createElement('textarea');
+      ta.style.cssText = 'width:100%;min-height:90px;background:#0f0f16;color:#f0e6d2;border:1px solid #f0c96a55;border-radius:10px;padding:10px;font-size:14px;box-sizing:border-box';
+      ta.placeholder = 'Apna khaas jawab yahan likhein...';
+      ta.value = lsG('sq-replyback') || '';
+      var b = document.createElement('button'); b.className = 'sq-f-btn'; b.type = 'button'; b.textContent = '\uD83D\uDCBE Mehfooz karein';
+      b.onclick = function () { lsS('sq-replyback', ta.value.trim()); b.textContent = '\u2705 Mehfooz ho gaya'; setTimeout(function () { b.textContent = '\uD83D\uDCBE Mehfooz karein'; }, 1500); };
+      var n = document.createElement('div'); n.className = 'sq-f-note';
+      n.textContent = 'Ye jawab sirf aap ke device par mehfooz hota hai \u2014 bilkul private.';
+      c.appendChild(ta); c.appendChild(b); c.appendChild(n);
+    });
+  }
+
+  window.__sqHubFeature = function (key) {
+    if (key === 'heartbeat') heartbeat();
+    else if (key === 'kisses') kisses();
+    else if (key === 'tickets') tickets();
+    else if (key === 'movie') movie();
+    else if (key === 'machine') machine();
+    else if (key === 'postbox') postbox();
+    else if (key === 'teddy') teddy();
+    else if (key === 'magic') magic();
+    else if (key === 'thennow') thennow();
+    else if (key === 'replyback') replyback();
     else if (prev) prev(key);
   };
 })();
