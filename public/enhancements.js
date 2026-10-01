@@ -2623,3 +2623,123 @@
   var tries = 0;
   var t = setInterval(function () { tries++; if (build() || tries > 40) clearInterval(t); }, 500);
 })();
+
+/* ===== Kit: Normal / Full site mode — Normal mein personal sections chhupe, Full (password "Love") mein sab ===== */
+(function () {
+  'use strict';
+  if (window.__sqMode) return;
+  window.__sqMode = true;
+
+  var SECTIONS = ['sq-poetry', 'sq-daily-sher', 'sq-user-sher', 'sq-hearts', 'qa'];
+
+  var st = document.createElement('style');
+  st.textContent = [
+    'body.sq-normal .sq-full-only > :not(.sq-mode-teaser){display:none!important}',
+    '.sq-mode-teaser{display:none!important}',
+    'body.sq-normal .sq-mode-teaser{display:block!important}',
+    '.sq-mode-teaser{background:#12121a;border:1px solid rgba(233,123,156,.35);border-radius:14px;padding:26px 18px;text-align:center;color:#b9b2a0;font:inherit}',
+    '.sq-mode-teaser .sq-mt-ico{font-size:30px;margin-bottom:8px}',
+    '.sq-mode-teaser .sq-mt-t{color:#f0c96a;font-size:16px;margin-bottom:6px}',
+    '.sq-mode-teaser .sq-mt-btn{margin-top:14px;background:linear-gradient(135deg,#e97b9c,#d9a94e);color:#fff;border:none;border-radius:999px;padding:10px 22px;font:inherit;font-size:14px;cursor:pointer}',
+    '#sq-mode-btn{position:fixed;bottom:64px;left:18px;z-index:11000;border:1px solid rgba(240,201,106,.5);background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 18px #0008;transition:transform .15s}',
+    '#sq-mode-btn:active{transform:scale(.94)}',
+    '#sq-mode-btn.sq-full-on{color:#5fdc8a;border-color:rgba(95,220,138,.5)}',
+    '#sq-mode-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}',
+    '#sq-mode-card{background:#12121a;border:1px solid rgba(233,123,156,.4);border-radius:16px;max-width:380px;width:100%;padding:22px;color:#e8e2d6;font:inherit}',
+    '#sq-mode-card h3{color:#f0c96a;margin:0 0 8px;font-size:17px}',
+    '#sq-mode-card input{width:100%;box-sizing:border-box;margin-top:10px;background:#16161f;border:1px solid #2e2e3a;border-radius:10px;padding:11px 13px;color:#e8e2d6;font:inherit;font-size:14px;outline:none}',
+    '#sq-mode-card input:focus{border-color:#e97b9c}',
+    '#sq-mode-err{color:#ff8f8f;font-size:13px;margin-top:8px;display:none}',
+    '#sq-mode-card .sq-mb-row{display:flex;gap:8px;margin-top:12px}',
+    '#sq-mode-card button.sq-mb{flex:1;border:none;border-radius:999px;padding:10px;font:inherit;font-size:14px;cursor:pointer}',
+    '#sq-mode-card .sq-mb-ok{background:linear-gradient(135deg,#e97b9c,#d9a94e);color:#fff}',
+    '#sq-mode-card .sq-mb-no{background:#22222c;color:#9a937f}'
+  ].join('');
+  document.head.appendChild(st);
+
+  function modeGet() { try { return localStorage.getItem('sq-site-mode') || 'normal'; } catch (e) { return 'normal'; } }
+  function modeSet(m) { try { localStorage.setItem('sq-site-mode', m); } catch (e) {} }
+  function unlocked() { try { return localStorage.getItem('sq-full-unlocked') === '1'; } catch (e) { return false; } }
+
+  function applyMode() {
+    var m = modeGet();
+    document.body.classList.toggle('sq-normal', m === 'normal');
+    var b = document.getElementById('sq-mode-btn');
+    if (b) {
+      b.textContent = m === 'full' ? '\u2606 Full mode ON' : '\u2605 Full mode';
+      b.classList.toggle('sq-full-on', m === 'full');
+    }
+  }
+
+  function closeOv() { var o = document.getElementById('sq-mode-ov'); if (o) o.remove(); }
+
+  function askPassword() {
+    closeOv();
+    var ov = document.createElement('div');
+    ov.id = 'sq-mode-ov';
+    ov.innerHTML = '<div id="sq-mode-card">' +
+      '<h3>\u2605 Full mode on karein</h3>' +
+      '<div style="font-size:13px;color:#9a937f">Poetry, Deewar e Dil, Q&A waghaira sab kuch dekhne ke liye password likhein.</div>' +
+      '<input id="sq-mode-pw" type="password" placeholder="Password likhein..." autocomplete="off">' +
+      '<div id="sq-mode-err">Ghalat password \u2014 dobara koshish karein.</div>' +
+      '<div class="sq-mb-row"><button class="sq-mb sq-mb-no" type="button">Cancel</button>' +
+      '<button class="sq-mb sq-mb-ok" type="button">On karein</button></div></div>';
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeOv(); });
+    document.body.appendChild(ov);
+    var pw = ov.querySelector('#sq-mode-pw');
+    var go = function () {
+      if ((pw.value || '').trim().toLowerCase() === 'love') {
+        try { localStorage.setItem('sq-full-unlocked', '1'); } catch (e) {}
+        modeSet('full'); closeOv(); applyMode();
+      } else { ov.querySelector('#sq-mode-err').style.display = 'block'; pw.value = ''; pw.focus(); }
+    };
+    ov.querySelector('.sq-mb-ok').addEventListener('click', go);
+    ov.querySelector('.sq-mb-no').addEventListener('click', closeOv);
+    pw.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+    setTimeout(function () { pw.focus(); }, 50);
+  }
+
+  function toggle() {
+    if (modeGet() === 'full') { modeSet('normal'); applyMode(); return; }
+    if (unlocked()) { modeSet('full'); applyMode(); }
+    else askPassword();
+  }
+
+  function tagSections() {
+    SECTIONS.forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (!sec || sec.classList.contains('sq-full-only')) return;
+      sec.classList.add('sq-full-only');
+      var t = document.createElement('div');
+      t.className = 'sq-mode-teaser';
+      t.innerHTML = '<div class="sq-mt-ico">\uD83D\uDD12</div>' +
+        '<div class="sq-mt-t">Ye Full mode mein hai</div>' +
+        '<div>Normal mode mein kuch personal cheezein chhupi hui hain.</div>' +
+        '<button class="sq-mt-btn" type="button">\u2605 Full mode on karein</button>';
+      t.querySelector('.sq-mt-btn').addEventListener('click', toggle);
+      sec.insertBefore(t, sec.firstChild);
+    });
+  }
+
+  function build() {
+    if (!document.body) return false;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'sq-mode-btn';
+    b.setAttribute('aria-label', 'Normal ya Full mode');
+    b.addEventListener('click', toggle);
+    document.body.appendChild(b);
+    applyMode();
+    return true;
+  }
+  var tries = 0;
+  var t = setInterval(function () {
+    tries++;
+    if (build()) {
+      clearInterval(t);
+      var t2 = setInterval(function () { tagSections(); }, 1200);
+      setTimeout(function () { clearInterval(t2); tagSections(); }, 60000);
+    }
+    if (tries > 40) clearInterval(t);
+  }, 500);
+})();
