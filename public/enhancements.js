@@ -1356,20 +1356,40 @@
       sb.className = 'sq-suno-btn';
       sb.innerHTML = '\uD83D\uDD0A Suno';
       sb.setAttribute('aria-label', 'Sher sunein');
+      function gtSpeak(txt, btn) {
+        try {
+          var au = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ur&q=' + encodeURIComponent(txt));
+          window.__sqSherAudio = au; /* Kit: GC guard */
+          btn.dataset.on = '1'; btn.innerHTML = '\u25B6 Sun raha hai...';
+          au.onended = function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; };
+          au.onerror = function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; };
+          au.play().catch(function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Awaz nahi ban saki'; setTimeout(function () { btn.innerHTML = '\uD83D\uDD0A Suno'; }, 2500); });
+        } catch (e) { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; }
+      }
       sb.onclick = function () {
         if (!window.speechSynthesis) { sb.textContent = 'Sunna mojood nahi'; return; }
         var SYN = window.speechSynthesis;
-        if (sb.dataset.on === '1') { SYN.cancel(); sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; return; }
-        Array.prototype.forEach.call(document.querySelectorAll('.sq-suno-btn'), function (b) { if (b !== sb && !b.classList.contains('sq-share-btn')) { b.dataset.on = ''; b.innerHTML = '\uD83D\uDD0A Suno'; } });
+        if (sb.dataset.on === '1') {
+          SYN.cancel();
+          try { if (window.__sqSherAudio) { window.__sqSherAudio.pause(); window.__sqSherAudio = null; } } catch (e) {}
+          sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; return;
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('.sq-suno-btn'), function (b) {
+          if (b !== sb && !b.classList.contains('sq-share-btn')) {
+            b.dataset.on = ''; b.innerHTML = '\uD83D\uDD0A Suno';
+            try { if (window.__sqSherAudio) { window.__sqSherAudio.pause(); window.__sqSherAudio = null; } } catch (e) {}
+          }
+        });
         SYN.cancel();
         try { SYN.resume(); } catch (e) {}
-        var u = new SpeechSynthesisUtterance(sh.replace(/ \| /g, ', ').replace(/[^\u0600-\u06FF\s\u060C\u061F.!]/g, ''));
-        u.lang = 'ur-PK'; u.rate = 0.92; u.volume = 1;
+        var txt = sh.replace(/ \| /g, ', ').replace(/[^\u0600-\u06FF\s\u060C\u061F.!]/g, '');
         var vs = SYN.getVoices();
-        var v = vs.filter(function (vv) { return /^ur/i.test(vv.lang) || /urdu/i.test(vv.name); })[0] || vs.filter(function (vv) { return /^hi/i.test(vv.lang); })[0] || vs.filter(function (vv) { return /^ar/i.test(vv.lang); })[0];
-        if (v) u.voice = v;
+        var v = vs.filter(function (vv) { return /^ur/i.test(vv.lang) || /urdu/i.test(vv.name); })[0] || vs.filter(function (vv) { return /^ar/i.test(vv.lang); })[0];
+        if (!v) { gtSpeak(txt, sb); try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'sunai' })); } catch (e) {} return; }
+        var u = new SpeechSynthesisUtterance(txt);
+        u.lang = v.lang; u.rate = 0.92; u.volume = 1; u.voice = v;
         u.onend = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; };
-        u.onerror = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Awaz nahi ban saki'; setTimeout(function () { sb.innerHTML = '\uD83D\uDD0A Suno'; }, 2500); };
+        u.onerror = function () { SYN.cancel(); gtSpeak(txt, sb); }; /* Kit: local voice fail ho to Google TTS */
         window.__sqSherUtterance = u; /* Kit: GC se bachao — Chrome pehli click par khamosh ho jata tha */
         sb.dataset.on = '1'; sb.innerHTML = '\u25B6 Sun raha hai...';
         try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'sunai' })); } catch (e) {}
