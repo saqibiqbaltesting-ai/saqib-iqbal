@@ -1639,7 +1639,7 @@
     sec.id = 'sq-music';
     var head = document.createElement('div');
     head.className = 'section-header';
-    head.innerHTML = '<h2>\uD83C\uDFB5 Music</h2>';
+    head.innerHTML = '<h2>07 \u2014 Music</h2>';
     var p = document.createElement('p');
     p.className = 'sq-sec-sub';
     p.textContent = 'Songs, Tilawat, Naat aur Qawwali — poori playlist';
@@ -1860,7 +1860,7 @@
     sec.id = 'sq-visitor-map';
     var head = document.createElement('div');
     head.className = 'section-header';
-    head.innerHTML = '<h2>\uD83C\uDF0D Visitor Map</h2>';
+    head.innerHTML = '<h2>09 \u2014 Visitor Map</h2>';
     var p = document.createElement('p');
     p.className = 'sq-sec-sub';
     p.textContent = 'Log kahan se aa rahe hain — shehar aur mulk';
@@ -1939,7 +1939,7 @@
     var host = q('#sq-hearts');
     if (!host || !host.parentNode) return false;
     if (q('#sq-user-sher')) return true;
-    var sec = mkSec('sq-user-sher', '\u270D\uFE0F Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
+    var sec = mkSec('sq-user-sher', '11 \u2014 Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
     var card = document.createElement('div');
     card.className = 'sq-user-sher-card';
     var ta = document.createElement('textarea');
@@ -2058,7 +2058,7 @@
     var host = q('#sq-visitor-map');
     if (!host || !host.parentNode) return false;
     if (q('#sq-hearts')) return true;
-    var sec = mkSec('sq-hearts', '\u2764\uFE0F Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
+    var sec = mkSec('sq-hearts', '10 \u2014 Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
     var card = document.createElement('div');
     card.className = 'sq-hearts-card';
     var big = document.createElement('button');
