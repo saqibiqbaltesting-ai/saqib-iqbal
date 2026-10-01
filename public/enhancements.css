@@ -309,3 +309,17 @@ body.sq-dock-open #sq-hub-btn{bottom:306px}
 #sq-poetry-sher .section-header h2,#sq-poetry-ghazal .section-header h2{font-size:clamp(22px,5vw,28px);color:var(--accent);font-style:italic}
 #sq-poetry-sher .section-header .sq-sec-sub,#sq-poetry-ghazal .section-header .sq-sec-sub{margin:0}
 #sq-poetry-ghazal{margin-top:26px}
+
+/* Poetry cards (My Memories pattern) + password lock */
+#sq-poetry .sq-poetry-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+.sq-poetry-card{border:1px solid var(--line);border-radius:16px;padding:26px 20px;background:var(--bg-soft);color:var(--ink);text-align:left;cursor:pointer;display:grid;gap:6px;transition:border-color .25s ease,transform .25s ease;font:inherit}
+@media (hover: hover){.sq-poetry-card:hover{border-color:var(--accent);transform:translateY(-3px)}}
+.sq-poetry-card.active{border-color:var(--accent)}
+.sq-poetry-cardtitle{font-size:22px;color:var(--accent)}
+.sq-poetry-cardsub{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute)}
+#sq-poetry-lock{display:grid;gap:10px;max-width:440px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--bg-soft)}
+#sq-poetry-lock .sq-lock-title{font-size:15px;color:var(--ink-dim)}
+#sq-poetry-lock .sq-lock-row{display:flex;gap:8px}
+#sq-poetry-lock input{flex:1;min-width:0;min-height:44px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
+#sq-poetry-lock button{min-height:44px;padding:10px 20px;border:none;border-radius:12px;font:inherit;font-weight:600;color:var(--v-aux-white,#fff);background:linear-gradient(135deg,var(--accent),var(--accent-deep));cursor:pointer}
+#sq-poetry-lock .sq-lock-err{font-size:13px;color:#ff8f9c;font-style:italic}
