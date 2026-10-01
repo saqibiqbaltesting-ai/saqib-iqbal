@@ -2655,7 +2655,7 @@
     '.sq-mode-teaser .sq-mt-ico{font-size:30px;margin-bottom:8px}',
     '.sq-mode-teaser .sq-mt-t{color:#f0c96a;font-size:16px;margin-bottom:6px}',
     '.sq-mode-teaser .sq-mt-btn{margin-top:14px;background:linear-gradient(135deg,#e97b9c,#d9a94e);color:#fff;border:none;border-radius:999px;padding:10px 22px;font:inherit;font-size:14px;cursor:pointer}',
-    '#sq-mode-btn{position:fixed;bottom:64px;left:18px;z-index:11000;border:1px solid rgba(240,201,106,.5);background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 18px #0008;transition:transform .15s}',
+    '#sq-mode-btn{position:fixed;bottom:118px;left:14px;z-index:11000;border:1px solid rgba(240,201,106,.5);background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 18px #0008;transition:transform .15s}',
     '#sq-mode-btn:active{transform:scale(.94)}',
     '#sq-mode-btn.sq-full-on{color:#5fdc8a;border-color:rgba(95,220,138,.5)}',
     '#sq-mode-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}',
@@ -2671,9 +2671,8 @@
   ].join('');
   document.head.appendChild(st);
 
-  function modeGet() { try { return localStorage.getItem('sq-site-mode') || 'normal'; } catch (e) { return 'normal'; } }
-  function modeSet(m) { try { localStorage.setItem('sq-site-mode', m); } catch (e) {} }
-  function unlocked() { try { return localStorage.getItem('sq-full-unlocked') === '1'; } catch (e) { return false; } }
+  function modeGet() { try { return localStorage.getItem('sq-site-mode') || 'full'; } catch (e) { return 'full'; } }
+  function modeSet(m) { try { localStorage.setItem('sq-site-mode', m); try { localStorage.setItem('sq-mode-chosen', '1'); } catch (e) {} } catch (e) {} }
 
   function applyMode() {
     var m = modeGet();
@@ -2687,36 +2686,9 @@
 
   function closeOv() { var o = document.getElementById('sq-mode-ov'); if (o) o.remove(); }
 
-  function askPassword() {
-    closeOv();
-    var ov = document.createElement('div');
-    ov.id = 'sq-mode-ov';
-    ov.innerHTML = '<div id="sq-mode-card">' +
-      '<h3>\u2605 Full mode on karein</h3>' +
-      '<div style="font-size:13px;color:#9a937f">Poetry, Deewar e Dil, Q&A waghaira sab kuch dekhne ke liye password likhein.</div>' +
-      '<input id="sq-mode-pw" type="password" placeholder="Password likhein..." autocomplete="off">' +
-      '<div id="sq-mode-err">Ghalat password \u2014 dobara koshish karein.</div>' +
-      '<div class="sq-mb-row"><button class="sq-mb sq-mb-no" type="button">Cancel</button>' +
-      '<button class="sq-mb sq-mb-ok" type="button">On karein</button></div></div>';
-    ov.addEventListener('click', function (e) { if (e.target === ov) closeOv(); });
-    document.body.appendChild(ov);
-    var pw = ov.querySelector('#sq-mode-pw');
-    var go = function () {
-      if ((pw.value || '').trim().toLowerCase() === 'love') {
-        try { localStorage.setItem('sq-full-unlocked', '1'); } catch (e) {}
-        modeSet('full'); closeOv(); applyMode();
-      } else { ov.querySelector('#sq-mode-err').style.display = 'block'; pw.value = ''; pw.focus(); }
-    };
-    ov.querySelector('.sq-mb-ok').addEventListener('click', go);
-    ov.querySelector('.sq-mb-no').addEventListener('click', closeOv);
-    pw.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
-    setTimeout(function () { pw.focus(); }, 50);
-  }
-
   function toggle() {
-    if (modeGet() === 'full') { modeSet('normal'); applyMode(); return; }
-    if (unlocked()) { modeSet('full'); applyMode(); }
-    else askPassword();
+    modeSet(modeGet() === 'full' ? 'normal' : 'full');
+    applyMode();
   }
 
   function tagSections() {
@@ -2737,6 +2709,11 @@
 
   function build() {
     if (!document.body) return false;
+    try {
+      if ((localStorage.getItem('portfolio-auth-token') || '') && localStorage.getItem('sq-mode-chosen') !== '1') {
+        localStorage.setItem('sq-site-mode', 'full');
+      }
+    } catch (e) {}
     var b = document.createElement('button');
     b.type = 'button';
     b.id = 'sq-mode-btn';
