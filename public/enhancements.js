@@ -2485,7 +2485,8 @@
       ['\uD83D\uDCF7', 'Then vs Now', 'sqx:thennow'],
       ['\u270D\uFE0F', 'Reply Back', 'sqx:replyback']
     ];
-    TILES.forEach(function (t) {
+    var PAGE_SPLIT = 13;
+    function makeTile(t, grid) {
       var tile = document.createElement('button');
       tile.type = 'button';
       tile.className = 'sq-hub-tile';
@@ -2521,8 +2522,31 @@
         }, 80);
       };
       grid.appendChild(tile);
-    });
+    }
+    var pageInfo = document.createElement('div');
+    pageInfo.className = 'sq-f-note'; pageInfo.style.textAlign = 'center'; pageInfo.style.margin = '8px 0 0';
+    var navRow = document.createElement('div');
+    navRow.style.cssText = 'display:flex;gap:8px;justify-content:center;margin-top:8px';
+    var btnPrev = document.createElement('button'); btnPrev.type = 'button'; btnPrev.className = 'sq-f-btn2'; btnPrev.textContent = '\u2190 Wapas';
+    var btnNext = document.createElement('button'); btnNext.type = 'button'; btnNext.className = 'sq-f-btn2'; btnNext.textContent = 'Aage \u2192';
+    var page = 1;
+    function showPage(p) {
+      page = p;
+      grid.innerHTML = '';
+      var list = p === 1 ? TILES.slice(0, PAGE_SPLIT) : TILES.slice(PAGE_SPLIT);
+      list.forEach(function (t) { makeTile(t, grid); });
+      pageInfo.textContent = p === 1 ? '\u2B50 World' : '\u2728 Naya Zone';
+      btnPrev.style.display = p === 1 ? 'none' : '';
+      btnNext.style.display = p === 1 ? '' : 'none';
+      panel.scrollTop = 0;
+    }
+    btnPrev.onclick = function () { showPage(1); };
+    btnNext.onclick = function () { showPage(2); };
+    navRow.appendChild(btnPrev); navRow.appendChild(btnNext);
     panel.appendChild(grid);
+    panel.appendChild(pageInfo);
+    panel.appendChild(navRow);
+    showPage(1);
     var back = document.createElement('button');
     back.type = 'button'; back.className = 'sq-hub-back';
     back.innerHTML = '<span>\u25C0</span>Wapas';
