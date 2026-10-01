@@ -1415,7 +1415,7 @@
     if (parent.querySelector('#sq-poetry-sher')) return null; // already built
 
     /* ---- Section 1: Sher ---- */
-    var sher = makeSection('sq-poetry-sher', '\u{1F58B}\uFE0F Sher', 'Dil se parhein — aur apni pasand ka font chunein');
+    var sher = makeSection('sq-poetry-sher', 'Sher', 'Dil se parhein — aur apni pasand ka font chunein');
     sher.appendChild(fontRow());
     var tabs = document.createElement('div');
     tabs.className = 'sq-poetry-tabs';
@@ -1434,13 +1434,27 @@
     });
     sher.appendChild(tabs);
     sher.appendChild(sherGrid);
-    parent.appendChild(sher);
 
-    /* ---- Section 2: Ghazal ---- */
-    var ghaz = makeSection('sq-poetry-ghazal', '\u{1F3BC} Ghazal', 'Mukammal ghazlein — apni pasand ka font yahan bhi chalega');
+    /* ---- Section 2: Ghazal (attached under the same Poetry section) ---- */
+    var ghaz = makeSection('sq-poetry-ghazal', 'Ghazal', 'Mukammal ghazlein — apni pasand ka font yahan bhi chalega');
     ghaz.appendChild(fontRow());
     ghaz.appendChild(ghazGrid);
-    parent.appendChild(ghaz);
+
+    /* ---- Poetry wrapper (like My Memories): Sher pehle, phir Ghazal ---- */
+    var wrap = document.createElement('section');
+    wrap.className = 'section sq-sec';
+    wrap.id = 'sq-poetry';
+    var whead = document.createElement('div');
+    whead.className = 'section-header';
+    whead.innerHTML = '<span class="mono-label">05 \u2014 Poetry</span>';
+    var wsub = document.createElement('p');
+    wsub.className = 'contact-sub';
+    wsub.textContent = 'Sher aur Ghazal — ek hi chhat ke neeche';
+    whead.appendChild(wsub);
+    wrap.appendChild(whead);
+    wrap.appendChild(sher);
+    wrap.appendChild(ghaz);
+    parent.appendChild(wrap);
 
     applyFont(saved);
     renderShers();
@@ -1639,7 +1653,7 @@
     sec.id = 'sq-music';
     var head = document.createElement('div');
     head.className = 'section-header';
-    head.innerHTML = '<h2>07 \u2014 Music</h2>';
+    head.innerHTML = '<h2>06 \u2014 Music</h2>';
     var p = document.createElement('p');
     p.className = 'sq-sec-sub';
     p.textContent = 'Songs, Tilawat, Naat aur Qawwali — poori playlist';
@@ -1835,8 +1849,8 @@
     }
     card.appendChild(txt);
     sec.appendChild(card);
-    var sherSec = q('#sq-poetry-sher');
-    if (sherSec && sherSec.parentNode === parent) parent.insertBefore(sec, sherSec);
+    var poetrySec = q('#sq-poetry');
+    if (poetrySec && poetrySec.parentNode === parent) parent.insertBefore(sec, poetrySec);
     else parent.insertBefore(sec, host.nextSibling);
   }, 600);
 })();
@@ -1844,6 +1858,7 @@
 /* hireMe pill: ab Saqib World hub tile hai */
 
 (function visitorMap(){
+  return; // Visitor Map removed on user request
   function q(s){ return document.querySelector(s); }
   var tries = 0;
   var t = setInterval(function(){
@@ -1939,7 +1954,7 @@
     var host = q('#sq-hearts');
     if (!host || !host.parentNode) return false;
     if (q('#sq-user-sher')) return true;
-    var sec = mkSec('sq-user-sher', '11 \u2014 Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
+    var sec = mkSec('sq-user-sher', '09 \u2014 Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
     var card = document.createElement('div');
     card.className = 'sq-user-sher-card';
     var ta = document.createElement('textarea');
@@ -2055,10 +2070,11 @@
 
   /* ---- Deewar e Dil ---- */
   function buildHearts() {
-    var host = q('#sq-visitor-map');
+    var host = q('#gallery'); // Deewar e Dil lands right after My Memories
+    if (host) host = { parentNode: host.parentNode, nextSibling: host.nextSibling };
     if (!host || !host.parentNode) return false;
     if (q('#sq-hearts')) return true;
-    var sec = mkSec('sq-hearts', '10 \u2014 Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
+    var sec = mkSec('sq-hearts', '08 \u2014 Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
     var card = document.createElement('div');
     card.className = 'sq-hearts-card';
     var big = document.createElement('button');
@@ -2232,7 +2248,6 @@
       ['\uD83C\uDFB5', 'Music', 'music'],
       ['\u2764\uFE0F', 'Deewar e Dil', 'sq-hearts'],
       ['\uD83D\uDCDD', 'Aap ka Sher', 'sq-user-sher'],
-      ['\uD83D\uDDFA\uFE0F', 'Visitor Map', 'sq-visitor-map'],
       ['\uD83D\uDCBC', 'Kaam poochein?', 'wa'],
       ['\uD83C\uDFC5', 'Badges', null]
     ];
