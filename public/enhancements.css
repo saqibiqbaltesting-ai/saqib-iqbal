@@ -295,3 +295,6 @@ body.sq-dock-open #sq-hub-btn{bottom:306px}
 
 /* Old in-app Music section replaced by the rich player (#sq-music) */
 #music{display:none!important}
+
+/* Rating widget removed on user request */
+#sq-rating{display:none!important}
