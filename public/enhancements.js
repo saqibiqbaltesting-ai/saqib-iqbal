@@ -1524,10 +1524,16 @@
 
   var els = {}; // cached elements
 
+  var SHOW_FIRST = 3; // pehle sirf 3 tracks nazar aayein, baqi 'See more' par
+  var expandedCats = {};
   function renderList() {
     var host = els.list;
     host.innerHTML = '';
-    list().forEach(function (t, i) {
+    var cat = active; // current playlist id
+    var expanded = !!expandedCats[cat];
+    var all = list();
+    all.forEach(function (t, i) {
+      if (!expanded && i >= SHOW_FIRST && i !== cur) return;
       var row = document.createElement('button');
       row.type = 'button';
       row.className = 'sq-music-track' + (i === cur ? ' active' : '');
@@ -1542,6 +1548,22 @@
       row.onclick = function () { select(i, true); };
       host.appendChild(row);
     });
+    var oldMore = document.getElementById('sq-music-more');
+    if (oldMore) oldMore.remove();
+    if (all.length > SHOW_FIRST) {
+      var more = document.createElement('button');
+      more.type = 'button';
+      more.id = 'sq-music-more';
+      more.className = 'sq-music-more';
+      more.textContent = expanded
+        ? '\u2014 Kam karein (See less) \u2014'
+        : '\u2014 See more (' + (all.length - SHOW_FIRST) + ' baqi) \u2014';
+      more.onclick = function () {
+        expandedCats[cat] = !expanded;
+        renderList();
+      };
+      host.appendChild(more);
+    }
   }
 
   function updateRows() {
