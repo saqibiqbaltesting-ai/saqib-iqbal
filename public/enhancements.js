@@ -1480,11 +1480,18 @@
       (which === 'sher' ? cardSher : cardGhaz).classList.add('active');
       try { (which === 'sher' ? sher : ghaz).scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
     }
+    function lockedMsg() {
+      var err = lockBox.querySelector('.sq-lock-err');
+      if (err) { err.textContent = 'Pehle password likhein — phir Sher aur Ghazal khulein ge.'; err.style.display = ''; }
+      try { lockBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    }
     cardSher.onclick = function () {
+      if (!unlocked) { lockedMsg(); return; }
       if (sher.style.display !== 'none') { closePanels(); return; }
       openPanel('sher');
     };
     cardGhaz.onclick = function () {
+      if (!unlocked) { lockedMsg(); return; }
       if (ghaz.style.display !== 'none') { closePanels(); return; }
       openPanel('ghazal');
     };
@@ -2361,8 +2368,10 @@
           setTimeout(function () {
             var wrap = document.getElementById('sq-poetry');
             if (!wrap) return;
+            var lockedNow = false;
+            try { lockedNow = localStorage.getItem('sq-poetry-unlocked') !== '1'; } catch (e) { lockedNow = true; }
             var panel = document.getElementById(t[2]);
-            if (panel && panel.style.display === 'none') {
+            if (!lockedNow && panel && panel.style.display === 'none') {
               var cs = wrap.querySelectorAll('.sq-poetry-card');
               if (cs.length) cs[t[2] === 'sq-poetry-sher' ? 0 : 1].click();
             }
