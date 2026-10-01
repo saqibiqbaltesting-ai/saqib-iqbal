@@ -2513,7 +2513,7 @@
 
 /* ===== Section order (user-chosen): bio, achievements, My Memories, Poetry, Quote, Music, Aap ka Sher, [CV], Guestbook, Quiz, Q&A, Deewar e Dil, Contact ===== */
 (function reorderSections(){
-  var ORDER = ['bio','achievements','gallery','sq-daily-sher','sq-poetry','quote','sq-music','music','sq-user-sher','guestbook','quiz','qa','sq-hearts','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-github','sq-status','contact'];
+  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-daily-sher','sq-music','music','sq-user-sher','guestbook','quiz','qa','sq-hearts','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-github','sq-status','contact'];
   var tries = 0;
   var t = setInterval(function(){
     tries++;
@@ -2528,4 +2528,19 @@
       try { secs[j].parentNode.appendChild(secs[j]); } catch (e) {}
     }
   }, 600);
+})();
+
+/* ===== Kit: Saqib AI chat khulne par baaki floating buttons chhup jati hain — koi overlap nahi ===== */
+(function () {
+  'use strict';
+  var FABS = ['sq-dock-btn', 'sq-hub-btn', 'sq-top-btn'];
+  setInterval(function () {
+    var panel = document.getElementById('sq-chat-panel');
+    var open = false;
+    try { open = !!(panel && window.getComputedStyle(panel).display !== 'none'); } catch (e) {}
+    FABS.forEach(function (id) {
+      var b = document.getElementById(id);
+      if (b) b.style.display = open ? 'none' : '';
+    });
+  }, 350);
 })();
