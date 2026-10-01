@@ -2239,8 +2239,7 @@
       ['\u2764\uFE0F', 'Deewar e Dil', 'sq-hearts'],
       ['\uD83D\uDCDD', 'Aap ka Sher', 'sq-user-sher'],
       ['\uD83D\uDDFA\uFE0F', 'Visitor Map', 'sq-visitor-map'],
-      ['\uD83C\uDFC5', 'Badges', null],
-      ['\u2B06\uFE0F', 'Sab se upar', 'top']
+      ['\uD83C\uDFC5', 'Badges', null]
     ];
     TILES.forEach(function (t) {
       var tile = document.createElement('button');
