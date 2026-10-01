@@ -2548,7 +2548,13 @@
     try { open = !!(panel && window.getComputedStyle(panel).display !== 'none'); } catch (e) {}
     FABS.forEach(function (id) {
       var b = document.getElementById(id);
-      if (b) b.style.display = open ? 'none' : '';
+      if (!b) return;
+      if (id === 'sq-hub-btn') {
+        var gate = !document.getElementById('bio') && !document.getElementById('achievements');
+        b.style.display = (open || gate) ? 'none' : '';
+      } else {
+        b.style.display = open ? 'none' : '';
+      }
     });
   }, 350);
 })();
@@ -3092,15 +3098,14 @@
   'use strict';
   if (window.__sqGateHide) return;
   window.__sqGateHide = true;
-  var IDS = ['sq-app-btn', 'sq-mode-btn', 'sq-hub-btn'];
-  var done = false;
-  var t = setInterval(function () {
-    var gate = !document.getElementById('main');
-    IDS.forEach(function (id) {
+  var last = null;
+  setInterval(function () {
+    var gate = !document.getElementById('bio') && !document.getElementById('achievements');
+    if (gate === last) return;
+    last = gate;
+    ['sq-app-btn', 'sq-mode-btn'].forEach(function (id) {
       var e = document.getElementById(id);
       if (e) e.style.display = gate ? 'none' : '';
     });
-    if (!gate) { done = true; clearInterval(t); }
-  }, 800);
-  setTimeout(function () { if (!done) clearInterval(t); }, 120000);
+  }, 500);
 })();
