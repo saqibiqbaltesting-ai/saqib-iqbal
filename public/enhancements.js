@@ -1322,109 +1322,141 @@
     return sec;
   }
 
-  /* Kit: voices pehle se load karao — Chrome pehli click par khamosh reh jata tha */
-  if ('speechSynthesis' in window) {
-    try {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = function () { window.speechSynthesis.getVoices(); };
-    } catch (e) {}
+  /* Kit: Suno hat gaya — user ne 4 naye features chunein (fav/copy/wallpaper/likes) */
+  function sherId(s) {
+    var h2 = 5381;
+    for (var i = s.length - 1; i >= 0; i--) h2 = ((h2 * 33) ^ s.charCodeAt(i)) >>> 0;
+    return 'sh' + h2.toString(36);
   }
-
-  function renderShers() {
-    var cat = CATS.filter(function (c) { return c[0] === active; })[0] || CATS[0];
-    sherGrid.innerHTML = '';
-    cat[3].forEach(function (sh) {
-      var parts = sh.split(' | ');
-      var card = document.createElement('div');
-      card.className = 'sq-sher-card';
-      var p = document.createElement('p');
-      p.className = 'sq-sher';
-      var l1 = document.createElement('span');
-      l1.textContent = parts[0];
-      var br = document.createElement('br');
-      var l2 = document.createElement('span');
-      l2.textContent = parts[1];
-      p.appendChild(l1); p.appendChild(br); p.appendChild(l2);
-      if (parts[2]) {
-        var em = document.createElement('span');
-        em.className = 'sq-sher-emoji';
-        em.textContent = ' ' + parts[2];
-        p.appendChild(em);
-      }
-      var sb = document.createElement('button');
-      sb.type = 'button';
-      sb.className = 'sq-suno-btn';
-      sb.innerHTML = '\uD83D\uDD0A Suno';
-      sb.setAttribute('aria-label', 'Sher sunein');
-      function lastTry(txt, btn) {
-        try {
-          var SYN = window.speechSynthesis; if (!SYN) return;
-          var u = new SpeechSynthesisUtterance(txt);
-          u.lang = 'ur-PK'; u.rate = 0.92;
-          u.onend = function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; };
-          window.__sqSherUtterance = u;
-          SYN.cancel(); try { SYN.resume(); } catch (e) {} SYN.speak(u); try { SYN.resume(); } catch (e) {}
-        } catch (e) {}
-      }
-      function gtSpeak(txt, btn) {
-        try {
-          var au = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ur&q=' + encodeURIComponent(txt));
-          window.__sqSherAudio = au; /* Kit: GC guard */
-          btn.dataset.on = '1'; btn.innerHTML = '\u25B6 Sun raha hai...';
-          au.onended = function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; };
-          au.onerror = function () { lastTry(txt, btn); };
-          au.play().catch(function () { lastTry(txt, btn); });
-        } catch (e) { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; }
-      }
-      sb.onclick = function () {
-        if (!window.speechSynthesis) { sb.textContent = 'Sunna mojood nahi'; return; }
-        var SYN = window.speechSynthesis;
-        if (sb.dataset.on === '1') {
-          SYN.cancel();
-          try { if (window.__sqSherAudio) { window.__sqSherAudio.pause(); window.__sqSherAudio = null; } } catch (e) {}
-          sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; return;
-        }
-        Array.prototype.forEach.call(document.querySelectorAll('.sq-suno-btn'), function (b) {
-          if (b !== sb && !b.classList.contains('sq-share-btn')) {
-            b.dataset.on = ''; b.innerHTML = '\uD83D\uDD0A Suno';
-            try { if (window.__sqSherAudio) { window.__sqSherAudio.pause(); window.__sqSherAudio = null; } } catch (e) {}
-          }
-        });
-        SYN.cancel();
-        try { SYN.resume(); } catch (e) {}
-        var txt = sh.replace(/ \| /g, ', ').replace(/[^\u0600-\u06FF\s\u060C\u061F.!]/g, '');
-        var vs = SYN.getVoices();
-        var v = vs.filter(function (vv) { return /^ur/i.test(vv.lang) || /urdu/i.test(vv.name); })[0] || vs.filter(function (vv) { return /^ar/i.test(vv.lang); })[0];
-        if (!v) { gtSpeak(txt, sb); try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'sunai' })); } catch (e) {} return; }
-        var u = new SpeechSynthesisUtterance(txt);
-        u.lang = v.lang; u.rate = 0.92; u.volume = 1; u.voice = v;
-        u.onend = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; };
-        u.onerror = function () { SYN.cancel(); gtSpeak(txt, sb); }; /* Kit: local voice fail ho to Google TTS */
-        window.__sqSherUtterance = u; /* Kit: GC se bachao — Chrome pehli click par khamosh ho jata tha */
-        sb.dataset.on = '1'; sb.innerHTML = '\u25B6 Sun raha hai...';
-        try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'sunai' })); } catch (e) {}
-        SYN.speak(u);
-        try { SYN.resume(); } catch (e) {}
-      };
-      var shBtn = document.createElement('button');
-      shBtn.type = 'button';
-      shBtn.className = 'sq-suno-btn sq-share-btn';
-      shBtn.innerHTML = '\u2197 WhatsApp';
-      shBtn.setAttribute('aria-label', 'Sher WhatsApp par share karein');
-      shBtn.onclick = function () {
-        var txt = sh.replace(/ \| /g, '\n') + '\n\n\u2014 Saqib Iqbal\nhttps://saqib-iqbal.vercel.app/';
-        window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
-      };
-      var actRow = document.createElement('div');
-      actRow.className = 'sq-sher-actions';
-      actRow.appendChild(sb);
-      actRow.appendChild(shBtn);
-      card.appendChild(actRow);
-      card.appendChild(p);
-      sherGrid.appendChild(card);
+  function sherFetch(url, opts) {
+    try {
+      var m = window.vellum;
+      if (m && typeof m.fetch === 'function') return m.fetch(url, opts);
+    } catch (e) {}
+    return fetch(url, opts);
+  }
+  function getFavs() { try { return JSON.parse(localStorage.getItem('sq-sher-favs') || '[]'); } catch (e) { return []; } }
+  function setFavs(a) { try { localStorage.setItem('sq-sher-favs', JSON.stringify(a)); } catch (e) {} }
+  function getLiked() { try { return JSON.parse(localStorage.getItem('sq-sher-liked') || '[]'); } catch (e) { return []; } }
+  function setLiked(a) { try { localStorage.setItem('sq-sher-liked', JSON.stringify(a)); } catch (e) {} }
+  var likeStore = {};
+  function refreshLikes() {
+    sherFetch('/v1/x/sher-likes').then(function (r) { return r.ok ? r.json() : {}; }).then(function (j) { likeStore = j || {}; paintLikes(); }).catch(function () {});
+  }
+  function paintLikes() {
+    Array.prototype.forEach.call(document.querySelectorAll('.sq-like-count'), function (sp) {
+      sp.textContent = likeStore[sp.dataset.sid] || 0;
     });
   }
-
+  function favTabRefresh() {
+    var t2 = document.getElementById('sq-fav-tab');
+    if (t2) t2.innerHTML = '\u2764\uFE0F Pasand (' + getFavs().length + ')';
+  }
+  function sherWallpaper(sh) {
+    var c = document.createElement('canvas'); c.width = 1080; c.height = 1080;
+    var x = c.getContext('2d'); if (!x) return;
+    var g = x.createLinearGradient(0, 0, 1080, 1080);
+    g.addColorStop(0, '#1a0f26'); g.addColorStop(0.5, '#2b1230'); g.addColorStop(1, '#0d0714');
+    x.fillStyle = g; x.fillRect(0, 0, 1080, 1080);
+    x.strokeStyle = 'rgba(240,201,106,.55)'; x.lineWidth = 3; x.strokeRect(40, 40, 1000, 1000);
+    x.strokeStyle = 'rgba(240,201,106,.25)'; x.lineWidth = 1; x.strokeRect(52, 52, 976, 976);
+    x.fillStyle = '#f5e9d8'; x.textAlign = 'center';
+    x.font = '46px "Noto Nastaliq Urdu", serif';
+    var y = 500;
+    sh.split(' | ').forEach(function (ln) { try { x.direction = 'rtl'; } catch (e) {} x.fillText(ln, 540, y); y += 100; });
+    x.fillStyle = '#f0c96a'; x.font = '30px Georgia, serif';
+    x.fillText('\u2014 Saqib Iqbal \u2014', 540, 960);
+    var a = document.createElement('a');
+    a.download = 'sher-saqib-iqbal.png';
+    a.href = c.toDataURL('image/png');
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function renderSherCard(sh, grid) {
+    var parts = sh.split(' | ');
+    var sid = sherId(sh);
+    var card = document.createElement('div');
+    card.className = 'sq-sher-card';
+    var p = document.createElement('p');
+    p.className = 'sq-sher';
+    var l1 = document.createElement('span'); l1.textContent = parts[0];
+    var br = document.createElement('br');
+    var l2 = document.createElement('span'); l2.textContent = parts[1];
+    p.appendChild(l1); p.appendChild(br); p.appendChild(l2);
+    if (parts[2]) {
+      var em = document.createElement('span');
+      em.className = 'sq-sher-emoji';
+      em.textContent = ' ' + parts[2];
+      p.appendChild(em);
+    }
+    var actRow = document.createElement('div');
+    actRow.className = 'sq-sher-actions';
+    function mk(cls, label) { var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-suno-btn ' + cls; b.innerHTML = label; return b; }
+    var favB = mk('sq-favbtn', '\u2661 Pasand');
+    function paintFav() { var on = getFavs().indexOf(sh) >= 0; favB.innerHTML = on ? '\u2764\uFE0F Pasand' : '\u2661 Pasand'; favB.classList.toggle('sq-on', on); }
+    favB.onclick = function () {
+      var a = getFavs(); var i = a.indexOf(sh);
+      if (i >= 0) a.splice(i, 1); else a.unshift(sh);
+      setFavs(a); paintFav(); favTabRefresh();
+      if (active === '__fav') renderShers();
+    };
+    paintFav();
+    var cpB = mk('sq-copybtn', '\uD83D\uDCCB Copy');
+    cpB.onclick = function () {
+      var txt = sh.split(' | ').join('\n') + '\n\n\u2014 Saqib Iqbal';
+      var done = function () { cpB.innerHTML = '\u2705 Copy ho gaya'; setTimeout(function () { cpB.innerHTML = '\uD83D\uDCCB Copy'; }, 1600); };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, done);
+        else done();
+      } catch (e) { done(); }
+    };
+    var wpB = mk('sq-wallbtn', '\uD83D\uDDBC\uFE0F Wallpaper');
+    wpB.onclick = function () { try { sherWallpaper(sh); } catch (e) {} };
+    var lkB = mk('sq-likebtn', '\uD83D\uDD25 Like \u00B7 <span class="sq-like-count" data-sid="' + sid + '">' + (likeStore[sid] || 0) + '</span>');
+    function paintLike() {
+      var on = getLiked().indexOf(sid) >= 0;
+      lkB.classList.toggle('sq-on', on);
+      lkB.innerHTML = (on ? '\u2764\uFE0F Liked' : '\uD83D\uDD25 Like') + ' \u00B7 <span class="sq-like-count" data-sid="' + sid + '">' + (likeStore[sid] || 0) + '</span>';
+    }
+    lkB.onclick = function () {
+      var a = getLiked(); var undo = a.indexOf(sid) >= 0;
+      if (undo) a.splice(a.indexOf(sid), 1); else a.push(sid);
+      setLiked(a);
+      likeStore[sid] = Math.max(0, (likeStore[sid] || 0) + (undo ? -1 : 1));
+      paintLike();
+      sherFetch('/v1/x/sher-likes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: sid, undo: undo }) })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (j) { if (j && j[sid] !== undefined) { likeStore[sid] = j[sid]; paintLikes(); } })
+        .catch(function () {});
+    };
+    paintLike();
+    var shBtn = mk('sq-share-btn', '\u2197 WhatsApp');
+    shBtn.setAttribute('aria-label', 'Sher WhatsApp par share karein');
+    shBtn.onclick = function () {
+      var txt = sh.split(' | ').join('\n') + '\n\n\u2014 Saqib Iqbal\nhttps://saqib-iqbal.vercel.app/';
+      window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+    };
+    actRow.appendChild(favB); actRow.appendChild(cpB); actRow.appendChild(wpB); actRow.appendChild(lkB); actRow.appendChild(shBtn);
+    card.appendChild(actRow);
+    card.appendChild(p);
+    grid.appendChild(card);
+  }
+  function renderSherList(list) {
+    sherGrid.innerHTML = '';
+    if (!list.length) {
+      var e = document.createElement('p');
+      e.style.cssText = 'text-align:center;opacity:.6;padding:30px 0';
+      e.textContent = 'Abhi koi sher pasand nahi kiya \u2014 kisi sher par \u2661 Pasand dabayen';
+      sherGrid.appendChild(e);
+      return;
+    }
+    list.forEach(function (sh) { renderSherCard(sh, sherGrid); });
+    refreshLikes();
+  }
+  function renderShers() {
+    if (active === '__fav') { renderSherList(getFavs()); return; }
+    var cat = CATS.filter(function (c) { return c[0] === active; })[0] || CATS[0];
+    renderSherList(cat[3]);
+  }
   function renderGhazals() {
     ghazGrid.innerHTML = '';
     GHAZALS.forEach(function (g) {
@@ -1502,6 +1534,19 @@
       };
       tabs.appendChild(b);
     });
+    var favTab = document.createElement('button');
+    favTab.type = 'button';
+    favTab.className = 'sq-poetry-tab';
+    favTab.id = 'sq-fav-tab';
+    favTab.innerHTML = '\u2764\uFE0F Pasand (0)';
+    favTab.onclick = function () {
+      active = '__fav';
+      Array.prototype.forEach.call(tabs.children, function (x) { x.classList.remove('active'); });
+      favTab.classList.add('active');
+      renderShers();
+    };
+    tabs.appendChild(favTab);
+    favTabRefresh();
     sher.appendChild(tabs);
     sher.appendChild(sherGrid);
 
