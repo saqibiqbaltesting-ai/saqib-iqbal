@@ -156,7 +156,7 @@ html.sq-a11y .hero-name,html.sq-a11y .hero-kicker,html.sq-a11y .hero-sub{transfo
 .sq-poetry-tab.active{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;border-color:transparent}
 .sq-poetry-fonts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
 .sq-poetry-flabel{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute)}
-.sq-poetry-fontbtn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink);font-size:17px;cursor:pointer;transition:border-color .2s ease,transform .2s ease}
+.sq-poetry-fontbtn{min-width:44px;height:42px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink);font-size:15px;cursor:pointer;transition:border-color .2s ease,transform .2s ease;line-height:40px}
 .sq-poetry-fontbtn:hover{transform:translateY(-2px)}
 .sq-poetry-fontbtn.active{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 2px rgba(224,164,88,.25)}
 .sq-poetry-grid{display:grid;grid-template-columns:1fr;gap:12px;--sq-sher-font:Georgia,serif;--sq-sher-style:italic;--sq-sher-weight:700}
