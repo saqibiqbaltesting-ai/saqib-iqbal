@@ -323,3 +323,5 @@ body.sq-dock-open #sq-hub-btn{bottom:306px}
 #sq-poetry-lock input{flex:1;min-width:0;min-height:44px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit}
 #sq-poetry-lock button{min-height:44px;padding:10px 20px;border:none;border-radius:12px;font:inherit;font-weight:600;color:var(--v-aux-white,#fff);background:linear-gradient(135deg,var(--accent),var(--accent-deep));cursor:pointer}
 #sq-poetry-lock .sq-lock-err{font-size:13px;color:#ff8f9c;font-style:italic}
+
+.sq-favbtn.sq-on,.sq-likebtn.sq-on{border-color:var(--accent)!important;color:var(--accent)!important;background:rgba(224,164,88,.12)}
