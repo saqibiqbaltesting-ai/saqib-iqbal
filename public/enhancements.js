@@ -2220,6 +2220,10 @@
     var head = document.createElement('div');
     head.className = 'sq-hub-head';
     head.innerHTML = '<h3>\uD83C\uDFE0 Saqib World</h3>';
+    var sub = document.createElement('p');
+    sub.className = 'sq-hub-sub';
+    sub.textContent = 'Saqib ka poora world \u2014 sab kuch ek jagah';
+    head.appendChild(sub);
     var x = document.createElement('button');
     x.type = 'button'; x.className = 'sq-hub-close'; x.innerHTML = '\u00D7';
     x.setAttribute('aria-label', 'Band karein');
@@ -2258,6 +2262,12 @@
       grid.appendChild(tile);
     });
     panel.appendChild(grid);
+    var back = document.createElement('button');
+    back.type = 'button'; back.className = 'sq-hub-back';
+    back.innerHTML = '<span>\u25C0</span>Wapas';
+    back.setAttribute('aria-label', 'Wapas home par jayen');
+    back.onclick = close;
+    ov.appendChild(back);
     ov.appendChild(panel);
     ov.onclick = function (e) { if (e.target === ov) close(); };
     document.body.appendChild(ov);
