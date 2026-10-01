@@ -270,3 +270,16 @@ body.sq-dock-open #sq-badge-tray{display:none}
 .sq-badge-item span{font-size:20px}
 .sq-badge-item strong{display:block;font-family:var(--sans);font-size:12.5px;color:var(--ink)}
 .sq-badge-item em{font-style:normal;font-family:var(--sans);font-size:11px;color:var(--muted)}
+/* ===== Kit: Sub-home Hub (Saqib World) ===== */
+#sq-hub-btn{position:fixed;bottom:306px;inset-inline-end:23px;z-index:11006;width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;font-size:20px;background:linear-gradient(135deg,#e97b9c,#d9a94e);color:#fff;box-shadow:0 8px 24px #e97b9c66;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease}
+body.sq-dock-open #sq-hub-btn{opacity:1;visibility:visible;transform:none}
+#sq-hub-overlay{position:fixed;inset:0;z-index:12000;background:rgba(20,16,24,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;animation:sq-hub-fade .25s ease}
+.sq-hub-panel{width:min(400px,calc(100vw - 40px));max-height:80vh;overflow:auto;background:var(--bg-soft);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.4)}
+.sq-hub-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sq-hub-head h3{margin:0;font-family:var(--sans);font-size:16px;color:var(--ink)}
+.sq-hub-close{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);font-size:18px;cursor:pointer}
+.sq-hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sq-hub-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;transition:transform .15s ease,border-color .2s ease}
+.sq-hub-tile span{font-size:24px}
+.sq-hub-tile:hover{transform:translateY(-2px);border-color:var(--accent)}
+@keyframes sq-hub-fade{from{opacity:0}to{opacity:1}}

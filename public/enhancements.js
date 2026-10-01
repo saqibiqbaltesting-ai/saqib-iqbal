@@ -2204,3 +2204,76 @@
     if ((a && b2 && c) || tries > 75) clearInterval(t);
   }, 600);
 })();
+
+
+/* ===== Kit: Sub-home Hub (Saqib World) — dock ke sath floating button ===== */
+(function () {
+  function q(s) { return document.querySelector(s); }
+  function close() { var ov = q('#sq-hub-overlay'); if (ov) ov.remove(); }
+  function open() {
+    var ov = q('#sq-hub-overlay');
+    if (ov) { close(); return; }
+    ov = document.createElement('div');
+    ov.id = 'sq-hub-overlay';
+    var panel = document.createElement('div');
+    panel.className = 'sq-hub-panel';
+    var head = document.createElement('div');
+    head.className = 'sq-hub-head';
+    head.innerHTML = '<h3>\uD83C\uDFE0 Saqib World</h3>';
+    var x = document.createElement('button');
+    x.type = 'button'; x.className = 'sq-hub-close'; x.innerHTML = '\u00D7';
+    x.setAttribute('aria-label', 'Band karein');
+    x.onclick = close;
+    head.appendChild(x);
+    panel.appendChild(head);
+    var grid = document.createElement('div');
+    grid.className = 'sq-hub-grid';
+    var TILES = [
+      ['\u270D\uFE0F', 'Shayari', 'sq-poetry-sher'],
+      ['\uD83D\uDCD6', 'Ghazal', 'sq-poetry-ghazal'],
+      ['\uD83C\uDFB5', 'Music', 'music'],
+      ['\u2764\uFE0F', 'Deewar e Dil', 'sq-hearts'],
+      ['\uD83D\uDCDD', 'Aap ka Sher', 'sq-user-sher'],
+      ['\uD83D\uDDFA\uFE0F', 'Visitor Map', 'sq-visitor-map'],
+      ['\uD83C\uDFC5', 'Badges', null],
+      ['\u2B06\uFE0F', 'Sab se upar', 'top']
+    ];
+    TILES.forEach(function (t) {
+      var tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'sq-hub-tile';
+      tile.innerHTML = '<span>' + t[0] + '</span>' + t[1];
+      tile.onclick = function () {
+        close();
+        if (t[2] === null) {
+          setTimeout(function () { var tr = q('#sq-badge-tray'); if (tr) tr.click(); }, 220);
+          return;
+        }
+        setTimeout(function () {
+          if (t[2] === 'top') { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } return; }
+          var el = document.getElementById(t[2]);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
+      };
+      grid.appendChild(tile);
+    });
+    panel.appendChild(grid);
+    ov.appendChild(panel);
+    ov.onclick = function (e) { if (e.target === ov) close(); };
+    document.body.appendChild(ov);
+  }
+  function build() {
+    if (!document.body || !q('#sq-dock-btn')) return false;
+    if (q('#sq-hub-btn')) return true;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'sq-hub-btn';
+    b.innerHTML = '\uD83C\uDFE0';
+    b.setAttribute('aria-label', 'Saqib World hub kholen');
+    b.onclick = open;
+    document.body.appendChild(b);
+    return true;
+  }
+  var tries = 0;
+  var t = setInterval(function () { tries++; if (build() || tries > 40) clearInterval(t); }, 600);
+})();
