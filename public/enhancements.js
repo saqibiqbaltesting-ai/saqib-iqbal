@@ -2290,11 +2290,25 @@
     var sent = false;
     fetch('/v1/x/hearts').then(function (r) { return r.json(); }).then(function (d) { cnt.textContent = Number((d && d.count) || 0).toLocaleString(); }).catch(function () { cnt.textContent = '0'; });
     big.onclick = function () {
-      var f = document.createElement('span');
-      f.className = 'sq-heart-float';
-      f.textContent = '\u2764\uFE0F';
-      big.appendChild(f);
-      setTimeout(function () { f.remove(); }, 1200);
+      var EMO = ['\u2764\uFE0F', '\u2764\uFE0F', '\u2764\uFE0F', '\uD83D\uDC95', '\uD83D\uDC9C'];
+      for (var i = 0; i < 10; i++) {
+        (function (i) {
+          setTimeout(function () {
+            var f = document.createElement('span');
+            f.className = 'sq-heart-float';
+            f.textContent = EMO[Math.floor(Math.random() * EMO.length)];
+            f.style.left = (25 + Math.random() * 50) + '%';
+            f.style.fontSize = (14 + Math.random() * 22) + 'px';
+            f.style.marginLeft = (Math.random() * 36 - 18) + 'px';
+            f.style.animationDuration = (0.9 + Math.random() * 0.7) + 's';
+            big.appendChild(f);
+            setTimeout(function () { f.remove(); }, 1800);
+          }, i * 45);
+        })(i);
+      }
+      big.classList.remove('sq-pop');
+      void big.offsetWidth;
+      big.classList.add('sq-pop');
       if (!sent) {
         sent = true;
         big.classList.add('done');
@@ -2754,7 +2768,9 @@
   st.textContent = [
     'body.sq-lite *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}',
     'body.sq-lite section, body.sq-lite .section{content-visibility:auto;contain-intrinsic-size:auto 600px}',
-    'body.sq-lite *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.1s!important}'
+    'body.sq-lite *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.1s!important}',
+    'body.sq-lite .sq-heart-float{animation-duration:1s!important}',
+    'body.sq-lite .sq-hearts-btn.sq-pop{animation-duration:.3s!important}'
   ].join('');
   document.head.appendChild(st);
   document.body.classList.add('sq-lite');
