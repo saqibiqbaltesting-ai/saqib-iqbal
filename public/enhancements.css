@@ -325,3 +325,8 @@ body.sq-dock-open #sq-hub-btn{bottom:306px}
 #sq-poetry-lock .sq-lock-err{font-size:13px;color:#ff8f9c;font-style:italic}
 
 .sq-favbtn.sq-on,.sq-likebtn.sq-on{border-color:var(--accent)!important;color:var(--accent)!important;background:rgba(224,164,88,.12)}
+
+/* Kit: Deewar e Dil — dil burst */
+.sq-hearts-btn{overflow:visible}
+.sq-hearts-btn.sq-pop{animation:sq-pop .3s ease}
+@keyframes sq-pop{0%{transform:scale(.85)}45%{transform:scale(1.18)}100%{transform:scale(1)}}
