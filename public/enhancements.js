@@ -4308,7 +4308,7 @@
     var anchor = document.querySelector('.font-toggle');
     if (!anchor || !anchor.parentNode) return false;
     var b = document.createElement('button');
-    b.type = 'button'; b.id = 'sq-cursor-btn'; b.className = 'nav-toggle font-toggle';
+    b.type = 'button'; b.id = 'sq-cursor-btn'; b.className = 'nav-toggle sq-cursor-toggle';
     b.innerHTML = '<span style="font-size:14px" aria-hidden="true">\uD83D\uDDBC\uFE0F</span>';
     b.setAttribute('aria-label', 'Cursor change karein');
     b.title = 'Cursor chunein';
