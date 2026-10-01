@@ -2467,7 +2467,13 @@
       ['\uD83C\uDFB5', 'Shuffle Naat', 'sqx:naat'],
       ['\uD83D\uDCAC', 'Apni Baat', 'sqx:baat'],
       ['\uD83D\uDCCA', 'Mood Diary', 'sqx:mood'],
-      ['\uD83D\uDCD6', 'Aaj ki Ayat/Hadees', 'sqx:ayat']
+      ['\uD83D\uDCD6', 'Aaj ki Ayat/Hadees', 'sqx:ayat'],
+      ['\uD83D\uDCE8', 'Open When', 'sqx:openwhen'],
+      ['\uD83C\uDF81', 'Gift Boxes', 'sqx:gifts'],
+      ['\uD83C\uDFB0', 'Sher Roulette', 'sqx:roulette'],
+      ['\uD83C\uDFA7', 'Scratch Card', 'sqx:scratch'],
+      ['\uD83C\uDF19', 'Raat/Subah', 'sqx:daypart'],
+      ['\uD83D\uDD10', 'Secret Vault', 'sqx:vault']
     ];
     TILES.forEach(function (t) {
       var tile = document.createElement('button');
@@ -3099,4 +3105,239 @@
       if (e) e.style.display = gate ? 'none' : '';
     });
   }, 500);
+})();
+
+/* ===== Kit: Saqib World phase-2 — Open When, Gift Boxes, Roulette, Scratch, Raat/Subah, Secret Vault ===== */
+(function () {
+  'use strict';
+  var prev = window.__sqHubFeature;
+  function lsS(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsG(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function dayIndex() { var d = new Date(); return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000) + d.getFullYear(); }
+
+  function modal2(title, build) {
+    var old = document.getElementById('sq-feat-ov'); if (old) old.remove();
+    var ov = document.createElement('div'); ov.id = 'sq-feat-ov';
+    var card = document.createElement('div'); card.id = 'sq-feat-card';
+    var x = document.createElement('button'); x.className = 'sq-fx'; x.type = 'button'; x.innerHTML = '\u00D7';
+    x.setAttribute('aria-label', 'Band karein'); x.onclick = function () { ov.remove(); };
+    var h = document.createElement('h3'); h.textContent = title; h.appendChild(x);
+    card.appendChild(h); build(card);
+    ov.appendChild(card);
+    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+    document.body.appendChild(ov);
+  }
+  function sherPool() {
+    var cats = window.__sqPoetryCats || [];
+    var all = []; cats.forEach(function (c) { all = all.concat(c[3] || []); });
+    return all;
+  }
+  function pickSher() { var p = sherPool(); return p.length ? p[Math.floor(Math.random() * p.length)].replace(' | ', '\n') : '\u2764\uFE0F'; }
+
+  /* ---- Open When letters ---- */
+  var LETTERS = [
+    ['\u2764\uFE0F', 'Jab mujhe yaad aaye', 'To ye sher parho —\n\nKabhi kabhi to khud ko bhi yaad na aaye,\ntumhare bina to dil kuch bhi na laage.\n\nEk kaam karo: mere sath bitayi hui koi acchi yaad yaad karo. Muskuraye? \u2764\uFE0F'],
+    ['\uD83E\uDEE0', 'Jab udaas ho', 'Suno — udaasi bhi guzar jati hai, bijli ki tarah chamakti hai aur guzar jati hai.\n\nAaj ka din aap ka nahi hai, kal ka to hai hi. Main hoon na? \uD83E\uDEE0'],
+    ['\uD83C\uDF19', 'Jab neend na aaye', 'Phone rakh do \uD83D\uDE0C\n\nAankhein band karo, soch wo cheez jis se dil ko sukoon mila — dheere dheere neend aa hi jayegi.\n\nShab ba khair \uD83C\uDF19'],
+    ['\uD83D\uDE04', 'Jab muskurane ka dil kare', 'Chalo ek raaz ki baat: aap ki muskurahat par sab ki nazar jati hai — aur ye sach hai.\n\nAaj muskurane ki wajah main hoon \uD83D\uDE04'],
+    ['\uD83D\uDC94', 'Jab din bura ho', 'Bura din aap ki kamiyaan nahi, bas taqdeer ka ek kadam hai.\n\nDeep breath. Paani piyo. Chaadar odho. Kal phir se — aur behtar. \uD83D\uDC94'],
+    ['\u2728', 'Jab pata karna ho main kaisa sochta hoon', 'Itna ke aap mil jao to din ka hisaab hi kuch aur ho jata hai.\n\nAam log se baat karna padta hai, aap se milna hota hai. \u2728'],
+    ['\uD83C\uDF1C', 'Jab raat ko hamari yaad aaye', 'Raat ki baat hai... sitare bhi aaj kal aap ka zikr karte hain \uD83C\uDF1C\n\nAb ankhein band karo — milte hain khwab mein.']
+  ];
+  function openWhen() {
+    modal2('\uD83D\uDCE8 Open When\u2026 Letters', function (c) {
+      var unlockedL = lsG('sq-openwhen-ok') === '1';
+      function render() {
+        c.querySelectorAll('.sq-ow-l').forEach(function (e) { e.remove(); });
+        LETTERS.forEach(function (L, i) {
+          var b = document.createElement('button');
+          b.className = 'sq-f-btn2 sq-ow-l'; b.type = 'button';
+          b.style.cssText += 'display:block;width:100%;text-align:left';
+          b.textContent = L[0] + ' Open when you ' + L[1];
+          b.onclick = function () {
+            if (!unlockedL) {
+              var pw = prompt('Ye letter kholne ke liye password likhein:');
+              if (pw === null) return;
+              if (pw.trim().toLowerCase() !== 'love') { alert('Ghalat password \u2014 dobara koshish karein.'); return; }
+              unlockedL = true; lsS('sq-openwhen-ok', '1'); render(); return;
+            }
+            modal2(L[0] + ' Open when you ' + L[1], function (cc) {
+              var body = document.createElement('div');
+              body.className = 'sq-f-big';
+              body.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif";
+              body.style.fontSize = '18px'; body.style.whiteSpace = 'pre-line'; body.style.direction = 'ltr';
+              body.textContent = L[2];
+              cc.appendChild(body);
+              var sig = document.createElement('div'); sig.style.cssText = 'text-align:center;font-size:12px;color:#e97b9c'; sig.textContent = '\u2014 Saqib \u2014';
+              cc.appendChild(sig);
+            });
+          };
+          c.appendChild(b);
+        });
+        var n = document.createElement('div'); n.className = 'sq-f-note sq-ow-l';
+        n.textContent = unlockedL ? 'Sab letters khule hain \u2764\uFE0F' : 'Letters ek password se khulte hain \u2014 wahi purana.';
+        c.appendChild(n);
+      }
+      render();
+    });
+  }
+
+  /* ---- Gift Boxes ---- */
+  function gifts() {
+    modal2('\uD83C\uDF81 Gift Boxes', function (c) {
+      var n = document.createElement('div'); n.className = 'sq-f-note';
+      n.textContent = 'Koi bhi box chunein \u2014 har ek mein ek surprise hai:';
+      c.appendChild(n);
+      var items = [
+        ['\uD83C\uDF81', 'Ek Sher', function () { return pickSher(); }],
+        ['\uD83D\uDC9C', 'Ek Tareef', function () { return 'Aap jaisa soch wala insaan kam hi dekha hai \u2014 sach mein.'; }],
+        ['\uD83D\uDD10', 'Ek Raaz', function () { return 'Raaz ye hai ke raaz ka koi raaz nahi \u2014 aap hi sab se acche hain \uD83D\uDE0C'; }],
+        ['\uD83E\uDD13', 'Ek Wada', function () { return 'Jo waqt aap ko mila, wo aap ka apna hai \u2014 dil se kamaya hua.'; }],
+        ['\uD83C\uDFB5', 'Ek Gaana', function () { return 'Music section kholo aur koi bhi Naat shuffle karo \u2014 aaj ka gaana maine aap ke liye chuna hai \uD83C\uDFB5'; }],
+        ['\uD83C\uDF1F', 'Ek Yaad', function () { return 'Wo purani baatein jo humne yahan likhi \u2014 Poetry section mein kabhi kabhi wahan jao, wahi hain.'; }],
+        ['\u2728', 'Aakhri Surprise', function () { return 'Surprise ye hai: aap tak ye sab pahunchne tak itna sab kuch ho gaya \u2014 aur ye to shuruaat hai. \u2728'; }]
+      ];
+      items.forEach(function (it, i) {
+        var b = document.createElement('button'); b.className = 'sq-f-btn2'; b.type = 'button';
+        b.style.cssText += 'display:inline-block;margin:4px';
+        b.textContent = it[0] + ' Box ' + (i + 1);
+        b.onclick = function () {
+          modal2('\uD83C\uDF81 Box ' + (i + 1) + ' \u2014 ' + it[1], function (cc) {
+            var body = document.createElement('div'); body.className = 'sq-f-big';
+            body.style.whiteSpace = 'pre-line'; body.textContent = it[2]();
+            cc.appendChild(body);
+          });
+        };
+        c.appendChild(b);
+      });
+    });
+  }
+
+  /* ---- Sher Roulette ---- */
+  function roulette() {
+    modal2('\uD83C\uDFB0 Sher Roulette', function (c) {
+      var res = document.createElement('div'); res.className = 'sq-f-big';
+      res.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif"; res.style.direction = 'rtl'; res.style.whiteSpace = 'pre-line';
+      res.textContent = '\uD83C\uDFB0 Spin dabayein\u2026';
+      var busy = false;
+      var b = document.createElement('button'); b.className = 'sq-f-btn'; b.type = 'button'; b.textContent = '\uD83C\uDFB0 Spin!';
+      b.onclick = function () {
+        if (busy) return; busy = true;
+        var frames = 0;
+        var iv = setInterval(function () {
+          res.textContent = pickSher();
+          if (++frames > 14) { clearInterval(iv); busy = false; }
+        }, 90);
+      };
+      c.appendChild(res); c.appendChild(b);
+    });
+  }
+
+  /* ---- Scratch Card (rozana naya) ---- */
+  var SCRATCH_MSGS = [
+    'Aaj ka raaz: aap se behtar koi nahi \u2764\uFE0F',
+    'Aaj apne aap par thoda extra hassan do \uD83D\uDE04',
+    'Jo aaj karna hai, aaram se \u2014 sab ho jayega \u2728',
+    'Koi yaad kar raha hai... shayad yahin kahin \uD83D\uDC9C',
+    'Aaj ki dua: sukoon aap ke sath rahe \uD83C\uDF19',
+    'Muskurahat sasti hai, asar gehra hai \uD83D\uDE04',
+    'Aaj sirf apna khayal rakho \u2014 bas \u2764\uFE0F'
+  ];
+  function scratch() {
+    var msg = SCRATCH_MSGS[dayIndex() % SCRATCH_MSGS.length];
+    modal2('\uD83C\uDFA7 Roz ka Scratch Card', function (c) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;height:130px;border-radius:12px;overflow:hidden;margin-top:10px';
+      var msg = document.createElement('div');
+      msg.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-size:16px;color:#f0c96a;background:#16161f';
+      msg.textContent = SCRATCH_MSGS[dayIndex() % SCRATCH_MSGS.length];
+      var cv = document.createElement('canvas');
+      cv.width = 380; cv.height = 130;
+      cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair';
+      var ctx = cv.getContext('2d');
+      ctx.fillStyle = '#2a2a35'; ctx.fillRect(0, 0, 380, 130);
+      ctx.fillStyle = '#6d675a'; ctx.font = '13px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('Yahan ragar dein \uD83D\uDC46', 190, 68);
+      var down = false, cleared = 0;
+      function scrub(e) {
+        if (!down) return;
+        var r = cv.getBoundingClientRect();
+        var x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+        var y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath(); ctx.arc(x * (380 / r.width), y * (130 / r.height), 18, 0, 7); ctx.fill();
+        cleared++;
+        if (cleared > 60) { cv.style.transition = 'opacity .6s'; cv.style.opacity = '0'; setTimeout(function () { cv.remove(); }, 650); }
+      }
+      cv.addEventListener('pointerdown', function (e) { down = true; scrub(e); });
+      cv.addEventListener('pointermove', scrub);
+      window.addEventListener('pointerup', function () { down = false; });
+      wrap.appendChild(msg); wrap.appendChild(cv);
+      c.appendChild(wrap);
+      var n = document.createElement('div'); n.className = 'sq-f-note';
+      n.textContent = 'Roz naya card \u2014 kal dobara kholein.';
+      c.appendChild(n);
+    });
+  }
+
+  /* ---- Raat / Subah ka Paigham ---- */
+  function daypart() {
+    var hr = new Date().getHours();
+    if (hr >= 5 && hr < 12) return ['\u2600\uFE0F', 'Good Morning', 'Naya din, nayi niyyat. Aaj ka target set karna na bhoolen \u2014 chhota sa hi sahi. \u2600\uFE0F'];
+    if (hr >= 12 && hr < 17) return ['\uD83C\uDF1E', 'Assalam o Alaikum', 'Dopahar ki thakan par paani piyo aur lamba saans lo. Aadha din aur bhi aap ka hai. \uD83C\uDF1E'];
+    if (hr >= 17 && hr < 21) return ['\uD83C\uDF07', 'Shaam mubarak', 'Shaam ki hawa mein sukoon hai \u2014 aaj ka din bhi guzar gaya, aap ne sambhal liya. \uD83C\uDF07'];
+    return ['\uD83C\uDF19', 'Shab ba khair', 'Sone se pehle ek baat: aaj ka din jo bhi raha, kal ka aap ka hai. Aankhein band karo \u2014 milte hain khwab mein. \uD83C\uDF19'];
+  }
+  function daypartMsg() {
+    var d = daypart();
+    modal2(d[0] + ' ' + d[1], function (c) {
+      var big = document.createElement('div'); big.className = 'sq-f-big';
+      big.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif";
+      big.textContent = d[2];
+      c.appendChild(big);
+      var n = document.createElement('div'); n.className = 'sq-f-note'; n.style.textAlign = 'center';
+      n.textContent = 'Waqt dekh kar apne aap badalta hai \u2014 subah, dopahar, shaam, raat.';
+      c.appendChild(n);
+    });
+  }
+
+  /* ---- Secret Vault ---- */
+  function vault() {
+    modal2('\uD83D\uDD10 Secret Vault', function (c) {
+      if (lsG('sq-vault-ok') === '1') { paint(); return; }
+      var q = document.createElement('div'); q.style.cssText = 'font-size:14px;margin-top:6px';
+      q.textContent = 'Yahan woh baat hai jo sab ke liye nahi. Jawab likhein:';
+      var inp = document.createElement('input'); inp.className = 'sq-f-in'; inp.type = 'password';
+      inp.placeholder = 'Jawab / password...'; inp.autocomplete = 'off';
+      var err = document.createElement('div'); err.style.cssText = 'color:#ff8f8f;font-size:12px;display:none';
+      err.textContent = 'Ye jawab nahi \u2014 dobara sochhein.';
+      var b = document.createElement('button'); b.className = 'sq-f-btn'; b.type = 'button'; b.textContent = 'Kholein';
+      b.onclick = function () {
+        if ((inp.value || '').trim().toLowerCase() === 'saqi') { lsS('sq-vault-ok', '1'); c.querySelectorAll('.sq-vq').forEach(function (e) { e.remove(); }); paint(); }
+        else err.style.display = 'block';
+      };
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') b.click(); });
+      [q, inp, err, b].forEach(function (e) { e.classList.add('sq-vq'); c.appendChild(e); });
+      function paint() {
+        c.querySelectorAll('.sq-vq').forEach(function (e) { e.remove(); });
+        var body = document.createElement('div'); body.className = 'sq-f-big';
+        body.style.whiteSpace = 'pre-line';
+        body.textContent = 'Vault khul gaya \uD83D\uDD13\n\nRaaz ki bhaanp laga li aap ne! Yahan aap kuch bhi rakh sakte hain \u2014 mujhe bolo, main isi jagah chhupa dunga. \uD83D\uDD10';
+        c.appendChild(body);
+        var lock = document.createElement('button'); lock.className = 'sq-f-btn2'; lock.type = 'button'; lock.textContent = 'Wapas band karein';
+        lock.onclick = function () { try { localStorage.removeItem('sq-vault-ok'); } catch (e) {} c.querySelectorAll('div,body'); var o = document.getElementById('sq-feat-ov'); if (o) o.remove(); };
+        c.appendChild(lock);
+      }
+    });
+  }
+
+  window.__sqHubFeature = function (key) {
+    if (key === 'openwhen') openWhen();
+    else if (key === 'gifts') gifts();
+    else if (key === 'roulette') roulette();
+    else if (key === 'scratch') scratch();
+    else if (key === 'daypart') daypartMsg();
+    else if (key === 'vault') vault();
+    else if (prev) prev(key);
+  };
 })();
