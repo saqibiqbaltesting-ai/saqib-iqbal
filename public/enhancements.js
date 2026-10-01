@@ -4248,10 +4248,10 @@
   }
   function apply(kind) {
     if (!fine) return;
-    var url = cursorPNG(kind);
+    if (kind === 'normal') { document.body.style.cursor = ''; trailOn = null; lsS('sq-cursor', 'normal'); return; }
+    var url = cursorPNG(kind === 'mix' ? 'ring' : kind);
     document.body.style.cursor = url ? 'url(' + url + ') 16 16, auto' : '';
     if (kind === 'mix') {
-      document.body.style.cursor = 'url(' + cursorPNG('ring') + ') 16 16, auto';
       trailOn = ['\u2728'];
     } else if (kind === 'sparkle') trailOn = ['\u2728', '\u2B50', '\uD83D\uDCAB'];
     else if (kind === 'heart') trailOn = ['\u2764\uFE0F', '\uD83D\uDC9C'];
@@ -4316,6 +4316,9 @@
     anchor.parentNode.insertBefore(b, anchor);
     return true;
   }
-  var tries = 0;
-  var iv = setInterval(function () { if (injectBtn() || ++tries > 40) { clearInterval(iv); if (fine) apply(lsG('sq-cursor') || 'normal'); } }, 1200);
+  var applied = false;
+  setInterval(function () {
+    var ok = injectBtn();
+    if (!applied && ok) { applied = true; if (fine) apply(lsG('sq-cursor') || 'normal'); }
+  }, 1200);
 })();
