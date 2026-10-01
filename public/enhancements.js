@@ -1873,9 +1873,13 @@
     listEl.className = 'sq-vmap-list';
     listEl.textContent = 'Load ho raha hai...';
     sec.appendChild(listEl);
-    var musicSec = q('#sq-music');
-    if (musicSec && musicSec.parentNode === parent) parent.insertBefore(sec, musicSec);
-    else parent.appendChild(sec);
+    var gallerySec = q('#gallery');
+    if (gallerySec && gallerySec.parentNode) gallerySec.parentNode.insertBefore(sec, gallerySec.nextSibling);
+    else {
+      var musicSec = q('#sq-music');
+      if (musicSec && musicSec.parentNode === parent) parent.insertBefore(sec, musicSec);
+      else parent.appendChild(sec);
+    }
 
     function render(geo) {
       listEl.innerHTML = '';
@@ -1932,7 +1936,7 @@
 
   /* ---- Aap ka Sher ---- */
   function buildUserSher() {
-    var host = q('#sq-music');
+    var host = q('#sq-hearts');
     if (!host || !host.parentNode) return false;
     if (q('#sq-user-sher')) return true;
     var sec = mkSec('sq-user-sher', '\u270D\uFE0F Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
@@ -1971,7 +1975,7 @@
     var listEl = document.createElement('div');
     listEl.className = 'sq-user-sher-list';
     sec.appendChild(listEl);
-    host.parentNode.insertBefore(sec, host);
+    host.parentNode.insertBefore(sec, host.nextSibling);
 
     var token = '';
     try { token = localStorage.getItem('portfolio-auth-token') || ''; } catch (e) {}
@@ -2051,7 +2055,7 @@
 
   /* ---- Deewar e Dil ---- */
   function buildHearts() {
-    var host = q('#sq-user-sher');
+    var host = q('#sq-visitor-map');
     if (!host || !host.parentNode) return false;
     if (q('#sq-hearts')) return true;
     var sec = mkSec('sq-hearts', '\u2764\uFE0F Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
@@ -2068,7 +2072,7 @@
     card.appendChild(big);
     card.appendChild(cnt);
     sec.appendChild(card);
-    host.parentNode.insertBefore(sec, host);
+    host.parentNode.insertBefore(sec, host.nextSibling);
     var sent = false;
     fetch('/v1/x/hearts').then(function (r) { return r.json(); }).then(function (d) { cnt.textContent = Number((d && d.count) || 0).toLocaleString(); }).catch(function () { cnt.textContent = '0'; });
     big.onclick = function () {
