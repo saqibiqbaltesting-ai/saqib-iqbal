@@ -1360,9 +1360,23 @@
         if (v) u.voice = v;
         u.onend = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; };
         sb.dataset.on = '1'; sb.innerHTML = '\u25B6 Sun raha hai...';
+        try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'sunai' })); } catch (e) {}
         window.speechSynthesis.speak(u);
       };
-      card.appendChild(sb);
+      var shBtn = document.createElement('button');
+      shBtn.type = 'button';
+      shBtn.className = 'sq-suno-btn sq-share-btn';
+      shBtn.innerHTML = '\u2197 WhatsApp';
+      shBtn.setAttribute('aria-label', 'Sher WhatsApp par share karein');
+      shBtn.onclick = function () {
+        var txt = sh.replace(/ \| /g, '\n') + '\n\n\u2014 Saqib Iqbal\nhttps://saqib-iqbal.vercel.app/';
+        window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+      };
+      var actRow = document.createElement('div');
+      actRow.className = 'sq-sher-actions';
+      actRow.appendChild(sb);
+      actRow.appendChild(shBtn);
+      card.appendChild(actRow);
       card.appendChild(p);
       sherGrid.appendChild(card);
     });
@@ -1586,7 +1600,7 @@
         if (cur < 0 || cur >= list().length) cur = 0;
         if (!els.nowPlaying.dataset.loaded || els.nowPlaying.dataset.loaded !== String(cur)) {
           playIndex(cur);
-        } else { player.playVideo(); playing = true; els.playBtn.textContent = '\u23F8'; }
+        } else { player.playVideo(); playing = true; els.playBtn.textContent = '\u23F8'; try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'music' })); } catch (e) {} }
       }
       els.nowPlaying.dataset.loaded = String(cur);
     } catch (e) { playIndex(cur); }
@@ -1706,6 +1720,18 @@
     ctr.appendChild(mkBtn('\u23ED', function () {
       var n = list().length; select((cur + 1) % n, true);
     }, false, 'Next'));
+    ctr.appendChild(mkBtn('\uD83C\uDFB2', function () {
+      var ci = Math.floor(Math.random() * CATS.length);
+      var c = CATS[ci];
+      active = c[0];
+      cur = Math.floor(Math.random() * list().length);
+      Array.prototype.forEach.call(tabs.children, function (x) { x.classList.remove('active'); });
+      tabs.children[ci].classList.add('active');
+      els.sub.textContent = c[2];
+      renderList(); updateRows();
+      select(cur, true);
+      try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'music' })); } catch (e) {}
+    }, false, 'Koi bhi chalao'));
     var volWrap = document.createElement('span');
     volWrap.className = 'sq-music-vol';
     volWrap.innerHTML = '\uD83D\uDD0A';
@@ -1900,5 +1926,281 @@
         fetch('/v1/x/visitor-geo', { method: 'POST' }).catch(function () {});
       }
     } catch (e) {}
+  }, 600);
+})();
+
+
+/* ===== Kit: Aap ka Sher + Deewar e Dil + Chhupay Badges ===== */
+(function () {
+  function q(s) { return document.querySelector(s); }
+  function mkSec(id, title, sub) {
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = id;
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>' + title + '</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = sub;
+    head.appendChild(p);
+    sec.appendChild(head);
+    return sec;
+  }
+
+  /* ---- Aap ka Sher ---- */
+  function buildUserSher() {
+    var host = q('#sq-music');
+    if (!host || !host.parentNode) return false;
+    if (q('#sq-user-sher')) return true;
+    var sec = mkSec('sq-user-sher', '\u270D\uFE0F Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
+    var card = document.createElement('div');
+    card.className = 'sq-user-sher-card';
+    var ta = document.createElement('textarea');
+    ta.className = 'sq-user-sher-ta';
+    ta.rows = '3';
+    ta.maxLength = 400;
+    ta.placeholder = 'Apna sher yahan likhein...';
+    ta.setAttribute('aria-label', 'Apna sher likhein');
+    card.appendChild(ta);
+    var row = document.createElement('div');
+    row.className = 'sq-user-sher-row';
+    var nm = document.createElement('input');
+    nm.type = 'text';
+    nm.className = 'sq-user-sher-name';
+    nm.maxLength = 40;
+    nm.placeholder = 'Aap ka naam (optional)';
+    nm.setAttribute('aria-label', 'Aap ka naam');
+    row.appendChild(nm);
+    try {
+      var au = JSON.parse(localStorage.getItem('portfolio-auth-local') || 'null');
+      if (au && au.name) nm.value = String(au.name).slice(0, 40);
+    } catch (e) {}
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'sq-user-sher-btn';
+    btn.textContent = 'Bhejein';
+    row.appendChild(btn);
+    card.appendChild(row);
+    var msg = document.createElement('p');
+    msg.className = 'sq-user-sher-msg';
+    card.appendChild(msg);
+    sec.appendChild(card);
+    var listEl = document.createElement('div');
+    listEl.className = 'sq-user-sher-list';
+    sec.appendChild(listEl);
+    host.parentNode.insertBefore(sec, host);
+
+    var token = '';
+    try { token = localStorage.getItem('portfolio-auth-token') || ''; } catch (e) {}
+    var isOwner = false;
+    try {
+      var au2 = JSON.parse(localStorage.getItem('portfolio-auth-local') || 'null');
+      isOwner = !!(au2 && au2.email && String(au2.email).toLowerCase() === 'fizanali6267@gmail.com');
+    } catch (e) {}
+
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function renderItem(el, s, pending) {
+      var it = document.createElement('div');
+      it.className = 'sq-user-sher-item';
+      it.innerHTML = '<p>' + esc(s.text) + '</p><span>' + esc(s.name) + (pending ? ' \u00B7 intezar e tarteeb' : '') + '</span>';
+      if (pending && isOwner) {
+        var br = document.createElement('div');
+        br.className = 'sq-user-sher-admin';
+        var ap = document.createElement('button');
+        ap.type = 'button'; ap.textContent = 'Approve'; ap.className = 'sq-user-sher-ap';
+        ap.onclick = function () {
+          fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'approve', id: s.id, token: token }) }).then(function () { it.remove(); });
+        };
+        var dl = document.createElement('button');
+        dl.type = 'button'; dl.textContent = 'Delete'; dl.className = 'sq-user-sher-dl';
+        dl.onclick = function () {
+          fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'delete', id: s.id, token: token }) }).then(function () { it.remove(); });
+        };
+        br.appendChild(ap); br.appendChild(dl);
+        it.appendChild(br);
+      }
+      el.appendChild(it);
+    }
+    function loadList() {
+      var url = isOwner ? '/v1/x/user-shers' : '/v1/x/user-shers';
+      fetch(url).then(function (r) { return r.json(); }).then(function (d) {
+        listEl.innerHTML = '';
+        var shers = (d && d.shers) || [];
+        if (!shers.length) {
+          var empty = document.createElement('p');
+          empty.className = 'sq-user-sher-empty';
+          empty.textContent = 'Abhi tak koi sher nahi aya — pehla sher aap bhejein!';
+          listEl.appendChild(empty);
+        }
+        shers.forEach(function (s) { renderItem(listEl, s, false); });
+        if (isOwner && token) {
+          fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'list-all', token: token }) }).then(function (r) { return r.json(); }).then(function (d2) {
+            if (d2 && d2.pending && d2.pending.length) {
+              var ph = document.createElement('h3');
+              ph.className = 'sq-user-sher-pendhead';
+              ph.textContent = 'Intezar mein (' + d2.pending.length + ') — sirf aap ko nazar aa rahe hain';
+              listEl.parentNode.insertBefore(ph, listEl);
+              d2.pending.forEach(function (s) { renderItem(listEl, s, true); });
+            }
+          }).catch(function () {});
+        }
+      }).catch(function () {});
+    }
+    btn.onclick = function () {
+      var text = ta.value.trim();
+      if (text.length < 10) { msg.textContent = 'Sher thora lamba likhein (kam az kam 10 hroof).'; return; }
+      btn.disabled = true;
+      fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'submit', sher: text, name: nm.value }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          btn.disabled = false;
+          if (d && d.ok) {
+            ta.value = '';
+            msg.textContent = 'Shukriya! Aap ka sher check ke baad yahan chhapega.';
+            try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'shair' })); } catch (e) {}
+          } else { msg.textContent = (d && d.error) || 'Kuch masla hua, dobara koshish karein.'; }
+        })
+        .catch(function () { btn.disabled = false; msg.textContent = 'Kuch masla hua, dobara koshish karein.'; });
+    };
+    loadList();
+    return true;
+  }
+
+  /* ---- Deewar e Dil ---- */
+  function buildHearts() {
+    var host = q('#sq-user-sher');
+    if (!host || !host.parentNode) return false;
+    if (q('#sq-hearts')) return true;
+    var sec = mkSec('sq-hearts', '\u2764\uFE0F Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
+    var card = document.createElement('div');
+    card.className = 'sq-hearts-card';
+    var big = document.createElement('button');
+    big.type = 'button';
+    big.className = 'sq-hearts-btn';
+    big.innerHTML = '\u2764\uFE0F';
+    big.setAttribute('aria-label', 'Dil lagayein');
+    var cnt = document.createElement('div');
+    cnt.className = 'sq-hearts-count';
+    cnt.textContent = '\u2026';
+    card.appendChild(big);
+    card.appendChild(cnt);
+    sec.appendChild(card);
+    host.parentNode.insertBefore(sec, host);
+    var sent = false;
+    fetch('/v1/x/hearts').then(function (r) { return r.json(); }).then(function (d) { cnt.textContent = Number((d && d.count) || 0).toLocaleString(); }).catch(function () { cnt.textContent = '0'; });
+    big.onclick = function () {
+      var f = document.createElement('span');
+      f.className = 'sq-heart-float';
+      f.textContent = '\u2764\uFE0F';
+      big.appendChild(f);
+      setTimeout(function () { f.remove(); }, 1200);
+      if (!sent) {
+        sent = true;
+        big.classList.add('done');
+        fetch('/v1/x/hearts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ add: 1 }) })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { cnt.textContent = Number((d && d.count) || 0).toLocaleString(); })
+          .catch(function () {});
+      }
+      try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'dil' })); } catch (e) {}
+    };
+    return true;
+  }
+
+  /* ---- Chhupay Badges ---- */
+  var BADGES = [
+    ['sunai', '\uD83D\uDD0A', 'Suno Star', 'Pehla sher sunein'],
+    ['music', '\uD83C\uDFB5', 'Music Lover', 'Music chalayen'],
+    ['dil', '\u2764\uFE0F', 'Dil Baat', 'Deewar e Dil par dil lagayen'],
+    ['shair', '\u270D\uFE0F', 'Shair e Azim', 'Apna sher bhejein'],
+    ['ghoomo', '\uD83E\uDD3D', 'Explorer', '5 sections dekhein']
+  ];
+  function earned() {
+    try { return JSON.parse(localStorage.getItem('sq-badges') || '[]'); } catch (e) { return []; }
+  }
+  function unlock(id) {
+    var have = earned();
+    if (have.indexOf(id) !== -1) return;
+    have.push(id);
+    try { localStorage.setItem('sq-badges', JSON.stringify(have)); } catch (e) {}
+    var b = null;
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i][0] === id) b = BADGES[i];
+    if (!b) return;
+    var t = document.createElement('div');
+    t.className = 'sq-badge-toast';
+    t.innerHTML = '<span>' + b[1] + '</span> Badge mila: <strong>' + b[2] + '</strong>';
+    document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('show'); }, 30);
+    setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 400); }, 3500);
+    renderTray();
+  }
+  document.addEventListener('sq-badge', function (e) { try { unlock(e.detail); } catch (err) {} });
+
+  function buildBadges() {
+    if (!document.body) return false;
+    if (q('#sq-badge-tray')) return true;
+    var tray = document.createElement('button');
+    tray.type = 'button';
+    tray.id = 'sq-badge-tray';
+    tray.innerHTML = '\uD83C\uDFC5';
+    tray.setAttribute('aria-label', 'Badges dekhein');
+    var seen = {};
+    BADGES.forEach(function (b) { seen[b[0]] = false; });
+    tray.onclick = function () {
+      var open = q('#sq-badge-panel');
+      if (open) { open.remove(); return; }
+      var panel = document.createElement('div');
+      panel.id = 'sq-badge-panel';
+      var have = earned();
+      var h = document.createElement('h3');
+      h.textContent = 'Aap ke Badges';
+      panel.appendChild(h);
+      BADGES.forEach(function (b) {
+        var got = have.indexOf(b[0]) !== -1;
+        var it = document.createElement('div');
+        it.className = 'sq-badge-item' + (got ? ' got' : '');
+        it.innerHTML = '<span>' + b[1] + '</span><div><strong>' + b[2] + '</strong><em>' + b[3] + '</em></div>';
+        panel.appendChild(it);
+      });
+      document.body.appendChild(panel);
+      setTimeout(function () { document.addEventListener('click', function close(ev) { if (!panel.contains(ev.target) && ev.target !== tray) { panel.remove(); document.removeEventListener('click', close); } }); }, 30);
+    };
+    document.body.appendChild(tray);
+    renderTray();
+    /* Explorer: distinct sections seen */
+    try {
+      var seenIds = {};
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          var id = en.target.id || 'anon';
+          if (id && !seenIds[id]) {
+            seenIds[id] = true;
+            var distinct = Object.keys(seenIds).filter(function (k) { return k !== 'anon'; }).length;
+            if (distinct >= 5) { unlock('ghoomo'); io.disconnect(); }
+          }
+        });
+      }, { threshold: 0.25 });
+      var watch = function () { document.querySelectorAll('section[id]').forEach(function (s) { io.observe(s); }); };
+      watch();
+      setTimeout(watch, 4000);
+    } catch (e) {}
+    return true;
+  }
+  function renderTray() {
+    var tray = q('#sq-badge-tray');
+    if (!tray) return;
+    var have = earned();
+    var n = BADGES.filter(function (b) { return have.indexOf(b[0]) !== -1; }).length;
+    tray.innerHTML = '\uD83C\uDFC5' + (n ? '<b>' + n + '</b>' : '');
+    tray.classList.toggle('has', n > 0);
+  }
+
+  var tries = 0;
+  var t = setInterval(function () {
+    tries++;
+    var a = buildUserSher(), b2 = buildHearts(), c = buildBadges();
+    if ((a && b2 && c) || tries > 75) clearInterval(t);
   }, 600);
 })();
