@@ -2575,7 +2575,7 @@
 
 /* ===== Section order (user-chosen): bio, achievements, My Memories, Poetry, Quote, Music, Aap ka Sher, [CV], Guestbook, Quiz, Q&A, Deewar e Dil, Contact ===== */
 (function reorderSections(){
-  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-music','music','sq-user-sher','sq-daily-sher','guestbook','quiz','qa','sq-hearts','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-github','sq-status','contact'];
+  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-music','music','sq-user-sher','sq-daily-sher','guestbook','quiz','qa','sq-hearts','sq-zone','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-github','sq-status','contact'];
   var tries = 0;
   var t = setInterval(function(){
     tries++;
@@ -3713,4 +3713,507 @@
     var r = e && e.reason;
     banner(r && r.message ? r.message : String(r).slice(0, 160));
   });
+})();
+
+/* ===== Kit: Saqib Zone section — 20 naye features (Dua se Khwab Tabeer tak) ===== */
+(function () {
+  'use strict';
+  if (window.__sqZoneInit) return;
+  window.__sqZoneInit = true;
+  function lsS(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsG(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsJ(k, d) { try { return JSON.parse(lsG(k)) || d; } catch (e) { return d; } }
+  function today() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function dayIndex() { var d = new Date(); return Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000) + d.getFullYear(); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function q(s) { return document.querySelector(s); }
+  function modal4(title, build) {
+    var old = document.getElementById('sq-feat-ov'); if (old) old.remove();
+    var ov = document.createElement('div'); ov.id = 'sq-feat-ov';
+    var card = document.createElement('div'); card.id = 'sq-feat-card';
+    var x = document.createElement('button'); x.className = 'sq-fx'; x.type = 'button'; x.innerHTML = '\u00D7';
+    x.setAttribute('aria-label', 'Band karein'); x.onclick = function () { ov.remove(); };
+    var h = document.createElement('h3'); h.textContent = title; h.appendChild(x);
+    card.appendChild(h); build(card);
+    ov.appendChild(card);
+    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+    document.body.appendChild(ov);
+  }
+  function btn(c, txt, fn, small) {
+    var b = document.createElement('button'); b.type = 'button';
+    b.className = small ? 'sq-f-btn2' : 'sq-f-btn'; b.textContent = txt; b.onclick = fn;
+    c.appendChild(b); return b;
+  }
+  function big(c, txt) { var d = document.createElement('div'); d.className = 'sq-f-big'; d.style.whiteSpace = 'pre-line'; d.style.textAlign = 'center'; d.textContent = txt; c.appendChild(d); return d; }
+  function note(c, txt) { var d = document.createElement('div'); d.className = 'sq-f-note'; d.textContent = txt; c.appendChild(d); return d; }
+  function burst(emojis, n) {
+    for (var i = 0; i < n; i++) {
+      (function (i) {
+        var s = document.createElement('div');
+        s.textContent = pick(emojis);
+        s.style.cssText = 'position:fixed;z-index:12999;pointer-events:none;bottom:-40px;left:' + (15 + Math.random() * 60) + '%;font-size:' + (16 + Math.random() * 20) + 'px;transition:transform 1.4s ease-out,opacity 1.4s';
+        document.body.appendChild(s);
+        setTimeout(function () { s.style.transform = 'translateY(-' + (300 + Math.random() * 250) + 'px) rotate(' + (Math.random() * 60 - 30) + 'deg)'; s.style.opacity = '0'; }, 30 + i * 50);
+        setTimeout(function () { s.remove(); }, 1800);
+      })(i);
+    }
+  }
+  var POETRY = window.__sqPoetryCats || [];
+  function sherPool() { var a = []; POETRY.forEach(function (c) { a = a.concat(c[3] || []); }); return a; }
+
+  /* 1 Dua Corner */
+  var DUAS = ['Ya Allah, meri har mushkil ko asani bana \u2014 aameen.', 'Aye mere Rub, mera dil ko sukoon de aur mere kaamon mein barkat \u2014 aameen.', 'Meri duayein qabool ho aur meri umeedein kam na ho \u2014 aameen.', 'Har din ka rizq, hifazat aur sehat ka shukriya \u2014 aameen.', 'Jo log mere liye dua karte hain unhe bhi khushyan dein \u2014 aameen.', 'Ilm mein izafa, dil mein noor \u2014 aameen.', 'Gham ko khushi mein badal dene wala tu hi hai \u2014 aameen.', 'Mere walidain par reham \u2014 aameen.'];
+  function dua() { var d = DUAS[dayIndex() % DUAS.length]; modal4('\uD83D\uDE4C Dua Corner \u2014 aaj ki dua', function (c) { var b = big(c, d); b.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif"; note(c, 'Roz nayi dua \u2014 dil se parhein.'); }); }
+
+  /* 2 Gulab Bhejo */
+  function gulab() {
+    modal4('\uD83C\uDF39 Gulab Bhejo', function (c) {
+      var n = big(c, (lsG('sq-roses') || '0') + ' \uD83C\uDF39');
+      var s = note(c, 'Gulab bhejte rahen \u2014 ginti mehfooz rehti hai.');
+      btn(c, '\uD83C\uDF39 Gulab bhejein', function () {
+        lsS('sq-roses', String((parseInt(lsG('sq-roses') || '0', 10) || 0) + 1));
+        n.textContent = lsG('sq-roses') + ' \uD83C\uDF39';
+        burst(['\uD83C\uDF39', '\uD83C\uDF39', '\u2764\uFE0F'], 6);
+      });
+    });
+  }
+
+  /* 3 Voice Note Corner */
+  function voice() {
+    modal4('\uD83C\uDF99\uFE0F Voice Note Corner', function (c) {
+      var rec = null, chunks = [], busy = false;
+      var status = note(c, 'Record dabayen \u2014 20 second tak awaz.');
+      var list = document.createElement('div'); list.style.marginTop = '8px';
+      function paint() {
+        list.innerHTML = '';
+        var notes = lsJ('sq-voice', []);
+        notes.forEach(function (nt, i) {
+          var a = document.createElement('audio'); a.controls = true; a.src = nt; a.style.cssText = 'width:100%;margin:4px 0';
+          var row = document.createElement('div');
+          row.appendChild(a);
+          var del = document.createElement('button'); del.type = 'button'; del.className = 'sq-f-btn2'; del.textContent = '\u2716';
+          del.onclick = function () { var ns = lsJ('sq-voice', []); ns.splice(i, 1); lsS('sq-voice', JSON.stringify(ns)); paint(); };
+          row.appendChild(del);
+          list.appendChild(row);
+        });
+      }
+      var b = btn(c, '\u23FA Record shuru', function () {
+        if (busy) return;
+        if (!rec) { status.textContent = 'Mic ki ijazat nahi mili.'; return; }
+        busy = true; chunks = [];
+        rec.start(); b.textContent = '\u23F9 Rukein (max 20s)';
+        var to = setTimeout(function () { if (rec.state === 'recording') rec.stop(); }, 20000);
+        rec.onstop = function () {
+          clearTimeout(to); busy = false; b.textContent = '\u23FA Record shuru';
+          var blob = new Blob(chunks, { type: 'audio/webm' });
+          var fr = new FileReader();
+          fr.onload = function () {
+            try {
+              var ns = lsJ('sq-voice', []); ns.push(fr.result); lsS('sq-voice', JSON.stringify(ns)); paint();
+            } catch (e) { status.textContent = 'Jaga nahi bachi \u2014 purana note delete karein.'; }
+          };
+          fr.readAsDataURL(blob);
+        };
+        b.onclick = function () { if (rec.state === 'recording') rec.stop(); b.onclick = arguments.callee ? b.onclick : null; location.hash = ''; btnRebind(); };
+        function btnRebind() { b.textContent = '\u23F9 Rukein'; b.onclick = function () { if (rec && rec.state === 'recording') rec.stop(); }; }
+      });
+      c.appendChild(list);
+      var notes = lsJ('sq-voice', []); paint();
+      if (!navigator.mediaDevices || !window.MediaRecorder) { status.textContent = 'Is browser mein recording nahi chalti.'; return; }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (str) {
+        rec = new MediaRecorder(str);
+        rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      }).catch(function () { status.textContent = 'Mic ki ijazat nahi mili \u2014 browser settings check karein.'; });
+    });
+  }
+
+  /* 4 Aaj ka Sabaq */
+  var SABAQ = ['Jo log doosron ke kaam aate hain, wo sab ke dil mein rehte hain.', 'Sach ki hamesha jeet hoti hai \u2014 waqt lagta hai magar hoti hai.', 'Shukar karne wala kam se kam nahi hota.', 'Ilm wo daulat hai jo kharch karne par barhti hai.', 'Maa ki dua jannat ki hawa hai.', 'Jo waqt ke qadar kare, waqt us ki qadar karta hai.', 'Neki chhupi bhi to phoolon jaisi mehak ati hai.', 'Sabr ka phal meetha hota hai.', 'Doosron ke liye dua karo \u2014 farishte likhte hain.', 'Koshish karne walo ki kabhi haar nahi hoti.'];
+  function sabaq() { modal4('\uD83D\uDCD6 Aaj ka Sabaq', function (c) { var b = big(c, SABAQ[dayIndex() % SABAQ.length]); b.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif"; note(c, 'Roz ek naya sabaq \u2014 dil par lagayein.'); }); }
+
+  /* 5 Nazar Utaro */
+  function nazar() {
+    modal4('\uD83E\uDDFF Nazar Utaro', function (c) {
+      var n = big(c, (lsG('sq-nazar') || '0') + ' \uD83E\uDDFF');
+      btn(c, '\uD83E\uDDFF Nazar utarein', function () {
+        lsS('sq-nazar', String((parseInt(lsG('sq-nazar') || '0', 10) || 0) + 1));
+        n.textContent = lsG('sq-nazar') + ' \uD83E\uDDFF';
+        burst(['\uD83E\uDDFF', '\u2728'], 5);
+      });
+      note(c, 'Buri nazar se hifazat \u2014 jitni martaba chahein.');
+    });
+  }
+
+  /* 6 Mystery Pass */
+  function mystery() {
+    modal4('\uD83C\uDFF0 Mystery Pass', function (c) {
+      var last = parseInt(lsG('sq-mystery-day') || '0', 10) || 0;
+      var diff = dayIndex() - last;
+      if (diff >= 7 || last === 0) {
+        lsS('sq-mystery-day', String(dayIndex()));
+        big(c, '\uD83C\uDF81 SPECIAL SURPRISE UNLOCKED!');
+        var s = big(c, Math.random() < .5 ? pick(sherPool()).replace(' | ', '\n') : 'Aap is website ki sab se khaas shakhsiyat hain \u2014 yahi asli surprise hai. \u2728');
+        s.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif";
+        note(c, 'Agla surprise 7 din baad \u2014 rozana aayen!');
+      } else {
+        big(c, '\uD83D\uDD12 Pass abhi band hai');
+        note(c, 'Surprise mein ' + (7 - diff) + ' din bache hain. Rozana aate rahen \u2014 jaldi khulega!');
+      }
+    });
+  }
+
+  /* 7 Soch Badlo */
+  var SOCH = ['Ye raat guzar jayegi \u2014 subah aap ki hai.', 'Jo aaj mushkil hai, kal wo aap ki taaqat ki kahani hogi.', 'Aap us se zyada strong hain jitna aap samajhte hain.', 'Chhote kadam bhi manzil hain \u2014 rukna manzil nahi.', 'Aaj bas ek achha kaam karein \u2014 baqi khud ba khud theek hoga.', 'Dil ko halka karna hai? Apni saans ko 4 ginti tak lein \u2014 4 rakhein \u2014 4 chhod dein.'];
+  function soch() { modal4('\uD83D\uDCAD Soch Badlo', function (c) { var d = big(c, '\u2728'); btn(c, '\uD83D\uDCAD Naya soch', function () { d.textContent = pick(SOCH); }); note(c, 'Jab udaasi bhaari lage \u2014 ek naya soch.'); }); }
+
+  /* 8 Sapno ka Naqsha */
+  function sapne() {
+    modal4('\uD83D\uDDFA\uFE0F Sapno ka Naqsha \u2014 bucket list', function (c) {
+      var inp = document.createElement('input'); inp.className = 'sq-f-in'; inp.placeholder = 'Ek sapna likhein...';
+      var list = document.createElement('div'); list.style.marginTop = '8px';
+      function paint() {
+        list.innerHTML = '';
+        lsJ('sq-sapne', []).forEach(function (s, i) {
+          var row = document.createElement('div');
+          row.style.cssText = 'display:flex;gap:6px;align-items:center;margin:4px 0';
+          var t = document.createElement('span'); t.textContent = '\u2B50 ' + s; t.style.cssText = 'flex:1;font-size:14px';
+          var del = document.createElement('button'); del.type = 'button'; del.className = 'sq-f-btn2'; del.textContent = '\u2716';
+          del.onclick = function () { var ns = lsJ('sq-sapne', []); ns.splice(i, 1); lsS('sq-sapne', JSON.stringify(ns)); paint(); };
+          row.appendChild(t); row.appendChild(del); list.appendChild(row);
+        });
+        if (!lsJ('sq-sapne', []).length) note(list, 'Abhi koi sapna nahi \u2014 pehla likhein!');
+      }
+      btn(c, '\u2B50 JAMA karein', function () { var v = (inp.value || '').trim(); if (!v) return; var ns = lsJ('sq-sapne', []); ns.push(v); lsS('sq-sapne', JSON.stringify(ns)); inp.value = ''; paint(); });
+      c.appendChild(inp); c.appendChild(list); paint();
+    });
+  }
+
+  /* 9 Namaz Check-in */
+  var NAMAZ = ['Fajr', 'Zohar', 'Asar', 'Maghrib', 'Isha'];
+  function namaz() {
+    modal4('\u26F3 Namaz Check-in', function (c) {
+      var key = 'sq-namaz-' + today();
+      var state = lsJ(key, [false, false, false, false, false]);
+      var done = big(c, '');
+      function paint() {
+        var count = state.filter(Boolean).length;
+        done.textContent = count + '/5 namazein \u2014 ' + (count === 5 ? '\u2728 MashaAllah, poora din!' : '');
+        list.innerHTML = '';
+        NAMAZ.forEach(function (nm, i) {
+          var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn2';
+          b.style.cssText += 'display:block;width:100%;text-align:left;margin:4px 0;opacity:' + (state[i] ? '.6' : '1');
+          b.textContent = (state[i] ? '\u2611 ' : '\u2610 ') + nm;
+          b.onclick = function () { state[i] = !state[i]; lsS(key, JSON.stringify(state)); paint(); };
+          list.appendChild(b);
+        });
+      }
+      var list = document.createElement('div');
+      c.appendChild(done); c.appendChild(list); paint();
+      note(c, 'Har namaz ke baad tick karein \u2014 hisaab rozana naya.');
+    });
+  }
+
+  /* 10 Rang Bharo */
+  var COLORS = ['#e97b9c', '#f0c96a', '#7bd4a0', '#7bb2e9', '#c48be9', '#ef8763'];
+  function rang() {
+    modal4('\uD83C\uDFA8 Rang Bharo', function (c) {
+      var g = document.createElement('div');
+      g.style.cssText = 'display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin-top:10px';
+      var ci = 0;
+      for (var i = 0; i < 64; i++) {
+        (function (i) {
+          var cell = document.createElement('div');
+          cell.style.cssText = 'aspect-ratio:1;border-radius:6px;background:#1c1c26;cursor:pointer';
+          cell.onclick = function () { cell.style.background = COLORS[ci % COLORS.length]; ci = (ci + 1) % COLORS.length; };
+          g.appendChild(cell);
+        })(i);
+      }
+      c.appendChild(g);
+      note(c, 'Har tap par naya rang \u2014 apna pattern banayein.');
+    });
+  }
+
+  /* 11 Yaad-e-Wasl */
+  function yaad() {
+    modal4('\uD83D\uDCC5 Yaad-e-Wasl', function (c) {
+      var inp = document.createElement('input'); inp.className = 'sq-f-in'; inp.placeholder = 'Khaas tareekh (2026-12-25) + naam...';
+      var list = document.createElement('div');
+      function paint() {
+        list.innerHTML = '';
+        lsJ('sq-yaad', []).forEach(function (m, i) {
+          var d = Math.ceil((new Date(m.date) - new Date()) / 86400000);
+          var row = document.createElement('div'); row.style.cssText = 'display:flex;gap:6px;align-items:center;margin:4px 0';
+          var t = document.createElement('span'); t.style.cssText = 'flex:1;font-size:14px';
+          t.textContent = '\u2764\uFE0F ' + m.name + ' \u2014 ' + (d > 0 ? d + ' din bache' : d === 0 ? 'AAJ KA DIN!' : Math.abs(d) + ' din ho gaye');
+          var del = document.createElement('button'); del.type = 'button'; del.className = 'sq-f-btn2'; del.textContent = '\u2716';
+          del.onclick = function () { var ns = lsJ('sq-yaad', []); ns.splice(i, 1); lsS('sq-yaad', JSON.stringify(ns)); paint(); };
+          row.appendChild(t); row.appendChild(del); list.appendChild(row);
+        });
+        if (!lsJ('sq-yaad', []).length) note(list, 'Koi tareekh add nahi \u2014 jaise koi khaas din.');
+      }
+      btn(c, '\u2764\uFE0F Add karein', function () {
+        var v = (inp.value || '').trim(); if (!v) return;
+        var mDate = v.match(/(\d{4}-\d{2}-\d{2})/);
+        var ns = lsJ('sq-yaad', []);
+        ns.push({ name: v.replace(/(\d{4}-\d{2}-\d{2})/, '').trim() || 'Khaas din', date: mDate ? mDate[1] : today() });
+        lsS('sq-yaad', JSON.stringify(ns)); inp.value = ''; paint();
+      });
+      c.appendChild(inp); c.appendChild(list); paint();
+      note(c, 'Format: tareekh likhein, phir naam \u2014 "2026-12-25 Birthday".');
+    });
+  }
+
+  /* 12 Palm Reader */
+  function palm() {
+    modal4('\uD83D\uDD2E Palm Reader \u2014 mazahiya', function (c) {
+      var out = big(c, '\u270B Haath rakhein aur dabayen...');
+      btn(c, '\u270B Haath parhein', function () {
+        out.textContent = pick([
+          'Aap ki kismat mein kamyabi likhi hai \u2014 bas thora sabr. \uD83C\uDF1F',
+          'Dil ka line kehta hai: koi khaas shakhs aap ke sath hai \u2014 yehi website uski nishani hai. \u2764\uFE0F',
+          'Zindagi ki lakeer seedhi nahi, magar hamesha oopar jati hai. \u2197\uFE0F',
+          'Aap jald apni mehnat ka phal dekhein ge \u2014 chhoti si khushkhabri aa rahi hai. \uD83C\uDF81',
+          'Hath par likha hai: aaj koi aisi baat sunenge jo dil khush kar de. \uD83C\uDFB5',
+          'Paiso ki line strong hai \u2014 halanki kharch bhi strong hai. \uD83D\uDE04'
+        ]);
+      });
+      note(c, 'Ye sirf mazah ke liye hai \u2014 asli taqdeer mehnat se banti hai.');
+    });
+  }
+
+  /* 13 Mood Radio */
+  function radio() {
+    modal4('\uD83C\uDFA7 Mood Radio', function (c) {
+      note(c, 'Mood chunein \u2014 Music section mein mulk ka best milta hai.');
+      var row = document.createElement('div'); row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px';
+      [['\uD83D\uDE04 Khushi', 'Naat'], ['\uD83D\uDE0C Sukoon', 'Tilawat'], ['\uD83E\uDD7A Udaasi', 'Qawwali']].forEach(function (m) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn2'; b.textContent = m[0];
+        b.onclick = function () {
+          var mus = q('#sq-music'); if (!mus) { alert('Music section nahi mila.'); return; }
+          var tabs = mus.querySelectorAll('.sq-poetry-tab'); var found = false;
+          tabs.forEach(function (t) { if (t.textContent.indexOf(m[1]) >= 0) { t.click(); found = true; } });
+          setTimeout(function () {
+            var tracks = mus.querySelectorAll('.sq-music-track');
+            if (tracks.length) tracks[Math.floor(Math.random() * tracks.length)].click();
+            var ov = document.getElementById('sq-feat-ov'); if (ov) ov.remove();
+          }, 450);
+        };
+        row.appendChild(b);
+      });
+      c.appendChild(row);
+    });
+  }
+
+  /* 14 Sandook */
+  function sandook() {
+    modal4('\uD83D\uDCDC Sandook \u2014 apni chithiyan', function (c) {
+      var inp = document.createElement('textarea');
+      inp.style.cssText = 'width:100%;min-height:70px;background:#0f0f16;color:#f0e6d2;border:1px solid #f0c96a55;border-radius:10px;padding:10px;font-size:14px;box-sizing:border-box';
+      inp.placeholder = 'Nayi chithi likhein (Sirf aap ke device par mehfooz)...';
+      var list = document.createElement('div');
+      function paint() {
+        list.innerHTML = '';
+        lsJ('sq-sandook', []).forEach(function (l, i) {
+          var row = document.createElement('div');
+          row.style.cssText = 'border:1px dashed #f0c96a55;border-radius:10px;padding:8px;margin:6px 0;font-size:13px;white-space:pre-line';
+          row.textContent = '\u2709 ' + l;
+          var del = document.createElement('button'); del.type = 'button'; del.className = 'sq-f-btn2'; del.textContent = '\u2716';
+          del.style.cssText += 'float:right';
+          del.onclick = function () { var ns = lsJ('sq-sandook', []); ns.splice(i, 1); lsS('sq-sandook', JSON.stringify(ns)); paint(); };
+          row.appendChild(del); list.appendChild(row);
+        });
+        if (!lsJ('sq-sandook', []).length) note(list, 'Sandook khali hai \u2014 pehli chithi likhein.');
+      }
+      btn(c, '\u2709 Sandook mein daalein', function () { var v = (inp.value || '').trim(); if (!v) return; var ns = lsJ('sq-sandook', []); ns.push(v); lsS('sq-sandook', JSON.stringify(ns)); inp.value = ''; paint(); });
+      c.appendChild(inp); c.appendChild(list); paint();
+    });
+  }
+
+  /* 15 Aadat Tracker */
+  function aadat() {
+    modal4('\uD83C\uDFC3 Aadat Tracker', function (c) {
+      var inp = document.createElement('input'); inp.className = 'sq-f-in'; inp.placeholder = 'Apni achhi aadat likhein (parhna / exercise)...';
+      var done = big(c, '');
+      var list = document.createElement('div');
+      function paint() {
+        var h = lsG('sq-aadat-name') || '';
+        if (!h) { done.textContent = 'Pehle aadat chunein.'; list.innerHTML = ''; return; }
+        var days = lsJ('sq-aadat', {});
+        var t = today();
+        if (!days[t]) days[t] = false;
+        var streak = 0; var d = new Date();
+        while (days[d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()]) { streak++; d.setDate(d.getDate() - 1); }
+        done.textContent = h + ' \u2014 streak: ' + streak + ' din \uD83D\uDD25';
+        list.innerHTML = '';
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn';
+        b.textContent = days[t] ? '\u2611 Aaj ho gaya' : '\u2610 Aaj ka tick lagayen';
+        b.onclick = function () { days[t] = !days[t]; lsS('sq-aadat', JSON.stringify(days)); paint(); };
+        list.appendChild(b);
+      }
+      btn(c, '\u2705 Aadat set karein', function () { var v = (inp.value || '').trim(); if (v) { lsS('sq-aadat-name', v); paint(); } });
+      c.appendChild(inp); c.appendChild(done); c.appendChild(list); paint();
+    });
+  }
+
+  /* 16 Zindagi ka Paimana */
+  function paimana() {
+    modal4('\uD83C\uDF08 Zindagi ka Paimana', function (c) {
+      var days = lsJ('sq-mood-w', {});
+      var t = today();
+      var row = document.createElement('div'); row.style.cssText = 'display:flex;gap:6px;justify-content:center;margin:10px 0';
+      var msg = big(c, '');
+      function paint() {
+        row.innerHTML = '';
+        for (var i = 1; i <= 5; i++) {
+          (function (i) {
+            var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn2';
+            b.textContent = ['', '\uD83D\uDE1E', '\uD83D\uDE10', '\uD83D\uDE0A', '\uD83D\uDE04', '\uD83E\uDD70'][i];
+            b.onclick = function () { days[t] = i; lsS('sq-mood-w', JSON.stringify(days)); paint(); };
+            if (days[t] === i) b.style.cssText += 'border-color:#f0c96a;color:#f0c96a';
+            row.appendChild(b);
+          })(i);
+        }
+        var g = document.createElement('div');
+        g.style.cssText = 'display:flex;gap:3px;align-items:flex-end;height:70px;justify-content:center;margin-top:8px';
+        var dt = new Date(); var bars = 0;
+        for (var k = 6; k >= 0; k--) {
+          var d2 = new Date(dt); d2.setDate(d2.getDate() - k);
+          var kk = d2.getFullYear() + '-' + (d2.getMonth() + 1) + '-' + d2.getDate();
+          var v = days[kk] || 0;
+          var bar = document.createElement('div');
+          bar.style.cssText = 'width:26px;background:' + (v ? '#f0c96a' : '#33333f') + ';height:' + (v ? v * 14 : 4) + 'px;border-radius:4px 4px 0 0';
+          bar.title = kk;
+          g.appendChild(bar); bars += v ? 1 : 0;
+        }
+        c.querySelectorAll('.sq-mood-graph').forEach(function (e) { e.remove(); });
+        g.className = 'sq-mood-graph';
+        msg.textContent = bars ? 'Is hafte ' + bars + '/7 din ka mood record hua.' : 'Aaj ka mood chunein \u2014 hafta bhar ka graph banega.';
+        c.appendChild(g);
+      }
+      c.appendChild(row); paint();
+    });
+  }
+
+  /* 17 Andaaz-e-Saqib */
+  function andaaz() {
+    modal4('\uD83C\uDFAD Andaaz \u2014 Sunehri Batein', function (c) {
+      var out = big(c, '\u201C...\u201D');
+      btn(c, '\uD83C\uDFAD Nayi baat', function () {
+        out.textContent = pick([
+          '\u201CJo dil se mile, wo dil jeet leta hai.\u201D',
+          '\u201CKamyabi wo nahi jo mil jaye \u2014 kamyabi wo hai jo milne par dil ko sukoon de.\u201D',
+          '\u201CSacha dost wo jo mauzood bhi ho aur majboor bhi na kare.\u201D',
+          '\u201CZindagi chhoti hai \u2014 bari baatein karo, pyar se.\u201D',
+          '\u201CJo mila us par shukar, jo mila us par khush \u2014 yehi asal daulat hai.\u201D'
+        ]);
+      });
+      note(c, 'Sunehri baatein \u2014 dil se nikali hui.');
+    });
+  }
+
+  /* 18 Himmat ka Khoont */
+  var HIMMAT = ['Sabh kuch theek ho jayega \u2014 hamesha hota hai.', 'Aap ne pehle bhi mushkil waqt dekha hai \u2014 aap ne haar nahi mani.', 'Aaj ka din aap ke khilaf hai, aap ke sath nahi.', 'Bas ek kadam \u2014 bas aaj ka kadam.', 'Aap akela nahi hain \u2014 koi yaad kar raha hai.', 'Rona bhi ibadat hai kabhi kabhi \u2014 phir uth kar himmat bhi.', 'Mushkilein aap ki taqdeer nahi, aap ka imtihan hai \u2014 aur aap pass honge.', 'Aaj bas sota jayen \u2014 kal subah sab kuch thora asan hoga.', 'Aap se bohat log pyar karte hain \u2014 bhool na jayen.', 'Ye din guzar jayega \u2014 aur aap zor se aayenge. \u2728'];
+  function himmat() {
+    modal4('\uD83D\uDEE1\uFE0F Himmat ka Khoont', function (c) {
+      var idx = 0;
+      var out = big(c, 'Tap karte jayen \u2014 himmat badhti jayegi');
+      btn(c, '\uD83D\uDEE1\uFE0F Ek khoont aur', function () {
+        out.textContent = HIMMAT[idx % HIMMAT.length];
+        idx++;
+      });
+    });
+  }
+
+  /* 19 Sher Puzzle */
+  function puzzle() {
+    modal4('\uD83E\uDDE9 Sher Puzzle', function (c) {
+      var target = pick(sherPool());
+      var parts = target.split(' | ');
+      var line = parts[0] || target;
+      var words = line.split(' ').filter(Boolean);
+      var answer = [];
+      var status = note(c, 'Alfaaz par tap karein \u2014 tarteeb banayen.');
+      var answerBox = document.createElement('div');
+      answerBox.style.cssText = 'min-height:44px;border:1px dashed #f0c96a66;border-radius:10px;padding:8px;margin:8px 0;font-family:\'Noto Nastaliq Urdu\',\'Gulzar\',serif;font-size:18px;direction:rtl;text-align:center';
+      var bank = document.createElement('div');
+      bank.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;justify-content:center';
+      var shuffled = words.slice().sort(function () { return Math.random() - .5; });
+      var buttons = [];
+      function paintAnswer() {
+        answerBox.textContent = answer.map(function (w) { return w.w; }).join(' ');
+        bank.querySelectorAll('button').forEach(function (b, i) { b.style.display = answer.some(function (a) { return a.i === i; }) ? 'none' : ''; });
+        if (answer.length === words.length) {
+          var ok = answer.map(function (a) { return a.w; }).join(' ') === line;
+          status.textContent = ok ? '\u2728 Sahi! Zabardast!' : '\u2716 Ghalat tarteeb \u2014 Reset karein.';
+        } else status.textContent = 'Alfaaz par tap karein \u2014 tarteeb banayen.';
+      }
+      shuffled.forEach(function (w, i) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn2';
+        b.style.cssText += 'font-family:\'Noto Nastaliq Urdu\',\'Gulzar\',serif;font-size:16px';
+        b.textContent = w;
+        b.onclick = function () { answer.push({ w: w, i: i }); paintAnswer(); };
+        buttons.push(b); bank.appendChild(b);
+      });
+      btn(c, '\u21BA Reset', function () { answer = []; paintAnswer(); });
+      c.appendChild(answerBox); c.appendChild(bank);
+      paintAnswer();
+    });
+  }
+
+  /* 20 Khwab Tabeer */
+  function khwab() {
+    modal4('\uD83C\uDF20 Khwab Tabeer \u2014 mazahiya', function (c) {
+      var inp = document.createElement('input'); inp.className = 'sq-f-in'; inp.placeholder = 'Apna khwab likhein...';
+      var out = big(c, '');
+      btn(c, '\uD83C\uDF20 Tabeer batayen', function () {
+        var v = (inp.value || '').trim();
+        if (!v) { out.textContent = 'Pehle khwab likhein :)'; return; }
+        out.textContent = pick([
+          '\u201C' + v.slice(0, 40) + '\u201D \u2014 iska matlab: koi khaas shakhs aap ke bare mein soch raha hai. \uD83D\uDC9C',
+          'Ye khwab khushi ki nishani hai \u2014 jald achhi khabar milegi. \u2728',
+          'Iska tabeer: aap ka dil sukoon chahta hai \u2014 aaj aaram karein. \uD83C\uDF19',
+          'Tabeer: safar mein barkat \u2014 koi purana dost yaad karega. \uD83D\uDCDE',
+          'Ye khwab kehta hai: mushkil asan ho rahi hai \u2014 himmat na harein. \uD83C\uDF1F'
+        ]) + ' (Mazahiya tabeer \u2014 asli ilm sirf Allah ko hai.)';
+      });
+      c.appendChild(inp); c.appendChild(out);
+      note(c, 'Sirf maza ke liye \u2014 haqeeqi ilm sirf Allah ke pass hai.');
+    });
+  }
+
+  var ZONE_TILES = [
+    ['\uD83D\uDE4C', 'Dua Corner', dua], ['\uD83C\uDF39', 'Gulab Bhejo', gulab], ['\uD83C\uDF99\uFE0F', 'Voice Note', voice],
+    ['\uD83D\uDCD6', 'Aaj ka Sabaq', sabaq], ['\uD83E\uDDFF', 'Nazar Utaro', nazar], ['\uD83C\uDFF0', 'Mystery Pass', mystery],
+    ['\uD83D\uDCAD', 'Soch Badlo', soch], ['\uD83D\uDDFA\uFE0F', 'Sapno ka Naqsha', sapne], ['\u26F3', 'Namaz Check-in', namaz],
+    ['\uD83C\uDFA8', 'Rang Bharo', rang], ['\uD83D\uDCC5', 'Yaad-e-Wasl', yaad], ['\uD83D\uDD2E', 'Palm Reader', palm],
+    ['\uD83C\uDFA7', 'Mood Radio', radio], ['\uD83D\uDCDC', 'Sandook', sandook], ['\uD83C\uDFC3', 'Aadat Tracker', aadat],
+    ['\uD83C\uDF08', 'Zindagi ka Paimana', paimana], ['\uD83C\uDFAD', 'Andaaz', andaaz], ['\uD83D\uDEE1\uFE0F', 'Himmat ka Khoont', himmat],
+    ['\uD83E\uDDE9', 'Sher Puzzle', puzzle], ['\uD83C\uDF20', 'Khwab Tabeer', khwab]
+  ];
+  function build() {
+    if (q('#sq-zone')) return true;
+    var host = q('#sq-hearts');
+    if (!host || !host.parentNode) return false;
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec'; sec.id = 'sq-zone';
+    var head = document.createElement('div'); head.className = 'section-header';
+    head.innerHTML = '<h2>13 \u2014 Saqib Zone</h2>';
+    var p = document.createElement('p'); p.className = 'sq-sec-sub';
+    p.textContent = '20 khaas cheezein \u2014 dua, khushyan, khel aur maza';
+    head.appendChild(p); sec.appendChild(head);
+    var grid = document.createElement('div');
+    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:6px';
+    ZONE_TILES.forEach(function (t) {
+      var tile = document.createElement('button');
+      tile.type = 'button'; tile.className = 'sq-hub-tile';
+      tile.innerHTML = '<span>' + t[0] + '</span>' + t[1];
+      tile.onclick = function () { t[2](); };
+      grid.appendChild(tile);
+    });
+    sec.appendChild(grid);
+    host.parentNode.insertBefore(sec, host.nextSibling);
+    return true;
+  }
+  var tries = 0;
+  var iv = setInterval(function () { if (build() || ++tries > 50) clearInterval(iv); }, 1200);
 })();
