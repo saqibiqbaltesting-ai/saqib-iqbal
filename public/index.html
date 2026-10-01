@@ -23,7 +23,10 @@
   <meta name="theme-color" content="#0b0709" />
 
     <link rel="stylesheet" href="main.css">
-  <style>html{background:var(--bg,#070509)}body{background:var(--bg,#070509)}</style></head>
+  <style>html{background:var(--bg,#070509)}body{background:var(--bg,#070509)}
+/* Kit: top bar — 5 items (3 socials + lang + theme) on one straight line; VIP label lower */
+.social-row{position:fixed!important;top:calc(max(12px,env(safe-area-inset-top)) + 9px)!important;inset-inline-start:152px!important;inset-inline-end:auto!important;left:152px!important;right:auto!important;gap:5px!important;z-index:100}
+.hero-top{padding-top:24px}</style></head>
 <body>
   <div id="app"><div style="color:#8a7f85;font:13px system-ui;padding:24px;text-align:center">Loading…</div></div>
   <script>
