@@ -3078,8 +3078,6 @@
   var last = null;
   setInterval(function () {
     var gate = !document.getElementById('bio') && !document.getElementById('achievements');
-    if (gate === last) return;
-    last = gate;
     ['sq-app-btn', 'sq-mode-btn'].forEach(function (id) {
       var e = document.getElementById(id);
       if (e) e.style.display = gate ? 'none' : '';
