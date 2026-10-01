@@ -2222,7 +2222,7 @@
     head.innerHTML = '<h3>\uD83C\uDFE0 Saqib World</h3>';
     var sub = document.createElement('p');
     sub.className = 'sq-hub-sub';
-    sub.textContent = 'Saqib ka poora world \u2014 sab kuch ek jagah';
+    sub.textContent = 'Saqib ki duniya \u2014 dekho, suno, enjoy karo';
     head.appendChild(sub);
     var x = document.createElement('button');
     x.type = 'button'; x.className = 'sq-hub-close'; x.innerHTML = '\u00D7';
