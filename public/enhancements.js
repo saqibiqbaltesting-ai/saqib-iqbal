@@ -106,7 +106,7 @@
     if (!lsGet('sq-cookie-ok')) {
       var ck = document.createElement('div');
       ck.id = 'sq-cookie';
-      ck.innerHTML = '<span>&#127871; Ye website aap ka behtar tajurba dene ke liye chhoti cookies use karti hai.</span>';
+      ck.innerHTML = '<span>&#127871; Ye website chhoti cookies use karti hai.</span>';
       var ok = document.createElement('button');
       ok.type = 'button';
       ok.textContent = 'Theek hai';
@@ -114,7 +114,6 @@
       ck.appendChild(ok);
       document.body.appendChild(ck);
       setTimeout(function () { try { if (document.contains(ck) && !lsGet('sq-cookie-ok')) return; } catch (e) {} }, 20000);
-      setTimeout(function () { try { ck.remove(); } catch (e) {} }, 30000);
     }
   } catch (e) {}
 
