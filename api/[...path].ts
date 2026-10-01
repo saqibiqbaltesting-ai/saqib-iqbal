@@ -118,7 +118,12 @@ async function handle(req: Request): Promise<Response> {
   const res = await fn(callReq);
   // login/chat touch only the users file — persist just that (fast), skip read-only actions
   if (req.method === "POST") {
-    if (action === "login") await persistData(["portfolio-users.json"]);
+    // login/signup/forgot/delete only touch the users file — persist just that.
+    // A full persistData() here fires ~12 parallel PUTs to the GitHub Contents
+    // API on every signup, which trips GitHub's secondary rate limits and made
+    // portfolio-users.json silently fail to save (accounts vanished after signup).
+    const USERS_ONLY = new Set(["login", "signup", "forgot", "delete-account"]);
+    if (USERS_ONLY.has(action)) await persistData(["portfolio-users.json"]);
     else if (!READ_ONLY_ACTIONS.has(action) && name !== "chat") await persistData();
   }
   return res;
