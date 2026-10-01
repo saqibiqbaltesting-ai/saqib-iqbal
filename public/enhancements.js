@@ -4312,6 +4312,11 @@
     b.innerHTML = '<span style="font-size:14px" aria-hidden="true">\uD83D\uDDBC\uFE0F</span>';
     b.setAttribute('aria-label', 'Cursor change karein');
     b.title = 'Cursor chunein';
+    try {
+      var cs = window.getComputedStyle(anchor);
+      ['width','height','border-radius','background','border','box-shadow','color','font-size','line-height','display','align-items','justify-content','padding','margin'].forEach(function (p) { b.style[p] = cs[p]; });
+      b.style.flexShrink = '0';
+    } catch (e) {}
     b.onclick = picker;
     anchor.parentNode.insertBefore(b, anchor);
     return true;
