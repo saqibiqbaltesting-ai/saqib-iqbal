@@ -1322,6 +1322,14 @@
     return sec;
   }
 
+  /* Kit: voices pehle se load karao — Chrome pehli click par khamosh reh jata tha */
+  if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = function () { window.speechSynthesis.getVoices(); };
+    } catch (e) {}
+  }
+
   function renderShers() {
     var cat = CATS.filter(function (c) { return c[0] === active; })[0] || CATS[0];
     sherGrid.innerHTML = '';
@@ -1350,18 +1358,23 @@
       sb.setAttribute('aria-label', 'Sher sunein');
       sb.onclick = function () {
         if (!window.speechSynthesis) { sb.textContent = 'Sunna mojood nahi'; return; }
-        if (sb.dataset.on === '1') { window.speechSynthesis.cancel(); sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; return; }
-        Array.prototype.forEach.call(document.querySelectorAll('.sq-suno-btn'), function (b) { if (b !== sb) { b.dataset.on = ''; b.innerHTML = '\uD83D\uDD0A Suno'; } });
-        window.speechSynthesis.cancel();
+        var SYN = window.speechSynthesis;
+        if (sb.dataset.on === '1') { SYN.cancel(); sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; return; }
+        Array.prototype.forEach.call(document.querySelectorAll('.sq-suno-btn'), function (b) { if (b !== sb && !b.classList.contains('sq-share-btn')) { b.dataset.on = ''; b.innerHTML = '\uD83D\uDD0A Suno'; } });
+        SYN.cancel();
+        try { SYN.resume(); } catch (e) {}
         var u = new SpeechSynthesisUtterance(sh.replace(/ \| /g, ', ').replace(/[^\u0600-\u06FF\s\u060C\u061F.!]/g, ''));
-        u.lang = 'ur-PK'; u.rate = 0.92;
-        var vs = window.speechSynthesis.getVoices();
-        var v = vs.filter(function (vv) { return /^ur/i.test(vv.lang); })[0] || vs.filter(function (vv) { return /^hi/i.test(vv.lang); })[0];
+        u.lang = 'ur-PK'; u.rate = 0.92; u.volume = 1;
+        var vs = SYN.getVoices();
+        var v = vs.filter(function (vv) { return /^ur/i.test(vv.lang) || /urdu/i.test(vv.name); })[0] || vs.filter(function (vv) { return /^hi/i.test(vv.lang); })[0] || vs.filter(function (vv) { return /^ar/i.test(vv.lang); })[0];
         if (v) u.voice = v;
         u.onend = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; };
+        u.onerror = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Awaz nahi ban saki'; setTimeout(function () { sb.innerHTML = '\uD83D\uDD0A Suno'; }, 2500); };
+        window.__sqSherUtterance = u; /* Kit: GC se bachao — Chrome pehli click par khamosh ho jata tha */
         sb.dataset.on = '1'; sb.innerHTML = '\u25B6 Sun raha hai...';
         try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'sunai' })); } catch (e) {}
-        window.speechSynthesis.speak(u);
+        SYN.speak(u);
+        try { SYN.resume(); } catch (e) {}
       };
       var shBtn = document.createElement('button');
       shBtn.type = 'button';
