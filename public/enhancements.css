@@ -298,3 +298,7 @@ body.sq-dock-open #sq-hub-btn{bottom:306px}
 
 /* Rating widget removed on user request */
 #sq-rating{display:none!important}
+
+/* See more / See less button under collapsed playlist */
+.sq-music-more{margin:10px auto 0;display:block;padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink);font-size:12.5px;cursor:pointer;transition:border-color .2s ease,color .2s ease}
+.sq-music-more:hover{border-color:var(--accent);color:var(--sq-accent,#f0c96a)}
