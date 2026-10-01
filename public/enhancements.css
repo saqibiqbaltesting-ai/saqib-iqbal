@@ -302,3 +302,10 @@ body.sq-dock-open #sq-hub-btn{bottom:306px}
 /* See more / See less button under collapsed playlist */
 .sq-music-more{margin:10px auto 0;display:block;padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink);font-size:12.5px;cursor:pointer;transition:border-color .2s ease,color .2s ease}
 .sq-music-more:hover{border-color:var(--accent);color:var(--sq-accent,#f0c96a)}
+
+/* Poetry: Sher aur Ghazal — alag alag clear panels (Memories pattern) */
+#sq-poetry-sher,#sq-poetry-ghazal{padding:26px 0 10px;border-top:1px dashed var(--line)}
+#sq-poetry-sher>.section-header,#sq-poetry-ghazal>.section-header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+#sq-poetry-sher .section-header h2,#sq-poetry-ghazal .section-header h2{font-size:clamp(22px,5vw,28px);color:var(--accent);font-style:italic}
+#sq-poetry-sher .section-header .sq-sec-sub,#sq-poetry-ghazal .section-header .sq-sec-sub{margin:0}
+#sq-poetry-ghazal{margin-top:26px}
