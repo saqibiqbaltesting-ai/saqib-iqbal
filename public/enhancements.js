@@ -1446,7 +1446,7 @@
     wrap.id = 'sq-poetry';
     var whead = document.createElement('div');
     whead.className = 'section-header';
-    whead.innerHTML = '<span class="mono-label">05 \u2014 Poetry</span>';
+    whead.innerHTML = '<span class="mono-label">04 \u2014 Poetry</span>';
     var wsub = document.createElement('p');
     wsub.className = 'contact-sub';
     wsub.textContent = 'Sher aur Ghazal — ek hi chhat ke neeche';
@@ -1976,7 +1976,7 @@
     var host = q('#sq-hearts');
     if (!host || !host.parentNode) return false;
     if (q('#sq-user-sher')) return true;
-    var sec = mkSec('sq-user-sher', '09 \u2014 Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
+    var sec = mkSec('sq-user-sher', '07 \u2014 Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
     var card = document.createElement('div');
     card.className = 'sq-user-sher-card';
     var ta = document.createElement('textarea');
@@ -2096,7 +2096,7 @@
     if (host) host = { parentNode: host.parentNode, nextSibling: host.nextSibling };
     if (!host || !host.parentNode) return false;
     if (q('#sq-hearts')) return true;
-    var sec = mkSec('sq-hearts', '08 \u2014 Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
+    var sec = mkSec('sq-hearts', '12 \u2014 Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
     var card = document.createElement('div');
     card.className = 'sq-hearts-card';
     var big = document.createElement('button');
@@ -2321,4 +2321,23 @@
   }
   var tries = 0;
   var t = setInterval(function () { tries++; if (build() || tries > 40) clearInterval(t); }, 600);
+})();
+
+/* ===== Section order (user-chosen): bio, achievements, My Memories, Poetry, Quote, Music, Aap ka Sher, [CV], Guestbook, Quiz, Q&A, Deewar e Dil, Contact ===== */
+(function reorderSections(){
+  var ORDER = ['bio','achievements','gallery','sq-daily-sher','sq-poetry','quote','sq-music','music','sq-user-sher','guestbook','quiz','qa','sq-hearts','contact'];
+  var tries = 0;
+  var t = setInterval(function(){
+    tries++;
+    var secs = [];
+    for (var i = 0; i < ORDER.length; i++) {
+      var el = document.getElementById(ORDER[i]);
+      if (!el) { if (tries > 90) clearInterval(t); return; }
+      secs.push(el);
+    }
+    clearInterval(t);
+    for (var j = 0; j < secs.length; j++) {
+      try { secs[j].parentNode.appendChild(secs[j]); } catch (e) {}
+    }
+  }, 600);
 })();
