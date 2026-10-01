@@ -1432,6 +1432,7 @@
       if (r !== false || tries > 60) clearInterval(t);
     } catch (e) { try { clearInterval(t); } catch (x) {} }
   }, 600);
+  window.__sqPoetryCats = CATS;
 })();
 
 
@@ -1735,5 +1736,145 @@
       var r = build();
       if (r !== false || tries > 70) clearInterval(t);
     } catch (e) { try { clearInterval(t); } catch (x) {} }
+  }, 600);
+})();
+
+
+/* ===== Kit: Roz ka Sher + Hire-Me WhatsApp + Visitor Map ===== */
+(function dailySher(){
+  function q(s){ return document.querySelector(s); }
+  var tries = 0;
+  var t = setInterval(function(){
+    tries++;
+    var cats = window.__sqPoetryCats;
+    var host = q('.hero');
+    if (!host || !host.parentNode) return;
+    var parent = host.parentNode;
+    if (parent.querySelector('#sq-daily-sher')) { clearInterval(t); return; }
+    if (!cats && tries > 40) { clearInterval(t); return; }
+    if (!cats) return;
+    clearInterval(t);
+    var pool = [];
+    cats.forEach(function(c){ c[3].forEach(function(sh){ pool.push({ sher: sh, cat: c[2] }); }); });
+    if (!pool.length) return;
+    var day = Math.floor(Date.now() / 86400000);
+    var pick = pool[day % pool.length];
+    var parts = pick.sher.split(' | ');
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = 'sq-daily-sher';
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>\uD83C\uDFB2 Roz ka Sher</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = 'Har roz ek naya sher — aaj: ' + pick.cat;
+    head.appendChild(p);
+    sec.appendChild(head);
+    var card = document.createElement('div');
+    card.className = 'sq-daily-card';
+    var txt = document.createElement('p');
+    txt.className = 'sq-daily-text';
+    var l1 = document.createElement('span'); l1.textContent = parts[0] || pick.sher;
+    txt.appendChild(l1);
+    if (parts[1]) {
+      txt.appendChild(document.createElement('br'));
+      var l2 = document.createElement('span'); l2.textContent = parts[1];
+      txt.appendChild(l2);
+    }
+    card.appendChild(txt);
+    sec.appendChild(card);
+    var sherSec = q('#sq-poetry-sher');
+    if (sherSec && sherSec.parentNode === parent) parent.insertBefore(sec, sherSec);
+    else parent.insertBefore(sec, host.nextSibling);
+  }, 600);
+})();
+
+(function hireMe(){
+  var WA = '923134182952';
+  var msg = encodeURIComponent('Assalam o Alaikum! Main aapki website dekhi — mujhe apne kaam ke baray mein batana tha.');
+  var tries = 0;
+  var t = setInterval(function(){
+    tries++;
+    if (document.getElementById('sq-hire-btn')) { clearInterval(t); return; }
+    if (!document.body || tries > 40) { if (tries > 40) clearInterval(t); return; }
+    clearInterval(t);
+    var a = document.createElement('a');
+    a.id = 'sq-hire-btn';
+    a.href = 'https://wa.me/' + WA + '?text=' + msg;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.className = 'sq-hire-btn';
+    a.setAttribute('aria-label', 'WhatsApp par rabta karein');
+    a.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1-.3-.1-1.1-.4-2-1.2-.8-.7-1.3-1.5-1.4-1.8-.2-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.3 0-.5l-.8-1.8c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.7 2.7 4.2 3.7.6.2 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3z" fill="#fff"/></svg><span>Kaam poochein?</span>';
+    document.body.appendChild(a);
+  }, 600);
+})();
+
+(function visitorMap(){
+  function q(s){ return document.querySelector(s); }
+  var tries = 0;
+  var t = setInterval(function(){
+    tries++;
+    var host = q('.hero');
+    if (!host || !host.parentNode) return;
+    var parent = host.parentNode;
+    if (parent.querySelector('#sq-visitor-map')) { clearInterval(t); return; }
+    if (tries > 50) { clearInterval(t); return; }
+    clearInterval(t);
+
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = 'sq-visitor-map';
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>\uD83C\uDF0D Visitor Map</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = 'Log kahan se aa rahe hain — shehar aur mulk';
+    head.appendChild(p);
+    sec.appendChild(head);
+    var mapDiv = document.createElement('div');
+    mapDiv.id = 'sq-vmap-canvas';
+    sec.appendChild(mapDiv);
+    var listEl = document.createElement('div');
+    listEl.className = 'sq-vmap-list';
+    listEl.textContent = 'Load ho raha hai...';
+    sec.appendChild(listEl);
+    var musicSec = q('#sq-music');
+    if (musicSec && musicSec.parentNode === parent) parent.insertBefore(sec, musicSec);
+    else parent.appendChild(sec);
+
+    function render(geo) {
+      listEl.innerHTML = '';
+      if (!geo || !geo.length) { listEl.innerHTML = '<span class="sq-vmap-item">Abhi tak koi entry nahin — aap pehle hain! \uD83C\uDF1F</span>'; return; }
+      geo.slice(0, 40).forEach(function (g) {
+        var s = document.createElement('span');
+        s.className = 'sq-vmap-item';
+        var place = g.city && g.city !== 'Unknown' ? g.city : (g.country || 'Namaloom');
+        s.textContent = '\uD83D\uDCCD ' + place + (g.country ? ', ' + g.country : '') + ' \u00D7' + g.n;
+        listEl.appendChild(s);
+      });
+      if (window.L && document.getElementById('sq-vmap-canvas')) {
+        try {
+          var map = L.map('sq-vmap-canvas', { scrollWheelZoom: false, attributionControl: true });
+          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '\u00A9 OpenStreetMap' }).addTo(map);
+          var pts = geo.filter(function (g) { return g.lat || g.lon; });
+          if (pts.length) {
+            pts.forEach(function (g) { L.circleMarker([g.lat, g.lon], { radius: 4 + Math.min(10, g.n), color: '#db4b77', fillColor: '#db4b77', fillOpacity: .75 }).addTo(map).bindTooltip((g.city || '') + (g.country ? ', ' + g.country : '') + ' \u00D7' + g.n); });
+            map.fitBounds(pts.map(function (g) { return [g.lat, g.lon]; }), { padding: [24, 24], maxZoom: 8 });
+          } else map.setView([30, 69], 2);
+        } catch (e) { mapDiv.style.display = 'none'; }
+      } else { mapDiv.style.display = 'none'; }
+    }
+
+    fetch('/v1/x/visitor-geo').then(function (r) { return r.json(); }).then(function (d) { render(d.geo || []); }).catch(function () { render([]); });
+
+    try {
+      if (!sessionStorage.getItem('sq-vmap-seen')) {
+        sessionStorage.setItem('sq-vmap-seen', '1');
+        fetch('/v1/x/visitor-geo', { method: 'POST' }).catch(function () {});
+      }
+    } catch (e) {}
   }, 600);
 })();
