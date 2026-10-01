@@ -1356,14 +1356,24 @@
       sb.className = 'sq-suno-btn';
       sb.innerHTML = '\uD83D\uDD0A Suno';
       sb.setAttribute('aria-label', 'Sher sunein');
+      function lastTry(txt, btn) {
+        try {
+          var SYN = window.speechSynthesis; if (!SYN) return;
+          var u = new SpeechSynthesisUtterance(txt);
+          u.lang = 'ur-PK'; u.rate = 0.92;
+          u.onend = function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; };
+          window.__sqSherUtterance = u;
+          SYN.cancel(); try { SYN.resume(); } catch (e) {} SYN.speak(u); try { SYN.resume(); } catch (e) {}
+        } catch (e) {}
+      }
       function gtSpeak(txt, btn) {
         try {
           var au = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ur&q=' + encodeURIComponent(txt));
           window.__sqSherAudio = au; /* Kit: GC guard */
           btn.dataset.on = '1'; btn.innerHTML = '\u25B6 Sun raha hai...';
           au.onended = function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; };
-          au.onerror = function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; };
-          au.play().catch(function () { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Awaz nahi ban saki'; setTimeout(function () { btn.innerHTML = '\uD83D\uDD0A Suno'; }, 2500); });
+          au.onerror = function () { lastTry(txt, btn); };
+          au.play().catch(function () { lastTry(txt, btn); });
         } catch (e) { btn.dataset.on = ''; btn.innerHTML = '\uD83D\uDD0A Suno'; }
       }
       sb.onclick = function () {
