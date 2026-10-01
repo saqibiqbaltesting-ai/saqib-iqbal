@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="main.css">
   <style>html{background:var(--bg,#070509)}body{background:var(--bg,#070509)}
 /* Kit: top bar — 5 items (3 socials + lang + theme) on one straight line; VIP label lower */
-.social-row{position:fixed!important;top:calc(max(12px,env(safe-area-inset-top)) + 9px)!important;inset-inline-start:152px!important;inset-inline-end:auto!important;left:152px!important;right:auto!important;gap:5px!important;z-index:100}
+.social-row{position:fixed!important;align-items:center!important;top:calc(max(12px,env(safe-area-inset-top)) + 4px)!important;inset-inline-start:152px!important;inset-inline-end:auto!important;left:152px!important;right:auto!important;gap:5px!important;z-index:100}
 .hero-top{padding-top:24px}</style></head>
 <body>
   <div id="app"><div style="color:#8a7f85;font:13px system-ui;padding:24px;text-align:center">Loading…</div></div>
@@ -54,7 +54,7 @@ body.sq-dock-open #sq-top-btn,body.sq-dock-open #sq-bottom-btn{opacity:0!importa
 @media (max-width:620px){#sq-cookie{bottom:112px!important;max-width:calc(100vw - 24px)}}
 /* social icons: small, tight, right after the toggles */
 .social-row{top:calc(max(8px,env(safe-area-inset-top)) + 4px)!important;inset-inline-start:152px!important;inset-inline-end:auto!important;gap:5px!important}
-.wa-top{width:30px!important;height:30px!important}
+.wa-top{width:40px!important;height:40px!important}
 .wa-top svg{width:16px!important;height:16px!important}
 /* gate (login/signup): social links + cookie pill off */
 body:has(.gate-overlay) .social-row{display:none!important}
