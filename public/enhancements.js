@@ -3559,7 +3559,7 @@
           var open = i === today;
           var b = document.createElement('button'); b.className = 'sq-f-btn2'; b.type = 'button';
           b.style.cssText += 'display:block;width:100%;text-align:left;margin:5px 0;opacity:' + (open ? '1' : '.5');
-          b.textContent = (open ? '\uD83D\uDC-E' : '\uD83D\uDD12') + ' Envelope ' + (i + 1) + (open ? ' \u2014 aaj ka!' : ' \u2014 abhi band');
+          b.textContent = (open ? '\u2709\uFE0F' : '\uD83D\uDD12') + ' Envelope ' + (i + 1) + (open ? ' \u2014 aaj ka!' : ' \u2014 abhi band');
           b.onclick = function () {
             if (!open) { alert('Ye envelope kal khulega \u2014 roz ek naya letter aata hai.'); return; }
             modal3('\uD83D\uDCF0 Envelope ' + (i + 1), function (cc) {
