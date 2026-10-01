@@ -1480,25 +1480,28 @@
       (which === 'sher' ? cardSher : cardGhaz).classList.add('active');
       try { (which === 'sher' ? sher : ghaz).scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
     }
-    function lockedMsg() {
-      var err = lockBox.querySelector('.sq-lock-err');
-      if (err) { err.textContent = 'Pehle password likhein — phir Sher aur Ghazal khulein ge.'; err.style.display = ''; }
+    var pendingPanel = null;
+    function showLock(which) {
+      pendingPanel = which;
+      lockBox.style.display = '';
+      var tt = lockBox.querySelector('.sq-lock-title');
+      if (tt) tt.textContent = '\u{1F512} ' + (which === 'sher' ? 'Sher' : 'Ghazal') + ' dekhne ke liye password likhein';
       try { lockBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
     }
     cardSher.onclick = function () {
-      if (!unlocked) { lockedMsg(); return; }
+      if (!unlocked) { showLock('sher'); return; }
       if (sher.style.display !== 'none') { closePanels(); return; }
       openPanel('sher');
     };
     cardGhaz.onclick = function () {
-      if (!unlocked) { lockedMsg(); return; }
+      if (!unlocked) { showLock('ghazal'); return; }
       if (ghaz.style.display !== 'none') { closePanels(); return; }
       openPanel('ghazal');
     };
 
     function applyLock() {
-      lockBox.style.display = unlocked ? 'none' : '';
-      cards.style.display = unlocked ? '' : 'none';
+      lockBox.style.display = 'none';
+      cards.style.display = '';
       if (!unlocked) closePanels();
     }
     lockBox.querySelector('#sq-poetry-unlock').onclick = function () {
@@ -1507,7 +1510,11 @@
       if (String(inp.value || '').trim().toLowerCase() === LOCK_PW) {
         unlocked = true;
         try { localStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {}
-        applyLock();
+        lockBox.style.display = 'none';
+        err.style.display = 'none';
+        var target = pendingPanel;
+        pendingPanel = null;
+        if (target) openPanel(target);
       } else {
         err.textContent = 'Ghalat password — dobara koshish karein.';
         err.style.display = '';
@@ -2368,10 +2375,8 @@
           setTimeout(function () {
             var wrap = document.getElementById('sq-poetry');
             if (!wrap) return;
-            var lockedNow = false;
-            try { lockedNow = localStorage.getItem('sq-poetry-unlocked') !== '1'; } catch (e) { lockedNow = true; }
             var panel = document.getElementById(t[2]);
-            if (!lockedNow && panel && panel.style.display === 'none') {
+            if (!panel || panel.style.display === 'none') {
               var cs = wrap.querySelectorAll('.sq-poetry-card');
               if (cs.length) cs[t[2] === 'sq-poetry-sher' ? 0 : 1].click();
             }
