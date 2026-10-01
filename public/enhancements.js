@@ -2743,3 +2743,28 @@
     if (tries > 40) clearInterval(t);
   }, 500);
 })();
+
+/* ===== Kit: Performance lite — kamzor phone par blur/animations band, sections render sirf jab nazar aayen ===== */
+(function () {
+  'use strict';
+  if (window.__sqPerf) return;
+  window.__sqPerf = true;
+  var weak = false;
+  try {
+    weak = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+           (navigator.deviceMemory && navigator.deviceMemory <= 4);
+  } catch (e) {}
+  /* sab devices: screen se bahar sections render na hon — lambe page par bari bachat */
+  var universal = document.createElement('style');
+  universal.textContent = 'section,.section{content-visibility:auto;contain-intrinsic-size:auto 600px}';
+  document.head.appendChild(universal);
+  if (!weak) return;
+  var st = document.createElement('style');
+  st.textContent = [
+    'body.sq-lite *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}',
+    'body.sq-lite section, body.sq-lite .section{content-visibility:auto;contain-intrinsic-size:auto 600px}',
+    'body.sq-lite *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.1s!important}'
+  ].join('');
+  document.head.appendChild(st);
+  document.body.classList.add('sq-lite');
+})();
