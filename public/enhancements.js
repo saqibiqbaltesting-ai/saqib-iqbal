@@ -1343,6 +1343,26 @@
         em.textContent = ' ' + parts[2];
         p.appendChild(em);
       }
+      var sb = document.createElement('button');
+      sb.type = 'button';
+      sb.className = 'sq-suno-btn';
+      sb.innerHTML = '\uD83D\uDD0A Suno';
+      sb.setAttribute('aria-label', 'Sher sunein');
+      sb.onclick = function () {
+        if (!window.speechSynthesis) { sb.textContent = 'Sunna mojood nahi'; return; }
+        if (sb.dataset.on === '1') { window.speechSynthesis.cancel(); sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; return; }
+        Array.prototype.forEach.call(document.querySelectorAll('.sq-suno-btn'), function (b) { if (b !== sb) { b.dataset.on = ''; b.innerHTML = '\uD83D\uDD0A Suno'; } });
+        window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(sh.replace(/ \| /g, ', ').replace(/[^\u0600-\u06FF\s\u060C\u061F.!]/g, ''));
+        u.lang = 'ur-PK'; u.rate = 0.92;
+        var vs = window.speechSynthesis.getVoices();
+        var v = vs.filter(function (vv) { return /^ur/i.test(vv.lang); })[0] || vs.filter(function (vv) { return /^hi/i.test(vv.lang); })[0];
+        if (v) u.voice = v;
+        u.onend = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; };
+        sb.dataset.on = '1'; sb.innerHTML = '\u25B6 Sun raha hai...';
+        window.speechSynthesis.speak(u);
+      };
+      card.appendChild(sb);
       card.appendChild(p);
       sherGrid.appendChild(card);
     });
@@ -1447,9 +1467,11 @@
   var CATS = [
     ['songs', '\uD83C\uDFB5 Songs', 'Songs playlist — ek ke baad ek chalti hain'],
     ['quran', '\uD83D\uDD4A\uFE0F Tilawat-e-Quran', '30 Paras — Para 1 se Para 30 tak'],
-    ['naat', '\uD83D\uDC99 Naat', 'Naatein — Ghulam Mustafa Qadri aur dost']
+    ['naat', '\uD83D\uDC99 Naat', 'Naatein — Ghulam Mustafa Qadri aur dost'],
+    ['qawwali', '\uD83C\uDFB6 Qawwali', 'Nusrat Fateh Ali Khan — hazri kalam']
   ];
   var NAATS = [{"id":"JLkCad_qAng","title":"New Naat - Ghulam Mustafa Qadri - Kabay Ki Ronaq - Official Video - Heera Gold"},{"id":"vgmgAdAu2ew","title":"Jagha Ji Lagane ki Duniya Nhi Hai - Ghulam Mustafa Qadri"},{"id":"qTGu_ZpNEH0","title":"Meri Baat Ban Gayi Hai - Ghulam Mustafa Qadri - Naat - M Media Gold"},{"id":"GIrrG1fznBU","title":"New Naat Sharif | Ghulam Mustafa Qadri | Gham Ho Gaye Beshumar | Heera Gold | Hou Karam Sarkar Ab"},{"id":"F1eGsxVr7Po","title":"Hara Gumbad Jo Dekhoge Zamana Bhool Jaoge Naat | Heart Touching Naat | Ghulam Mustafa Qadri| Studio5"},{"id":"2EkYCgqRt5M","title":"Menu Shoq Madine Jawan Da - Ghulam Mustafa Qadri - Official video"},{"id":"uKPb4Tq_klA","title":"New Rabi Ul Awal Title Naat 2020 | Pukaro Ya Rasool Allah صلى الله عليه وسلم | Ghulam Mustafa Qadri"},{"id":"POQFRfV3by8","title":"Heart Touching Naat - Ghulam Mustafa Qadri - Haal e Dil - Official Video - M Media Gold"},{"id":"TLFXHiyGV_o","title":"Dar e Nabi Par | Ghulam Mustafa Qadri | 2021 Heart Touching Naat | Kids Naat | Studio5"},{"id":"05mLbp5yyzQ","title":"Ankhon Ka Tara Naam e Mohammad - Ghulam Mustafa Qadri - Heart Touching Naat"},{"id":"OSoQVyAlOOU","title":"Rabi Ul Awal Naat | Ghulam Mustafa Qadri | Gali Gali Saj Gayi - Hum Apne Nabi Pak Se | Studio5"},{"id":"uRhLDd7pnho","title":"New Heart Touching Naat - Mustafa Apke Jesa - Ghulam Mustafa Qadri - Official Video - Heera Gold"},{"id":"ELsBOmfW-nM","title":"New Naat - Sukoon Paya - Ghulam Mustafa Qadri - Official Video - Safa Islamic"},{"id":"M9PIEjsg_5I","title":"Ghulam Mustafa - Eid Mubarak - Hajj Kalam - Qurbani Ka Mausam - RWDS"},{"id":"QKwVG4KoY-8","title":"Jashn e Amad e Rasool Allah he Allah || Bibi Amna ke Phool | Ghulam Mustafa Qadri | New Milad Album"},{"id":"EvsrF0IrAkg","title":"New Naat - Hum Ko Bulana Ya Rasool Allah - Ghulam Mustafa Qadri - Official Video -Safa Islamic"},{"id":"I6r2nRufiZM","title":"2021 Milad Special Nasheed | Noor Wala Aaya Hai | Ghulam Mustafa Qadri | New Rabi Ul Awal Kids"},{"id":"vmJ4AMo_sXc","title":"Wajay Allah Wali Taar - Ghulam Mustafa Qadri - Arfana Kalam 2021 - Meem Production"},{"id":"HRwL70lzixc","title":"Meraj ko Chalay Dulha || Meraj Shareef Super hit kalam || Ghulam Mustafa Qadri"},{"id":"OlLVclhLD8Q","title":"2024 Ramadan Best Special Nasheed | Ghulam Mustafa Qadri Mah e Ramzan Hai | Hi-Tech Islamic Naats"},{"id":"bdoThhh4-8o","title":"Ramadan Nasheed | Mustafa Mustafa | Ramzan Naat | Ahmed Raza Qadri & Ghulam Mustafa Qadri | Studio5"},{"id":"6vjLjM3TaV4","title":"Beautiful Naat - Ghulam Mustafa Qadri - Zameen Maili Nahi Hoti - Official Video - Heera Gold"},{"id":"tqiF-3Q16HE","title":"Tu Kuja Man Kuja • Ghulam Mustafa Qadri • New Very Beautiful Nasheed 2021• Naat Update"},{"id":"m81jvJ1Ezkw","title":"New Rabi Ul Awal Title Naat 2020 | Aa Gaye Rasoolallah | Ghulam Mustafa Qadri | Milad Special"},{"id":"xBqDaiH_cTg","title":"Manqabat 2022 | Taj Ul Shariyya | Ghulam Mustafa Qadri"},{"id":"Jt4yyyHwK4U","title":"Dam Mast Qalandar Umar Umar | New Manqabat 2021 | Ghulam Mustafa Qadri"},{"id":"SXquwYQeZjI","title":"Warafana Laka Zikrak | Ghulam Mustafa Qadri | New Naat"},{"id":"wzcmMjt30AM","title":"New Rabiulawal Naat - Ghulam Mustafa Qadri - Amna K Laal Aye - Official Video - Heera Gold"},{"id":"fokdo9obdBo","title":"Best & Most Beautiful Naat 2022 | Woh Mera Nabi Hai | Ghulam Mustafa Qadri | Kids Special Nasheed"},{"id":"J_D6QPdOhEM","title":"Har Waqt Tassawur Main Madinay Ki Gali | Ghulam Mustafa Qadri | Naat 2024"},{"id":"g86BJIOFg34","title":"Ab to Bas ek hi dhun hai ke Madina Dekhon | Ghulam Mustafa Qadri | Official Video"},{"id":"MvKf8x3woRI","title":"New Manqabat Aala Hazrat - Raza Baadshah - Ghulam Mustafa Qadri | 4K Video |"},{"id":"MYNjWzIctDA","title":"New Rabi Ul Awal Title Kalam | Jashn e Milad | Ghulam Mustafa Qadri"},{"id":"Bl5HGq_8XE0","title":"2021 Ramadan Kids Special Naat | Ghulam Mustafa Qadri | Aye Sabz Gumbad Wale"},{"id":"r7vGnH0Pag0","title":"Phir K Gali Gali | Ghulam Mustafa Qadri | Official Video"},{"id":"9CwLSy-amZ0","title":"Emotional kalam || Unka Mangta hoon || Ghulam Mustafa Qadri"},{"id":"nPExoPYxU64","title":"New Hajj Kalam 2021 || Hara Gumbad - Ghulam Mustafa Qadri"},{"id":"Ne9KIbZ7c6U","title":"Qaseeda Burda Shareef - Ghulam Mustafa Qadri - Official Video"},{"id":"EV5jeUg0y9o","title":"New Manqabat Imam Hussain | Badshah Ya Hussain | Ghulam Mustafa Qadri |"},{"id":"2tOykgj7hlc","title":"Tere Sadqay mein Aaqa || New Kalam 2022 || Hasbi rabbi jallallah || Ghulam Mustafa Qadri"},{"id":"LYqTNn29GLw","title":"Kya Bataon K Kiya Madina Hai - Ghulam Mustafa Qadri - Official Video"},{"id":"7FMn5NFoY0Q","title":"Taiba Ke Jaane Wale - Ghulam Mustafa Qadri - Official Video"},{"id":"Tvuh068s1O8","title":"New Beautiful Manqbat 2020 | Nazr e Karam Jillani | Ghulam Mustafa Qadri"},{"id":"civysHwcRsw","title":"New Manqabat 2022 || Hazrat Abu Bakrr Siddique || Ghulam Mustafa Qadri"},{"id":"AAP--01ICpY","title":"Ghous Ka Karam Ghous Ki Ata || Gyarvi Sharif - Ghulam Mustafa Qadri - Manqabat 2021"},{"id":"OXG-g5xUTMw","title":"Na Cricket Sharart kay liay aaya hay | Mah e Ramzan Ibadat kay liay Aaya hay - Ghulam Mustafa Qadri-"},{"id":"e5sfvQAIU-0","title":"Tajdar e Haram || Super Hit Kalam 2022 || Ghulam Mustafa Qadri - New Style"},{"id":"f1g1lWVPkcc","title":"Tanam Farsooda Jaan Para - Ghulam Mustafa Qadri | Official Video |"},{"id":"8v-6THqssQI","title":"Chan do Tukday ho Janda aye || Ghulam Mustafa Qadri || 2022 ||"},{"id":"LZfjnI6TVUc","title":"Dama Dam Mast Qalandar - Manqabat Hazrat Umar Farooq - Ghulam Mustafa Qadri | Muharram ul Haram"},{"id":"DxfWXt47g04","title":"Mein Madinay Chala | Complete Video Shoot in Madina Pak | Ghulam Mustafa Qadri"},{"id":"p0YHksb96OU","title":"Almadad Ya Ghous ul Azam - Ghulam Mustafa Qadri - Official video"},{"id":"GgMw49P3OBU","title":"Dil Sey Milad Hum Manaien Gey - Milad Titel Kalam - Ghulam Mustafa Qadri"},{"id":"FhMMRQs7J_w","title":"Kab Gunahon Se Kinara Main Karunga Ya Rab || Moral Story || Emotional Munajat | Ghulam Mustafa Qadri"},{"id":"FYc_KTB6OFs","title":"Haidri Rang | Manqabat | Mola Ali A.S. | 13 Rajab | Jashn e Wiladat | Ghulam Mustafa Qadri"},{"id":"07SkgSGj6l0","title":"Lakhon Darood aur Lakhon Sallam - Shab e Meraj - Ghulam Mustafa Qadri"},{"id":"lBT0GhEcpUs","title":"|| Sahaba Sahaba Hamare Sahaba || NEW KALAM 2022 || Ghulam Mustafa Qadri"},{"id":"YULjg44pyZE","title":"New Milad Special Kalam - Jashan Manaien Gey Hum Mil Kar - Ghulam Mustafa Qadri - Official Video"},{"id":"-nigswgMN3U","title":"New Ramzan Naat 2023 - Jab Gumbad e Khazra Pe Wo Pehli Nazar Gai -Ghulam Mustafa Qadri"},{"id":"QHG6-qNzHTY","title":"Pohanchon Dar e Sarkar صلى الله عليه وسلم pay | Ghulam Mustafa Qadri | Official Video"},{"id":"22xSPenylx0","title":"Konain Dey Wali Da Darbar Bara Sohna | Ghulam Mustafa Qadri"},{"id":"PKzemQ5t6BI","title":"Dar hey kitna pyaara pyaara || NEW KALAM 2022 || Ghulam Mustafa Qadri"}];
+  var QAWALIS = [{"id":"k9plOYAmpBU","title":"Shah-e-Mardane Ali ( Remix ) || Nusrat Fateh Ali Khan Full Remix Qawali || Atiq's Creations"},{"id":"50pkaaM-YnA","title":"Othe Amlan De Hony Ne Navede || Nusrat Fateh Ali Khan ||Best Qwali ||#NFAK"},{"id":"AffgSkmDFgk","title":"Unke Andaz e karam Nusrat Fateh Ali Khan Best Qawwali"},{"id":"WzlO79d3S8c","title":"Coke Studio Season 11| Piya Ghar Aaya| Fareed Ayaz| Abu Muhammad Qawwal and Brothers"},{"id":"Nqwmh4WXMmo","title":"Allah hu Allah hu ,Qawali by Nusrat Fateh ali Khan,One of the greatest Qawali"},{"id":"VyvlJoV_q8s","title":"Je Tu Rab Nu Manuna Phly Yaar Nu Mana Ustad Nusrat Fateh Ali Khan RGH HD Video (hafizabadi)"},{"id":"29kYSbMUSuA","title":"Woh Bhi Apne Na Hue (NFAK Remix) | Unke Andaz-e-Karam"},{"id":"TBxtqzGsI7U","title":"🎶 Je Tu Akhiyan De Samne Nahi Rehna | Nusrat Fateh Ali Khan | NFAK Qawwali ❤️ | Sufi Kalam"},{"id":"q4NVp-aFZSw","title":"Tumhein Dillagi Bhool Jani Paray Gi| Ustad Nusrat Fateh Ali Khan| Best Ever|"},{"id":"2Rz5cZjvBzU","title":"Dam Dam Ali Ali Kar | Nusrat Fateh Ali Khan | Powerful Original Qawwali | Bazm-e-Nusrat"},{"id":"9YByMu_W7E8","title":"Kali Kali Zulfon Ke Phande Na Dalo | Nusrat Fateh Ali Khan | Qawwali | NFAK"},{"id":"zk0-f92gg9A","title":"'Bhar Do Jholi Meri' FULL VIDEO Song - Adnan Sami | Bajrangi Bhaijaan | Salman Khan Pritam"}];
 
   var active = 'songs';
   var player = null;
@@ -1461,7 +1483,7 @@
   try { vol = parseInt(localStorage.getItem('sq-music-vol') || '80', 10) || 80; } catch (e) {}
   if (vol < 0 || vol > 100) vol = 80;
 
-  function list() { return active === 'songs' ? SONGS : (active === 'naat' ? NAATS : PARAS); }
+  function list() { return active === 'songs' ? SONGS : active === 'naat' ? NAATS : active === 'qawwali' ? QAWALIS : PARAS; }
   function trackOf(i) {
     var t = list()[i];
     return t ? (t.label ? t.label + ' — ' + t.title : t.title) : '';
@@ -1605,7 +1627,7 @@
     head.innerHTML = '<h2>\uD83C\uDFB5 Music</h2>';
     var p = document.createElement('p');
     p.className = 'sq-sec-sub';
-    p.textContent = 'Songs aur Tilawat — do categories, poori playlist';
+    p.textContent = 'Songs, Tilawat, Naat aur Qawwali — poori playlist';
     head.appendChild(p);
     sec.appendChild(head);
 

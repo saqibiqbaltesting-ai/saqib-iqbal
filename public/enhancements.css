@@ -214,3 +214,7 @@ html.sq-a11y .hero-name,html.sq-a11y .hero-kicker,html.sq-a11y .hero-sub{transfo
 @media(max-width:719px){.sq-daily-text{font-size:16px}.sq-hire-btn span{display:none}.sq-hire-btn{padding:12px}#sq-vmap-canvas{height:200px}}
 
 body.sq-dock-open .sq-hire-btn{opacity:0!important;visibility:hidden!important}
+/* ===== Kit: Suno (TTS) button ===== */
+.sq-suno-btn{align-self:flex-start;min-height:34px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg-soft);color:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600;cursor:pointer;transition:border-color .2s ease,transform .15s ease;margin-bottom:10px}
+.sq-suno-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.sq-suno-btn[data-on="1"]{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;border-color:transparent}
