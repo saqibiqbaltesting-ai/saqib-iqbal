@@ -2341,11 +2341,10 @@
     var TILES = [
       ['\u270D\uFE0F', 'Shayari', 'sq-poetry-sher'],
       ['\uD83D\uDCD6', 'Ghazal', 'sq-poetry-ghazal'],
-      ['\uD83C\uDFB5', 'Music', 'music'],
+      ['\uD83C\uDFB5', 'Music', 'sq-music'],
       ['\u2764\uFE0F', 'Deewar e Dil', 'sq-hearts'],
       ['\uD83D\uDCDD', 'Aap ka Sher', 'sq-user-sher'],
-      ['\uD83D\uDCBC', 'Kaam poochein?', 'wa'],
-      ['\uD83C\uDFC5', 'Badges', null]
+      ['\uD83D\uDCBC', 'Kaam poochein?', 'wa']
     ];
     TILES.forEach(function (t) {
       var tile = document.createElement('button');
@@ -2356,6 +2355,19 @@
         close();
         if (t[2] === 'wa') {
           window.open('https://wa.me/923134182952?text=' + encodeURIComponent('Assalam o Alaikum! Main aapki website dekhi \u2014 mujhe apne kaam ke baray mein batana tha.'), '_blank');
+          return;
+        }
+        if (t[2] === 'sq-poetry-sher' || t[2] === 'sq-poetry-ghazal') {
+          setTimeout(function () {
+            var wrap = document.getElementById('sq-poetry');
+            if (!wrap) return;
+            var panel = document.getElementById(t[2]);
+            if (panel && panel.style.display === 'none') {
+              var cs = wrap.querySelectorAll('.sq-poetry-card');
+              if (cs.length) cs[t[2] === 'sq-poetry-sher' ? 0 : 1].click();
+            }
+            try { wrap.scrollIntoView({ behavior: 'smooth' }); } catch (e) {}
+          }, 80);
           return;
         }
         if (t[2] === null) {
