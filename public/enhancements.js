@@ -1294,7 +1294,7 @@
       b.style.fontFamily = f[1];
       b.style.fontStyle = f[2];
       b.style.fontWeight = f[3];
-      b.textContent = 'Aa';
+      b.textContent = f[0];
       b.title = f[0];
       b.setAttribute('aria-label', 'Poetry font: ' + f[0]);
       b.onclick = function () {
