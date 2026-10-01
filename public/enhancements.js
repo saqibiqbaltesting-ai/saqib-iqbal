@@ -4217,3 +4217,105 @@
   var tries = 0;
   var iv = setInterval(function () { if (build() || ++tries > 50) clearInterval(iv); }, 1200);
 })();
+
+/* ===== Kit: Cursor Picker — user apna cursor chune (naam ke sath) ===== */
+(function () {
+  'use strict';
+  if (window.__sqCursor) return;
+  window.__sqCursor = true;
+  function lsS(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function lsG(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  var fine = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
+
+  function cursorPNG(kind) {
+    var cv = document.createElement('canvas'); cv.width = 32; cv.height = 32;
+    var x = cv.getContext('2d');
+    if (kind === 'ring') {
+      x.strokeStyle = '#f0c96a'; x.lineWidth = 3;
+      x.shadowColor = '#f0c96a'; x.shadowBlur = 8;
+      x.beginPath(); x.arc(16, 16, 9, 0, 7); x.stroke();
+      x.beginPath(); x.arc(16, 16, 2, 0, 7); x.fillStyle = '#f0c96a'; x.fill();
+    } else if (kind === 'orb') {
+      var g = x.createLinearGradient(6, 6, 26, 26);
+      g.addColorStop(0, '#e97b9c'); g.addColorStop(1, '#f0c96a');
+      x.fillStyle = g; x.shadowColor = '#e97b9c'; x.shadowBlur = 10;
+      x.beginPath(); x.arc(16, 16, 9, 0, 7); x.fill();
+      x.fillStyle = '#ffffffcc'; x.beginPath(); x.arc(12, 12, 3, 0, 7); x.fill();
+    } else if (kind === 'crown') { x.font = '22px serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText('\uD83D\uDC51', 16, 17); }
+    else if (kind === 'crescent') { x.font = '22px serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText('\uD83C\uDF19', 16, 17); }
+    else if (kind === 'heartdot') { x.font = '20px serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText('\u2764\uFE0F', 16, 17); }
+    try { return cv.toDataURL('image/png'); } catch (e) { return ''; }
+  }
+  function apply(kind) {
+    if (!fine) return;
+    var url = cursorPNG(kind);
+    document.body.style.cursor = url ? 'url(' + url + ') 16 16, auto' : '';
+    if (kind === 'mix') {
+      document.body.style.cursor = 'url(' + cursorPNG('ring') + ') 16 16, auto';
+      trailOn = ['\u2728'];
+    } else if (kind === 'sparkle') trailOn = ['\u2728', '\u2B50', '\uD83D\uDCAB'];
+    else if (kind === 'heart') trailOn = ['\u2764\uFE0F', '\uD83D\uDC9C'];
+    else if (kind === 'comet') trailOn = ['\uD83D\uDCAB', '\u2728'];
+    else trailOn = null;
+    lsS('sq-cursor', kind);
+  }
+  var trailOn = null, lastT = 0;
+  if (fine) {
+    document.addEventListener('mousemove', function (e) {
+      if (!trailOn || Date.now() - lastT < 70) return;
+      lastT = Date.now();
+      var s = document.createElement('div');
+      s.textContent = trailOn[Math.floor(Math.random() * trailOn.length)];
+      s.style.cssText = 'position:fixed;z-index:12998;pointer-events:none;left:' + (e.clientX - 8) + 'px;top:' + (e.clientY - 8) + 'px;font-size:13px;opacity:1;transition:transform .8s ease-out,opacity .8s';
+      document.body.appendChild(s);
+      requestAnimationFrame(function () { s.style.transform = 'translateY(18px) scale(.4)'; s.style.opacity = '0'; });
+      setTimeout(function () { s.remove(); }, 850);
+    }, { passive: true });
+  }
+  var CURSORS = [
+    ['normal', '\u2B1C Normal', 'Default cursor'],
+    ['ring', '\uD83D\uDFE1 Golden Glow Ring', 'Chamakta sunehri ring'],
+    ['sparkle', '\u2728 Sparkle Trail', 'Sitare girte hain'],
+    ['heart', '\u2764\uFE0F Heart Trail', 'Dillay peeche urte hain'],
+    ['crown', '\uD83D\uDC51 Crown', 'Sunehri taj'],
+    ['comet', '\uD83D\uDCAB Comet Trail', 'Dhumaketu tail'],
+    ['crescent', '\uD83C\uDF19 Crescent Glow', 'Chand cursor'],
+    ['orb', '\uD83D\uDD2E Gradient Orb', 'Rang badalta ball'],
+    ['mix', '\uD83C\uDFAF Mix Mode', 'Ring + sparkle combo']
+  ];
+  function picker() {
+    var old = document.getElementById('sq-feat-ov'); if (old) old.remove();
+    var ov = document.createElement('div'); ov.id = 'sq-feat-ov';
+    var card = document.createElement('div'); card.id = 'sq-feat-card';
+    var x = document.createElement('button'); x.className = 'sq-fx'; x.type = 'button'; x.innerHTML = '\u00D7';
+    x.setAttribute('aria-label', 'Band karein'); x.onclick = function () { ov.remove(); };
+    var h = document.createElement('h3'); h.textContent = '\uD83D\uDDBC\uFE0F Cursor chunein'; h.appendChild(x);
+    card.appendChild(h);
+    var cur = lsG('sq-cursor') || 'normal';
+    CURSORS.forEach(function (cs) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn2';
+      b.style.cssText += 'display:block;width:100%;text-align:left;margin:5px 0;' + (cur === cs[0] ? 'border-color:#f0c96a;color:#f0c96a' : '');
+      b.innerHTML = '<span style="font-family:inherit">' + cs[1] + '</span><br><span style="font-size:11px;opacity:.7;font-family:inherit">' + cs[2] + '</span>';
+      b.onclick = function () { apply(cs[0]); ov.remove(); };
+      card.appendChild(b);
+    });
+    ov.appendChild(card);
+    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+    document.body.appendChild(ov);
+  }
+  function injectBtn() {
+    if (document.getElementById('sq-cursor-btn')) return true;
+    var anchor = document.querySelector('.font-toggle');
+    if (!anchor || !anchor.parentNode) return false;
+    var b = document.createElement('button');
+    b.type = 'button'; b.id = 'sq-cursor-btn'; b.className = 'nav-toggle font-toggle';
+    b.innerHTML = '<span style="font-size:14px" aria-hidden="true">\uD83D\uDDBC\uFE0F</span>';
+    b.setAttribute('aria-label', 'Cursor change karein');
+    b.title = 'Cursor chunein';
+    b.onclick = picker;
+    anchor.parentNode.insertBefore(b, anchor);
+    return true;
+  }
+  var tries = 0;
+  var iv = setInterval(function () { if (injectBtn() || ++tries > 40) { clearInterval(iv); if (fine) apply(lsG('sq-cursor') || 'normal'); } }, 1200);
+})();
