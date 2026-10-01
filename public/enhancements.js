@@ -1625,8 +1625,9 @@
     var host = q('.hero');
     if (!host || !host.parentNode) return false;
     var parent = host.parentNode;
+    var oldMusic = q('#music'); // original in-app Music section (replaced by rich player)
     // wait until the poetry sections exist (or clearly never will) so Music lands after Ghazal
-    if (!parent.querySelector('#sq-poetry-ghazal') && !parent.querySelector('#sq-music')) {
+    if (!oldMusic && !parent.querySelector('#sq-poetry-ghazal') && !parent.querySelector('#sq-music')) {
       if (build._tries === undefined) build._tries = 0;
       build._tries++;
       if (build._tries < 75) return false; // poetry module polls every 600ms too
@@ -1760,7 +1761,7 @@
     sec.appendChild(listEl);
     els.list = listEl;
 
-    parent.appendChild(sec);
+    if (oldMusic && oldMusic.parentNode) oldMusic.parentNode.insertBefore(sec, oldMusic); else parent.appendChild(sec);
     renderList();
     updateRows();
     loadYT();
@@ -2117,6 +2118,14 @@
     renderTray();
   }
   document.addEventListener('sq-badge', function (e) { try { unlock(e.detail); } catch (err) {} });
+
+  // Nav link pointing at the replaced in-app Music section now scrolls to the rich player
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href="#music"],[data-target="music"]') : null;
+    if (!a) return;
+    var t = q('#sq-music');
+    if (t) { try { e.preventDefault(); } catch (err) {} t.scrollIntoView({ behavior: 'smooth' }); }
+  }, true);
 
   function buildBadges() {
     if (!document.body) return false;
