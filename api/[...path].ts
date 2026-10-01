@@ -12,6 +12,9 @@ import * as qa from "../routes/qa.js";
 import * as quiz from "../routes/quiz.js";
 import * as ratings from "../routes/ratings.js";
 import * as visitors from "../routes/visitors.js";
+import * as hearts from "../routes/hearts.js";
+import * as userShers from "../routes/user-shers.js";
+import * as visitorGeo from "../routes/visitor-geo.js";
 
 const DATA_ROOT = process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data";
 const DATA_DIR = join(DATA_ROOT, "data");
@@ -81,6 +84,7 @@ const READ_ONLY_ACTIONS = new Set(["me", "logout", "chat"]);
 const routes: Record<string, { GET?: (req: Request) => Response | Promise<Response>; POST?: (req: Request) => Response | Promise<Response> }> = {
   auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
   "photo-reactions": photoReactions, qa, quiz, ratings, visitors,
+  "visitor-geo": visitorGeo, hearts, "user-shers": userShers,
 };
 
 async function handle(req: Request): Promise<Response> {

@@ -106,7 +106,7 @@
     if (!lsGet('sq-cookie-ok')) {
       var ck = document.createElement('div');
       ck.id = 'sq-cookie';
-      ck.innerHTML = '<span>&#127871; Ye website aap ka behtar tajurba dene ke liye chhoti cookies use karti hai.</span>';
+      ck.innerHTML = '<span>&#127871; Ye website chhoti cookies use karti hai.</span>';
       var ok = document.createElement('button');
       ok.type = 'button';
       ok.textContent = 'Theek hai';
@@ -114,7 +114,6 @@
       ck.appendChild(ok);
       document.body.appendChild(ck);
       setTimeout(function () { try { if (document.contains(ck) && !lsGet('sq-cookie-ok')) return; } catch (e) {} }, 20000);
-      setTimeout(function () { try { ck.remove(); } catch (e) {} }, 30000);
     }
   } catch (e) {}
 
@@ -1344,6 +1343,40 @@
         em.textContent = ' ' + parts[2];
         p.appendChild(em);
       }
+      var sb = document.createElement('button');
+      sb.type = 'button';
+      sb.className = 'sq-suno-btn';
+      sb.innerHTML = '\uD83D\uDD0A Suno';
+      sb.setAttribute('aria-label', 'Sher sunein');
+      sb.onclick = function () {
+        if (!window.speechSynthesis) { sb.textContent = 'Sunna mojood nahi'; return; }
+        if (sb.dataset.on === '1') { window.speechSynthesis.cancel(); sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; return; }
+        Array.prototype.forEach.call(document.querySelectorAll('.sq-suno-btn'), function (b) { if (b !== sb) { b.dataset.on = ''; b.innerHTML = '\uD83D\uDD0A Suno'; } });
+        window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(sh.replace(/ \| /g, ', ').replace(/[^\u0600-\u06FF\s\u060C\u061F.!]/g, ''));
+        u.lang = 'ur-PK'; u.rate = 0.92;
+        var vs = window.speechSynthesis.getVoices();
+        var v = vs.filter(function (vv) { return /^ur/i.test(vv.lang); })[0] || vs.filter(function (vv) { return /^hi/i.test(vv.lang); })[0];
+        if (v) u.voice = v;
+        u.onend = function () { sb.dataset.on = ''; sb.innerHTML = '\uD83D\uDD0A Suno'; };
+        sb.dataset.on = '1'; sb.innerHTML = '\u25B6 Sun raha hai...';
+        try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'sunai' })); } catch (e) {}
+        window.speechSynthesis.speak(u);
+      };
+      var shBtn = document.createElement('button');
+      shBtn.type = 'button';
+      shBtn.className = 'sq-suno-btn sq-share-btn';
+      shBtn.innerHTML = '\u2197 WhatsApp';
+      shBtn.setAttribute('aria-label', 'Sher WhatsApp par share karein');
+      shBtn.onclick = function () {
+        var txt = sh.replace(/ \| /g, '\n') + '\n\n\u2014 Saqib Iqbal\nhttps://saqib-iqbal.vercel.app/';
+        window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener');
+      };
+      var actRow = document.createElement('div');
+      actRow.className = 'sq-sher-actions';
+      actRow.appendChild(sb);
+      actRow.appendChild(shBtn);
+      card.appendChild(actRow);
       card.appendChild(p);
       sherGrid.appendChild(card);
     });
@@ -1433,4 +1466,809 @@
       if (r !== false || tries > 60) clearInterval(t);
     } catch (e) { try { clearInterval(t); } catch (x) {} }
   }, 600);
+  window.__sqPoetryCats = CATS;
+})();
+
+
+/* ===== Kit: Music section (Songs + Tilawat) — YouTube IFrame API behind an audio-style player ===== */
+(function () {
+  'use strict';
+  function q(s) { return document.querySelector(s); }
+
+  var SONGS = [{"id":"cerYfcoPnjI","title":"Oy Kamla Yar Tan Wat Yar Hondin | Slowed+Reverb Saraiki Song|Shafaullah Rokri Song | Saraiki Song"},{"id":"RfTeNHzyRuU","title":"Jinde Naal Dil laya { Slowed+Reverb } || Super Hits Saraiki Songs || slowed new song 2024 | Saraiki"},{"id":"5ZtlnftpXTg","title":"Akhiyan Mila Ke Dhola {Slowed & Reverb} | Slowed Saraiki Song || Duniya to Sohna Mahi | Saraiki song"},{"id":"DbIRbTUHquU","title":"Jay Disya Na Manu Mukh Tera {Slowed +Reverb} | Hathan Diya Lakeera Punjabi Song | Rahat Fateh Ali"},{"id":"cZAYAkC2k6A","title":"Dhola Ty Main Haan Kathey {Slowed &Reverb } Song || Slowed Saraiki Song || New Saraiki Song 2024"},{"id":"8B8L18Z-FEM","title":"Chitty Waal Thi Gay {Slowed +Reverb} |Shafa Ullah Khan Rokhri Saraiki Song | Slowed Saraiki Hit Song"},{"id":"sb8iqa9XB60","title":"Thaki Thaiyan Aan { Slowed & Reverb}|Zeeshan Rokhri Song |Slowed And Reverb Saraiki Songs"},{"id":"7EK_XWy82fA","title":"Dhola Jo bewafa He { Slowed + Reverb } | Shafa Ullah Khan Rokhri #SaraikiSong | #ReverbSaraikiSongs"},{"id":"axrrqmLFuM8","title":"Sajna Ve mil powen hai { Slowed & Reverb }|| Sajna jay Mil paway a Song | Slowed Reverb Punjabi Song"},{"id":"yGtrZlBRNNs","title":"Vighar Gai Ae Thore Dina Toun {SLOWED +REVERB} | New Saraiki Song | Best Saraiki Song #SaraikiSong"},{"id":"Ip4lonaaSLk","title":"Dhola Manu Janda Aye (Slowed & Reverb) Saraiki Song || Saraiki Slowed and Reverb Songs| Dhola song"},{"id":"f1hpQc7ubms","title":"Yar Waal Aya ae {Slowed+Reverb}Song| New Saraiki Song | Kamli Kamli hoi wadi a | Slowed Saraiki song"},{"id":"fbeXgsoE-Iw","title":"Tere Hundiya Pende nahi sa {Slowed & Reverb}|Shafaullah Khan Rokhri saraiki Song|Slowed Saraiki Song"},{"id":"KAoo4fIMJnU","title":"Zamane di na Man Dhola Slowed+Reverb Lofi | Punjabi Song | Shafa Ullah Khan Rokhari"},{"id":"SaKdd8roBvk","title":"Soniayan Akhaian Kajlay Bharya | Shafaullah Khan Rokhri Song | Slowed and Reverb song |Saraiki Songs"},{"id":"qK8kDhEQNWY","title":"Chal Dowan Chaliye Sunary Kol (Slowed+Reverb)| #ChalDowanChaliye #ChalDowanChaliyeSlowed #reverbsong"},{"id":"zylrW4dzbiQ","title":"Aik Howay To { Slowed + Reverb } Aik Howay Main || Shafaullah Khan Rokhri | Saraiki Slowed Song"},{"id":"PgnJSfOSVOY","title":"Kitni Makhmoor Hai Tumhari Ankhain (Slowed & Reverb ) || Shafaullah Khan Rokhri Songs | Reverb Songs"},{"id":"dyRJEDWRkZs","title":"Sari Duniya Bholai betha ho { Slowed + Reverb } Song | kitni Chahat Chupaye betha ho |Sajjad Solangi"},{"id":"T-ghMbRaoYo","title":"Chalray Chalray waal {Slowed + Reverb}| Shafaullah Khan Rokhri |Slowed and Reverb song |Saraiki song"},{"id":"gMTo_j73Wvs","title":"Chal Bottle Chaa Dildar {Slowed+Reverb}Song | Shafaullah Khan Rokhri Song|Saraiki Slowed Reverb Song"},{"id":"xNkpPyTCgJw","title":"Assalam o Alaikum aoo g {Slowed +Reverb} |Zeeshan Rokhri New Song |TikTok Viral Songs | Punjab songs"},{"id":"GVFHiFoqe6w","title":"Meda Dil Pia Thendy ( Slowed + Reverb ) | Ahmad Nawaz Chena | Saraiki Slowed and Reverb #saraikisong"},{"id":"IBm_Pmz_Xgk","title":"Jy Ghar Mere To Away ( Slowed+Reverb ) | Phulay dy haar pawesa Jy Ghar mere to awy song"},{"id":"QfkGDSpkMRM","title":"Shala Sardari Qaim Hovi | Musafir Tede Watna Tun | Basit Naeemi | Saraiki Slow Sad Song #saraikisong"},{"id":"S_if4gi0hcM","title":"Main Suti Paii Nu (Slowed+Reverb)|Shafaullah khan rokhri Song |#SaraikiSongSlowed | Rokhari songs"},{"id":"DzToNraltY4","title":"Ay Gali Be Wafawa Di ( Slowed & Reverb )| Punjabi Song #punjabisong #punjabislowedreverb #Naseebolal"},{"id":"pWRXph0UH3s","title":"Gila Teda Kariye (Slowed & Reverb) Asa Mar na Jaiye | Shafaullah Khan Rokhri Song #saraikisong"},{"id":"DyZHR0cUiBQ","title":"Mekho So Chowa lay Phol Main Ni Taroray { Slowed+Reverb }| Saraiki Slowed Song | Reverb song Saraiki"},{"id":"5mvn3QXTFm4","title":"Kawra Kawra ( Slowed + Reverb ) Shafaullah Khan Rokhri"},{"id":"EhoShqTLr-w","title":"Mar Mar Ke Taa Milay c (Slowed + Reverb) | Punjabi Sad Song 💔 #amrindergillsongs"},{"id":"F14ZAD0_U-0","title":"Rab Sain Likh Chori Rozi Vich Pardesan De ( Slowed + Reverb ) | New Saraiki song Punjabi Slowed Song"},{"id":"GblFVNWTAAE","title":"Meda Ranjhna (Slowed + Reverb) Zeeshan Rokhri | Slowed + Reverb song | Saraiki Song Slowed Reverb"},{"id":"duDLDKUgxdw","title":"Rab Di Zaat To Dar Na Kar Maghrori Aye (TikTok Viral Song) | New Punjabi Song"},{"id":"Ycjsc1iwJjY","title":"kamli Nal laa Akhaiyan (Slowed + Reverb) | Onchi dokana ty pekhe pakwan hundan #SaraikiSong"},{"id":"rJtmyk5zcXA","title":"Way Kamla Yar Ta Wat Yar Hudan { Slowed+ Reverb } | Saraiki Song"},{"id":"WVmO64Amdn4","title":"Main Haan Garibni Ji - Shafaullah Khan Rokhri | Saraiki Song Slowed Reverb"},{"id":"1gJ1P7KggFI","title":"Tu Banse Dhola kain Naseeban Walay Da ( Slowed + Reverb ) | Shafaullah Khan Rokhri"},{"id":"3X2OFwy5d_I","title":"\"Meray Sajan Ko Akho Na Enj Khafa(Slowed Reverb) | Shafaullah khan rokhri song | Saraiki Slowed Song"}];
+  var PARAS = [{"id":"Zbnq02nVDF8","label":"Para 1","title":"Al Quran Full Terjemahan Bahasa Indonesia dan Inggris | PARA 1 | JUZUK 1"},{"id":"BU_mhUfx3yw","label":"Para 2","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 2 | JUZUK 2"},{"id":"qFKqSO6-37o","label":"Para 3","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 3 | JUZUK 3"},{"id":"noyQ265xtUk","label":"Para 4","title":"Quran Full Translation in Indonesian and English | QURAN PARA 4 | JUZ 4"},{"id":"vB7thMibR50","label":"Para 5","title":"Full Quran with Indonesian and English Translation | QURAN PARA 5 | JUZ 5"},{"id":"1Q7oW_XEdSI","label":"Para 6","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris| QURAN PARA 6 | JUZUK 6"},{"id":"1NfXabv2CJI","label":"Para 7","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 7 | JUZUK 7"},{"id":"UI0AM_lUmsc","label":"Para 8","title":"Quran Full Indonesian and English Translation | QURAN PARA 8 | JUZ 8"},{"id":"yDIvf8jw4Dc","label":"Para 9","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 9 | JUZUK 9"},{"id":"HLbA07pDWEU","label":"Para 10","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 10 | JUZUK 10"},{"id":"3w_kp9dFat0","label":"Para 11","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 11 | JUZUK 11"},{"id":"2T7VL8A9XIk","label":"Para 12","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 12 | JUZUK 12"},{"id":"rEFuNihNDCo","label":"Para 13","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 13 | JUZUK 13"},{"id":"r0SoEmKNZlg","label":"Para 14","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 14 | JUZUK 14"},{"id":"F1iIhvi5LDw","label":"Para 15","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 15 | JUZUK 15"},{"id":"uSRRwvXEy7I","label":"Para 16","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 16 | JUZUK 16"},{"id":"hxIuXlS3nLM","label":"Para 17","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 17 | JUZUK 17"},{"id":"d6EgV-Hn81g","label":"Para 18","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 18 | JUZUK 18"},{"id":"KF9YV_sssr4","label":"Para 19","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 19 | JUZUK 19"},{"id":"5UP2z0ZNFfY","label":"Para 20","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 20 | JUZUK 20"},{"id":"nSa6W-k61dM","label":"Para 21","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 21 | JUZUK 21"},{"id":"Bm_Awst_Ozk","label":"Para 22","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 22 | JUZUK 22"},{"id":"8sX7dD_cgC0","label":"Para 23","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 23 | JUZUK 23"},{"id":"CCM_Wg_nbU0","label":"Para 24","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 24 | JUZUK 24"},{"id":"M_d9eUVWCrM","label":"Para 25","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 25 | JUZUK 25"},{"id":"2X8sm49VdC4","label":"Para 26","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 26 | JUZUK 26"},{"id":"DvYBQ0wu7Ic","label":"Para 27","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 27 | JUZUK 27"},{"id":"riLnZmLx4_8","label":"Para 28","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 28 | JUZUK 28"},{"id":"zeSd2MtpMfk","label":"Para 29","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 29 | JUZUK 29"},{"id":"T-2F4wtWjpw","label":"Para 30","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 30 | JUZUK 30"}];
+
+  var CATS = [
+    ['songs', '\uD83C\uDFB5 Songs', 'Songs playlist — ek ke baad ek chalti hain'],
+    ['quran', '\uD83D\uDD4A\uFE0F Tilawat-e-Quran', '30 Paras — Para 1 se Para 30 tak'],
+    ['naat', '\uD83D\uDC99 Naat', 'Naatein — Ghulam Mustafa Qadri aur dost'],
+    ['qawwali', '\uD83C\uDFB6 Qawwali', 'Nusrat Fateh Ali Khan — hazri kalam']
+  ];
+  var NAATS = [{"id":"JLkCad_qAng","title":"New Naat - Ghulam Mustafa Qadri - Kabay Ki Ronaq - Official Video - Heera Gold"},{"id":"vgmgAdAu2ew","title":"Jagha Ji Lagane ki Duniya Nhi Hai - Ghulam Mustafa Qadri"},{"id":"qTGu_ZpNEH0","title":"Meri Baat Ban Gayi Hai - Ghulam Mustafa Qadri - Naat - M Media Gold"},{"id":"GIrrG1fznBU","title":"New Naat Sharif | Ghulam Mustafa Qadri | Gham Ho Gaye Beshumar | Heera Gold | Hou Karam Sarkar Ab"},{"id":"F1eGsxVr7Po","title":"Hara Gumbad Jo Dekhoge Zamana Bhool Jaoge Naat | Heart Touching Naat | Ghulam Mustafa Qadri| Studio5"},{"id":"2EkYCgqRt5M","title":"Menu Shoq Madine Jawan Da - Ghulam Mustafa Qadri - Official video"},{"id":"uKPb4Tq_klA","title":"New Rabi Ul Awal Title Naat 2020 | Pukaro Ya Rasool Allah صلى الله عليه وسلم | Ghulam Mustafa Qadri"},{"id":"POQFRfV3by8","title":"Heart Touching Naat - Ghulam Mustafa Qadri - Haal e Dil - Official Video - M Media Gold"},{"id":"TLFXHiyGV_o","title":"Dar e Nabi Par | Ghulam Mustafa Qadri | 2021 Heart Touching Naat | Kids Naat | Studio5"},{"id":"05mLbp5yyzQ","title":"Ankhon Ka Tara Naam e Mohammad - Ghulam Mustafa Qadri - Heart Touching Naat"},{"id":"OSoQVyAlOOU","title":"Rabi Ul Awal Naat | Ghulam Mustafa Qadri | Gali Gali Saj Gayi - Hum Apne Nabi Pak Se | Studio5"},{"id":"uRhLDd7pnho","title":"New Heart Touching Naat - Mustafa Apke Jesa - Ghulam Mustafa Qadri - Official Video - Heera Gold"},{"id":"ELsBOmfW-nM","title":"New Naat - Sukoon Paya - Ghulam Mustafa Qadri - Official Video - Safa Islamic"},{"id":"M9PIEjsg_5I","title":"Ghulam Mustafa - Eid Mubarak - Hajj Kalam - Qurbani Ka Mausam - RWDS"},{"id":"QKwVG4KoY-8","title":"Jashn e Amad e Rasool Allah he Allah || Bibi Amna ke Phool | Ghulam Mustafa Qadri | New Milad Album"},{"id":"EvsrF0IrAkg","title":"New Naat - Hum Ko Bulana Ya Rasool Allah - Ghulam Mustafa Qadri - Official Video -Safa Islamic"},{"id":"I6r2nRufiZM","title":"2021 Milad Special Nasheed | Noor Wala Aaya Hai | Ghulam Mustafa Qadri | New Rabi Ul Awal Kids"},{"id":"vmJ4AMo_sXc","title":"Wajay Allah Wali Taar - Ghulam Mustafa Qadri - Arfana Kalam 2021 - Meem Production"},{"id":"HRwL70lzixc","title":"Meraj ko Chalay Dulha || Meraj Shareef Super hit kalam || Ghulam Mustafa Qadri"},{"id":"OlLVclhLD8Q","title":"2024 Ramadan Best Special Nasheed | Ghulam Mustafa Qadri Mah e Ramzan Hai | Hi-Tech Islamic Naats"},{"id":"bdoThhh4-8o","title":"Ramadan Nasheed | Mustafa Mustafa | Ramzan Naat | Ahmed Raza Qadri & Ghulam Mustafa Qadri | Studio5"},{"id":"6vjLjM3TaV4","title":"Beautiful Naat - Ghulam Mustafa Qadri - Zameen Maili Nahi Hoti - Official Video - Heera Gold"},{"id":"tqiF-3Q16HE","title":"Tu Kuja Man Kuja • Ghulam Mustafa Qadri • New Very Beautiful Nasheed 2021• Naat Update"},{"id":"m81jvJ1Ezkw","title":"New Rabi Ul Awal Title Naat 2020 | Aa Gaye Rasoolallah | Ghulam Mustafa Qadri | Milad Special"},{"id":"xBqDaiH_cTg","title":"Manqabat 2022 | Taj Ul Shariyya | Ghulam Mustafa Qadri"},{"id":"Jt4yyyHwK4U","title":"Dam Mast Qalandar Umar Umar | New Manqabat 2021 | Ghulam Mustafa Qadri"},{"id":"SXquwYQeZjI","title":"Warafana Laka Zikrak | Ghulam Mustafa Qadri | New Naat"},{"id":"wzcmMjt30AM","title":"New Rabiulawal Naat - Ghulam Mustafa Qadri - Amna K Laal Aye - Official Video - Heera Gold"},{"id":"fokdo9obdBo","title":"Best & Most Beautiful Naat 2022 | Woh Mera Nabi Hai | Ghulam Mustafa Qadri | Kids Special Nasheed"},{"id":"J_D6QPdOhEM","title":"Har Waqt Tassawur Main Madinay Ki Gali | Ghulam Mustafa Qadri | Naat 2024"},{"id":"g86BJIOFg34","title":"Ab to Bas ek hi dhun hai ke Madina Dekhon | Ghulam Mustafa Qadri | Official Video"},{"id":"MvKf8x3woRI","title":"New Manqabat Aala Hazrat - Raza Baadshah - Ghulam Mustafa Qadri | 4K Video |"},{"id":"MYNjWzIctDA","title":"New Rabi Ul Awal Title Kalam | Jashn e Milad | Ghulam Mustafa Qadri"},{"id":"Bl5HGq_8XE0","title":"2021 Ramadan Kids Special Naat | Ghulam Mustafa Qadri | Aye Sabz Gumbad Wale"},{"id":"r7vGnH0Pag0","title":"Phir K Gali Gali | Ghulam Mustafa Qadri | Official Video"},{"id":"9CwLSy-amZ0","title":"Emotional kalam || Unka Mangta hoon || Ghulam Mustafa Qadri"},{"id":"nPExoPYxU64","title":"New Hajj Kalam 2021 || Hara Gumbad - Ghulam Mustafa Qadri"},{"id":"Ne9KIbZ7c6U","title":"Qaseeda Burda Shareef - Ghulam Mustafa Qadri - Official Video"},{"id":"EV5jeUg0y9o","title":"New Manqabat Imam Hussain | Badshah Ya Hussain | Ghulam Mustafa Qadri |"},{"id":"2tOykgj7hlc","title":"Tere Sadqay mein Aaqa || New Kalam 2022 || Hasbi rabbi jallallah || Ghulam Mustafa Qadri"},{"id":"LYqTNn29GLw","title":"Kya Bataon K Kiya Madina Hai - Ghulam Mustafa Qadri - Official Video"},{"id":"7FMn5NFoY0Q","title":"Taiba Ke Jaane Wale - Ghulam Mustafa Qadri - Official Video"},{"id":"Tvuh068s1O8","title":"New Beautiful Manqbat 2020 | Nazr e Karam Jillani | Ghulam Mustafa Qadri"},{"id":"civysHwcRsw","title":"New Manqabat 2022 || Hazrat Abu Bakrr Siddique || Ghulam Mustafa Qadri"},{"id":"AAP--01ICpY","title":"Ghous Ka Karam Ghous Ki Ata || Gyarvi Sharif - Ghulam Mustafa Qadri - Manqabat 2021"},{"id":"OXG-g5xUTMw","title":"Na Cricket Sharart kay liay aaya hay | Mah e Ramzan Ibadat kay liay Aaya hay - Ghulam Mustafa Qadri-"},{"id":"e5sfvQAIU-0","title":"Tajdar e Haram || Super Hit Kalam 2022 || Ghulam Mustafa Qadri - New Style"},{"id":"f1g1lWVPkcc","title":"Tanam Farsooda Jaan Para - Ghulam Mustafa Qadri | Official Video |"},{"id":"8v-6THqssQI","title":"Chan do Tukday ho Janda aye || Ghulam Mustafa Qadri || 2022 ||"},{"id":"LZfjnI6TVUc","title":"Dama Dam Mast Qalandar - Manqabat Hazrat Umar Farooq - Ghulam Mustafa Qadri | Muharram ul Haram"},{"id":"DxfWXt47g04","title":"Mein Madinay Chala | Complete Video Shoot in Madina Pak | Ghulam Mustafa Qadri"},{"id":"p0YHksb96OU","title":"Almadad Ya Ghous ul Azam - Ghulam Mustafa Qadri - Official video"},{"id":"GgMw49P3OBU","title":"Dil Sey Milad Hum Manaien Gey - Milad Titel Kalam - Ghulam Mustafa Qadri"},{"id":"FhMMRQs7J_w","title":"Kab Gunahon Se Kinara Main Karunga Ya Rab || Moral Story || Emotional Munajat | Ghulam Mustafa Qadri"},{"id":"FYc_KTB6OFs","title":"Haidri Rang | Manqabat | Mola Ali A.S. | 13 Rajab | Jashn e Wiladat | Ghulam Mustafa Qadri"},{"id":"07SkgSGj6l0","title":"Lakhon Darood aur Lakhon Sallam - Shab e Meraj - Ghulam Mustafa Qadri"},{"id":"lBT0GhEcpUs","title":"|| Sahaba Sahaba Hamare Sahaba || NEW KALAM 2022 || Ghulam Mustafa Qadri"},{"id":"YULjg44pyZE","title":"New Milad Special Kalam - Jashan Manaien Gey Hum Mil Kar - Ghulam Mustafa Qadri - Official Video"},{"id":"-nigswgMN3U","title":"New Ramzan Naat 2023 - Jab Gumbad e Khazra Pe Wo Pehli Nazar Gai -Ghulam Mustafa Qadri"},{"id":"QHG6-qNzHTY","title":"Pohanchon Dar e Sarkar صلى الله عليه وسلم pay | Ghulam Mustafa Qadri | Official Video"},{"id":"22xSPenylx0","title":"Konain Dey Wali Da Darbar Bara Sohna | Ghulam Mustafa Qadri"},{"id":"PKzemQ5t6BI","title":"Dar hey kitna pyaara pyaara || NEW KALAM 2022 || Ghulam Mustafa Qadri"}];
+  var QAWALIS = [{"id":"k9plOYAmpBU","title":"Shah-e-Mardane Ali ( Remix ) || Nusrat Fateh Ali Khan Full Remix Qawali || Atiq's Creations"},{"id":"50pkaaM-YnA","title":"Othe Amlan De Hony Ne Navede || Nusrat Fateh Ali Khan ||Best Qwali ||#NFAK"},{"id":"AffgSkmDFgk","title":"Unke Andaz e karam Nusrat Fateh Ali Khan Best Qawwali"},{"id":"WzlO79d3S8c","title":"Coke Studio Season 11| Piya Ghar Aaya| Fareed Ayaz| Abu Muhammad Qawwal and Brothers"},{"id":"Nqwmh4WXMmo","title":"Allah hu Allah hu ,Qawali by Nusrat Fateh ali Khan,One of the greatest Qawali"},{"id":"VyvlJoV_q8s","title":"Je Tu Rab Nu Manuna Phly Yaar Nu Mana Ustad Nusrat Fateh Ali Khan RGH HD Video (hafizabadi)"},{"id":"29kYSbMUSuA","title":"Woh Bhi Apne Na Hue (NFAK Remix) | Unke Andaz-e-Karam"},{"id":"TBxtqzGsI7U","title":"🎶 Je Tu Akhiyan De Samne Nahi Rehna | Nusrat Fateh Ali Khan | NFAK Qawwali ❤️ | Sufi Kalam"},{"id":"q4NVp-aFZSw","title":"Tumhein Dillagi Bhool Jani Paray Gi| Ustad Nusrat Fateh Ali Khan| Best Ever|"},{"id":"2Rz5cZjvBzU","title":"Dam Dam Ali Ali Kar | Nusrat Fateh Ali Khan | Powerful Original Qawwali | Bazm-e-Nusrat"},{"id":"9YByMu_W7E8","title":"Kali Kali Zulfon Ke Phande Na Dalo | Nusrat Fateh Ali Khan | Qawwali | NFAK"},{"id":"zk0-f92gg9A","title":"'Bhar Do Jholi Meri' FULL VIDEO Song - Adnan Sami | Bajrangi Bhaijaan | Salman Khan Pritam"}];
+
+  var active = 'songs';
+  var player = null;
+  var playerReady = false;
+  var pendingPlay = null;   // track index waiting for player ready
+  var playing = false;
+  var cur = 0;              // current track index in active list
+  var vol = 80;
+  try { vol = parseInt(localStorage.getItem('sq-music-vol') || '80', 10) || 80; } catch (e) {}
+  if (vol < 0 || vol > 100) vol = 80;
+
+  function list() { return active === 'songs' ? SONGS : active === 'naat' ? NAATS : active === 'qawwali' ? QAWALIS : PARAS; }
+  function trackOf(i) {
+    var t = list()[i];
+    return t ? (t.label ? t.label + ' — ' + t.title : t.title) : '';
+  }
+  function fmt(s) {
+    s = Math.max(0, Math.floor(s || 0));
+    var m = Math.floor(s / 60), r = s % 60;
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+
+  var els = {}; // cached elements
+
+  function renderList() {
+    var host = els.list;
+    host.innerHTML = '';
+    list().forEach(function (t, i) {
+      var row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'sq-music-track' + (i === cur ? ' active' : '');
+      var num = document.createElement('span');
+      num.className = 'sq-music-num';
+      num.textContent = t.label ? String(i + 1) : '\u25B6';
+      var label = document.createElement('span');
+      label.className = 'sq-music-label';
+      label.textContent = t.label ? t.label + ' — ' + t.title : t.title;
+      row.appendChild(num);
+      row.appendChild(label);
+      row.onclick = function () { select(i, true); };
+      host.appendChild(row);
+    });
+  }
+
+  function updateRows() {
+    Array.prototype.forEach.call(els.list.children, function (row, i) {
+      row.classList.toggle('active', i === cur);
+    });
+    els.nowPlaying.textContent = trackOf(cur) || 'Koi track chuna nahin gaya';
+    document.title = playing ? '\u25B6 ' + trackOf(cur) : document.title.replace(/^\u25B6 /, '');
+  }
+
+  function loadYT() {
+    if (window.YT && window.YT.Player) { ready(); return; }
+    if (!window.onYouTubeIframeAPIReady) {
+      window.onYouTubeIframeAPIReady = function () { ready(); };
+      var s = document.createElement('script');
+      s.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(s);
+    }
+  }
+
+  function ready() {
+    if (player) return;
+    player = new YT.Player('sq-music-yt', {
+      height: '180', width: '320',
+      playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+      events: {
+        onReady: function () {
+          playerReady = true;
+          try { player.setVolume(vol); } catch (e) {}
+          if (pendingPlay !== null) { var i = pendingPlay; pendingPlay = null; playIndex(i); }
+        },
+        onStateChange: function (e) {
+          if (e.data === YT.PlayerState.PLAYING) {
+            playing = true; els.playBtn.textContent = '\u23F8'; updateRows(); tickTime();
+          } else if (e.data === YT.PlayerState.PAUSED) {
+            playing = false; els.playBtn.textContent = '\u25B6'; updateRows();
+          } else if (e.data === YT.PlayerState.ENDED) {
+            playing = false; els.playBtn.textContent = '\u25B6';
+            if (cur + 1 < list().length) select(cur + 1, true); else updateRows();
+          }
+        }
+      }
+    });
+  }
+
+  function playIndex(i) {
+    cur = i;
+    var t = list()[i];
+    if (!t) return;
+    if (!playerReady) { pendingPlay = i; loadYT(); return; }
+    try { player.loadVideoById(t.id); } catch (e) { pendingPlay = i; loadYT(); return; }
+    playing = true;
+    els.playBtn.textContent = '\u23F8';
+    updateRows();
+    setTimeout(tickTime, 800);
+  }
+
+  function select(i, autoplay) {
+    cur = i;
+    updateRows();
+    renderList();
+    if (autoplay) playIndex(i);
+  }
+
+  function togglePlay() {
+    if (!playerReady) { playIndex(cur); return; }
+    try {
+      if (playing) { player.pauseVideo(); playing = false; els.playBtn.textContent = '\u25B6'; }
+      else {
+        if (cur < 0 || cur >= list().length) cur = 0;
+        if (!els.nowPlaying.dataset.loaded || els.nowPlaying.dataset.loaded !== String(cur)) {
+          playIndex(cur);
+        } else { player.playVideo(); playing = true; els.playBtn.textContent = '\u23F8'; try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'music' })); } catch (e) {} }
+      }
+      els.nowPlaying.dataset.loaded = String(cur);
+    } catch (e) { playIndex(cur); }
+  }
+
+  var timeTimer = null;
+  function tickTime() {
+    if (timeTimer) return;
+    timeTimer = setInterval(function () {
+      if (!playerReady || !playing) { return; }
+      try {
+        var d = player.getDuration(), c = player.getCurrentTime();
+        if (d > 0 && isFinite(c) && c >= 0) {
+          els.seek.value = String(Math.max(0, Math.min(1000, Math.round((c / d) * 1000))));
+          els.time.textContent = fmt(c) + ' / ' + fmt(d);
+        }
+      } catch (e) {}
+    }, 700);
+  }
+
+  function build() {
+    var host = q('.hero');
+    if (!host || !host.parentNode) return false;
+    var parent = host.parentNode;
+    // wait until the poetry sections exist (or clearly never will) so Music lands after Ghazal
+    if (!parent.querySelector('#sq-poetry-ghazal') && !parent.querySelector('#sq-music')) {
+      if (build._tries === undefined) build._tries = 0;
+      build._tries++;
+      if (build._tries < 75) return false; // poetry module polls every 600ms too
+    }
+    if (parent.querySelector('#sq-music')) return true; // already built
+
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = 'sq-music';
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>\uD83C\uDFB5 Music</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = 'Songs, Tilawat, Naat aur Qawwali — poori playlist';
+    head.appendChild(p);
+    sec.appendChild(head);
+
+    var tabs = document.createElement('div');
+    tabs.className = 'sq-poetry-tabs';
+    CATS.forEach(function (cat) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sq-poetry-tab' + (cat[0] === active ? ' active' : '');
+      b.innerHTML = cat[1];
+      b.onclick = function () {
+        active = cat[0];
+        cur = 0;
+        Array.prototype.forEach.call(tabs.children, function (x) { x.classList.remove('active'); });
+        b.classList.add('active');
+        els.sub.textContent = cat[2];
+        renderList(); updateRows();
+        if (playing) playIndex(0);
+      };
+      tabs.appendChild(b);
+    });
+    sec.appendChild(tabs);
+
+    var card = document.createElement('div');
+    card.className = 'sq-music-player';
+
+    var yt = document.createElement('div');
+    yt.id = 'sq-music-yt';
+    yt.className = 'sq-music-yt';
+    card.appendChild(yt);
+
+    var np = document.createElement('div');
+    np.className = 'sq-music-now';
+    np.textContent = 'Koi track chuna nahin gaya';
+    card.appendChild(np);
+    els.nowPlaying = np;
+
+    var seekRow = document.createElement('div');
+    seekRow.className = 'sq-music-seekrow';
+    var t0 = document.createElement('span'); t0.textContent = '0:00';
+    var seek = document.createElement('input');
+    seek.type = 'range'; seek.min = '0'; seek.max = '1000'; seek.value = '0';
+    seek.className = 'sq-music-seek';
+    seek.setAttribute('aria-label', 'Seek');
+    seek.oninput = function () {
+      if (!playerReady) return;
+      try {
+        var d = player.getDuration();
+        if (d > 0) player.seekTo((parseInt(seek.value, 10) / 1000) * d, true);
+      } catch (e) {}
+    };
+    var t1 = document.createElement('span'); t1.textContent = '0:00';
+    t1.className = 'sq-music-time';
+    seekRow.appendChild(t0); seekRow.appendChild(seek); seekRow.appendChild(t1);
+    els.seek = seek; els.time = t1;
+    card.appendChild(seekRow);
+
+    var ctr = document.createElement('div');
+    ctr.className = 'sq-music-controls';
+    function mkBtn(txt, fn, big, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sq-music-btn' + (big ? ' big' : '');
+      b.textContent = txt;
+      if (label) b.setAttribute('aria-label', label);
+      b.onclick = fn;
+      return b;
+    }
+    ctr.appendChild(mkBtn('\u23EE', function () {
+      var n = list().length;
+      select((cur - 1 + n) % n, true);
+    }, false, 'Previous'));
+    var playBtn = mkBtn('\u25B6', togglePlay, true, 'Play / Pause');
+    ctr.appendChild(playBtn);
+    els.playBtn = playBtn;
+    ctr.appendChild(mkBtn('\u23ED', function () {
+      var n = list().length; select((cur + 1) % n, true);
+    }, false, 'Next'));
+    ctr.appendChild(mkBtn('\uD83C\uDFB2', function () {
+      var ci = Math.floor(Math.random() * CATS.length);
+      var c = CATS[ci];
+      active = c[0];
+      cur = Math.floor(Math.random() * list().length);
+      Array.prototype.forEach.call(tabs.children, function (x) { x.classList.remove('active'); });
+      tabs.children[ci].classList.add('active');
+      els.sub.textContent = c[2];
+      renderList(); updateRows();
+      select(cur, true);
+      try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'music' })); } catch (e) {}
+    }, false, 'Koi bhi chalao'));
+    var volWrap = document.createElement('span');
+    volWrap.className = 'sq-music-vol';
+    volWrap.innerHTML = '\uD83D\uDD0A';
+    var volR = document.createElement('input');
+    volR.type = 'range'; volR.min = '0'; volR.max = '100'; volR.value = String(vol);
+    volR.className = 'sq-music-volrange';
+    volR.setAttribute('aria-label', 'Volume');
+    volR.oninput = function () {
+      vol = parseInt(volR.value, 10);
+      try { if (playerReady) player.setVolume(vol); } catch (e) {}
+      try { localStorage.setItem('sq-music-vol', String(vol)); } catch (e) {}
+    };
+    volWrap.appendChild(volR);
+    ctr.appendChild(volWrap);
+    card.appendChild(ctr);
+    sec.appendChild(card);
+
+    var sub = document.createElement('p');
+    sub.className = 'sq-sec-sub';
+    sub.textContent = CATS[0][2];
+    els.sub = sub;
+    sec.appendChild(sub);
+
+    var listEl = document.createElement('div');
+    listEl.className = 'sq-music-list';
+    sec.appendChild(listEl);
+    els.list = listEl;
+
+    parent.appendChild(sec);
+    renderList();
+    updateRows();
+    loadYT();
+    makePlayerWhenApi();
+    return true;
+  }
+
+  function makePlayerWhenApi() {
+    var n = 0;
+    var iv = setInterval(function () {
+      n++;
+      if ((window.YT && window.YT.Player) || n > 40) {
+        clearInterval(iv);
+        if (window.YT && window.YT.Player) ready();
+      }
+    }, 500);
+  }
+
+  var tries = 0;
+  var t = setInterval(function () {
+    try {
+      tries++;
+      var r = build();
+      if (r !== false || tries > 70) clearInterval(t);
+    } catch (e) { try { clearInterval(t); } catch (x) {} }
+  }, 600);
+})();
+
+
+/* ===== Kit: Roz ka Sher + Hire-Me WhatsApp + Visitor Map ===== */
+(function dailySher(){
+  function q(s){ return document.querySelector(s); }
+  var tries = 0;
+  var t = setInterval(function(){
+    tries++;
+    var cats = window.__sqPoetryCats;
+    var host = q('.hero');
+    if (!host || !host.parentNode) return;
+    var parent = host.parentNode;
+    if (parent.querySelector('#sq-daily-sher')) { clearInterval(t); return; }
+    if (!cats && tries > 40) { clearInterval(t); return; }
+    if (!cats) return;
+    clearInterval(t);
+    var pool = [];
+    cats.forEach(function(c){ c[3].forEach(function(sh){ pool.push({ sher: sh, cat: c[2] }); }); });
+    if (!pool.length) return;
+    var day = Math.floor(Date.now() / 86400000);
+    var pick = pool[day % pool.length];
+    var parts = pick.sher.split(' | ');
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = 'sq-daily-sher';
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>\uD83C\uDFB2 Roz ka Sher</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = 'Har roz ek naya sher — aaj: ' + pick.cat;
+    head.appendChild(p);
+    sec.appendChild(head);
+    var card = document.createElement('div');
+    card.className = 'sq-daily-card';
+    var txt = document.createElement('p');
+    txt.className = 'sq-daily-text';
+    var l1 = document.createElement('span'); l1.textContent = parts[0] || pick.sher;
+    txt.appendChild(l1);
+    if (parts[1]) {
+      txt.appendChild(document.createElement('br'));
+      var l2 = document.createElement('span'); l2.textContent = parts[1];
+      txt.appendChild(l2);
+    }
+    card.appendChild(txt);
+    sec.appendChild(card);
+    var sherSec = q('#sq-poetry-sher');
+    if (sherSec && sherSec.parentNode === parent) parent.insertBefore(sec, sherSec);
+    else parent.insertBefore(sec, host.nextSibling);
+  }, 600);
+})();
+
+/* hireMe pill: ab Saqib World hub tile hai */
+
+(function visitorMap(){
+  function q(s){ return document.querySelector(s); }
+  var tries = 0;
+  var t = setInterval(function(){
+    tries++;
+    var host = q('.hero');
+    if (!host || !host.parentNode) return;
+    var parent = host.parentNode;
+    if (parent.querySelector('#sq-visitor-map')) { clearInterval(t); return; }
+    if (tries > 50) { clearInterval(t); return; }
+    clearInterval(t);
+
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = 'sq-visitor-map';
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>\uD83C\uDF0D Visitor Map</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = 'Log kahan se aa rahe hain — shehar aur mulk';
+    head.appendChild(p);
+    sec.appendChild(head);
+    var mapDiv = document.createElement('div');
+    mapDiv.id = 'sq-vmap-canvas';
+    sec.appendChild(mapDiv);
+    var listEl = document.createElement('div');
+    listEl.className = 'sq-vmap-list';
+    listEl.textContent = 'Load ho raha hai...';
+    sec.appendChild(listEl);
+    var musicSec = q('#sq-music');
+    if (musicSec && musicSec.parentNode === parent) parent.insertBefore(sec, musicSec);
+    else parent.appendChild(sec);
+
+    function render(geo) {
+      listEl.innerHTML = '';
+      if (!geo || !geo.length) { listEl.innerHTML = '<span class="sq-vmap-item">Abhi tak koi entry nahin — aap pehle hain! \uD83C\uDF1F</span>'; return; }
+      geo.slice(0, 40).forEach(function (g) {
+        var s = document.createElement('span');
+        s.className = 'sq-vmap-item';
+        var place = g.city && g.city !== 'Unknown' ? g.city : (g.country || 'Namaloom');
+        s.textContent = '\uD83D\uDCCD ' + place + (g.country ? ', ' + g.country : '') + ' \u00D7' + g.n;
+        listEl.appendChild(s);
+      });
+      if (window.L && document.getElementById('sq-vmap-canvas')) {
+        try {
+          var map = L.map('sq-vmap-canvas', { scrollWheelZoom: false, attributionControl: true });
+          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '\u00A9 OpenStreetMap' }).addTo(map);
+          var pts = geo.filter(function (g) { return g.lat || g.lon; });
+          if (pts.length) {
+            pts.forEach(function (g) { L.circleMarker([g.lat, g.lon], { radius: 4 + Math.min(10, g.n), color: '#db4b77', fillColor: '#db4b77', fillOpacity: .75 }).addTo(map).bindTooltip((g.city || '') + (g.country ? ', ' + g.country : '') + ' \u00D7' + g.n); });
+            map.fitBounds(pts.map(function (g) { return [g.lat, g.lon]; }), { padding: [24, 24], maxZoom: 8 });
+          } else map.setView([30, 69], 2);
+        } catch (e) { mapDiv.style.display = 'none'; }
+      } else { mapDiv.style.display = 'none'; }
+    }
+
+    fetch('/v1/x/visitor-geo').then(function (r) { return r.json(); }).then(function (d) { render(d.geo || []); }).catch(function () { render([]); });
+
+    try {
+      if (!sessionStorage.getItem('sq-vmap-seen')) {
+        sessionStorage.setItem('sq-vmap-seen', '1');
+        fetch('/v1/x/visitor-geo', { method: 'POST' }).catch(function () {});
+      }
+    } catch (e) {}
+  }, 600);
+})();
+
+
+/* ===== Kit: Aap ka Sher + Deewar e Dil + Chhupay Badges ===== */
+(function () {
+  function q(s) { return document.querySelector(s); }
+  function mkSec(id, title, sub) {
+    var sec = document.createElement('section');
+    sec.className = 'section sq-sec';
+    sec.id = id;
+    var head = document.createElement('div');
+    head.className = 'section-header';
+    head.innerHTML = '<h2>' + title + '</h2>';
+    var p = document.createElement('p');
+    p.className = 'sq-sec-sub';
+    p.textContent = sub;
+    head.appendChild(p);
+    sec.appendChild(head);
+    return sec;
+  }
+
+  /* ---- Aap ka Sher ---- */
+  function buildUserSher() {
+    var host = q('#sq-music');
+    if (!host || !host.parentNode) return false;
+    if (q('#sq-user-sher')) return true;
+    var sec = mkSec('sq-user-sher', '\u270D\uFE0F Aap ka Sher', 'Apna sher likhein — approve hone ke baad yahan sab dekhenge');
+    var card = document.createElement('div');
+    card.className = 'sq-user-sher-card';
+    var ta = document.createElement('textarea');
+    ta.className = 'sq-user-sher-ta';
+    ta.rows = '3';
+    ta.maxLength = 400;
+    ta.placeholder = 'Apna sher yahan likhein...';
+    ta.setAttribute('aria-label', 'Apna sher likhein');
+    card.appendChild(ta);
+    var row = document.createElement('div');
+    row.className = 'sq-user-sher-row';
+    var nm = document.createElement('input');
+    nm.type = 'text';
+    nm.className = 'sq-user-sher-name';
+    nm.maxLength = 40;
+    nm.placeholder = 'Aap ka naam (optional)';
+    nm.setAttribute('aria-label', 'Aap ka naam');
+    row.appendChild(nm);
+    try {
+      var au = JSON.parse(localStorage.getItem('portfolio-auth-local') || 'null');
+      if (au && au.name) nm.value = String(au.name).slice(0, 40);
+    } catch (e) {}
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'sq-user-sher-btn';
+    btn.textContent = 'Bhejein';
+    row.appendChild(btn);
+    card.appendChild(row);
+    var msg = document.createElement('p');
+    msg.className = 'sq-user-sher-msg';
+    card.appendChild(msg);
+    sec.appendChild(card);
+    var listEl = document.createElement('div');
+    listEl.className = 'sq-user-sher-list';
+    sec.appendChild(listEl);
+    host.parentNode.insertBefore(sec, host);
+
+    var token = '';
+    try { token = localStorage.getItem('portfolio-auth-token') || ''; } catch (e) {}
+    var isOwner = false;
+    try {
+      var au2 = JSON.parse(localStorage.getItem('portfolio-auth-local') || 'null');
+      isOwner = !!(au2 && au2.email && String(au2.email).toLowerCase() === 'fizanali6267@gmail.com');
+    } catch (e) {}
+
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function renderItem(el, s, pending) {
+      var it = document.createElement('div');
+      it.className = 'sq-user-sher-item';
+      it.innerHTML = '<p>' + esc(s.text) + '</p><span>' + esc(s.name) + (pending ? ' \u00B7 intezar e tarteeb' : '') + '</span>';
+      if (pending && isOwner) {
+        var br = document.createElement('div');
+        br.className = 'sq-user-sher-admin';
+        var ap = document.createElement('button');
+        ap.type = 'button'; ap.textContent = 'Approve'; ap.className = 'sq-user-sher-ap';
+        ap.onclick = function () {
+          fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'approve', id: s.id, token: token }) }).then(function () { it.remove(); });
+        };
+        var dl = document.createElement('button');
+        dl.type = 'button'; dl.textContent = 'Delete'; dl.className = 'sq-user-sher-dl';
+        dl.onclick = function () {
+          fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'delete', id: s.id, token: token }) }).then(function () { it.remove(); });
+        };
+        br.appendChild(ap); br.appendChild(dl);
+        it.appendChild(br);
+      }
+      el.appendChild(it);
+    }
+    function loadList() {
+      var url = isOwner ? '/v1/x/user-shers' : '/v1/x/user-shers';
+      fetch(url).then(function (r) { return r.json(); }).then(function (d) {
+        listEl.innerHTML = '';
+        var shers = (d && d.shers) || [];
+        if (!shers.length) {
+          var empty = document.createElement('p');
+          empty.className = 'sq-user-sher-empty';
+          empty.textContent = 'Abhi tak koi sher nahi aya — pehla sher aap bhejein!';
+          listEl.appendChild(empty);
+        }
+        shers.forEach(function (s) { renderItem(listEl, s, false); });
+        if (isOwner && token) {
+          fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'list-all', token: token }) }).then(function (r) { return r.json(); }).then(function (d2) {
+            if (d2 && d2.pending && d2.pending.length) {
+              var ph = document.createElement('h3');
+              ph.className = 'sq-user-sher-pendhead';
+              ph.textContent = 'Intezar mein (' + d2.pending.length + ') — sirf aap ko nazar aa rahe hain';
+              listEl.parentNode.insertBefore(ph, listEl);
+              d2.pending.forEach(function (s) { renderItem(listEl, s, true); });
+            }
+          }).catch(function () {});
+        }
+      }).catch(function () {});
+    }
+    btn.onclick = function () {
+      var text = ta.value.trim();
+      if (text.length < 10) { msg.textContent = 'Sher thora lamba likhein (kam az kam 10 hroof).'; return; }
+      btn.disabled = true;
+      fetch('/v1/x/user-shers', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'submit', sher: text, name: nm.value }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          btn.disabled = false;
+          if (d && d.ok) {
+            ta.value = '';
+            msg.textContent = 'Shukriya! Aap ka sher check ke baad yahan chhapega.';
+            try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'shair' })); } catch (e) {}
+          } else { msg.textContent = (d && d.error) || 'Kuch masla hua, dobara koshish karein.'; }
+        })
+        .catch(function () { btn.disabled = false; msg.textContent = 'Kuch masla hua, dobara koshish karein.'; });
+    };
+    loadList();
+    return true;
+  }
+
+  /* ---- Deewar e Dil ---- */
+  function buildHearts() {
+    var host = q('#sq-user-sher');
+    if (!host || !host.parentNode) return false;
+    if (q('#sq-hearts')) return true;
+    var sec = mkSec('sq-hearts', '\u2764\uFE0F Deewar e Dil', 'Tap karein, dil lagayein — sab dilon ki ginti sab ko nazar aati hai');
+    var card = document.createElement('div');
+    card.className = 'sq-hearts-card';
+    var big = document.createElement('button');
+    big.type = 'button';
+    big.className = 'sq-hearts-btn';
+    big.innerHTML = '\u2764\uFE0F';
+    big.setAttribute('aria-label', 'Dil lagayein');
+    var cnt = document.createElement('div');
+    cnt.className = 'sq-hearts-count';
+    cnt.textContent = '\u2026';
+    card.appendChild(big);
+    card.appendChild(cnt);
+    sec.appendChild(card);
+    host.parentNode.insertBefore(sec, host);
+    var sent = false;
+    fetch('/v1/x/hearts').then(function (r) { return r.json(); }).then(function (d) { cnt.textContent = Number((d && d.count) || 0).toLocaleString(); }).catch(function () { cnt.textContent = '0'; });
+    big.onclick = function () {
+      var f = document.createElement('span');
+      f.className = 'sq-heart-float';
+      f.textContent = '\u2764\uFE0F';
+      big.appendChild(f);
+      setTimeout(function () { f.remove(); }, 1200);
+      if (!sent) {
+        sent = true;
+        big.classList.add('done');
+        fetch('/v1/x/hearts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ add: 1 }) })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { cnt.textContent = Number((d && d.count) || 0).toLocaleString(); })
+          .catch(function () {});
+      }
+      try { document.dispatchEvent(new CustomEvent('sq-badge', { detail: 'dil' })); } catch (e) {}
+    };
+    return true;
+  }
+
+  /* ---- Chhupay Badges ---- */
+  var BADGES = [
+    ['sunai', '\uD83D\uDD0A', 'Suno Star', 'Pehla sher sunein'],
+    ['music', '\uD83C\uDFB5', 'Music Lover', 'Music chalayen'],
+    ['dil', '\u2764\uFE0F', 'Dil Baat', 'Deewar e Dil par dil lagayen'],
+    ['shair', '\u270D\uFE0F', 'Shair e Azim', 'Apna sher bhejein'],
+    ['ghoomo', '\uD83E\uDD3D', 'Explorer', '5 sections dekhein']
+  ];
+  function earned() {
+    try { return JSON.parse(localStorage.getItem('sq-badges') || '[]'); } catch (e) { return []; }
+  }
+  function unlock(id) {
+    var have = earned();
+    if (have.indexOf(id) !== -1) return;
+    have.push(id);
+    try { localStorage.setItem('sq-badges', JSON.stringify(have)); } catch (e) {}
+    var b = null;
+    for (var i = 0; i < BADGES.length; i++) if (BADGES[i][0] === id) b = BADGES[i];
+    if (!b) return;
+    var t = document.createElement('div');
+    t.className = 'sq-badge-toast';
+    t.innerHTML = '<span>' + b[1] + '</span> Badge mila: <strong>' + b[2] + '</strong>';
+    document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('show'); }, 30);
+    setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 400); }, 3500);
+    renderTray();
+  }
+  document.addEventListener('sq-badge', function (e) { try { unlock(e.detail); } catch (err) {} });
+
+  function buildBadges() {
+    if (!document.body) return false;
+    if (q('#sq-badge-tray')) return true;
+    var tray = document.createElement('button');
+    tray.type = 'button';
+    tray.id = 'sq-badge-tray';
+    tray.innerHTML = '\uD83C\uDFC5';
+    tray.setAttribute('aria-label', 'Badges dekhein');
+    var seen = {};
+    BADGES.forEach(function (b) { seen[b[0]] = false; });
+    tray.onclick = function () {
+      var open = q('#sq-badge-panel');
+      if (open) { open.remove(); return; }
+      var panel = document.createElement('div');
+      panel.id = 'sq-badge-panel';
+      var have = earned();
+      var h = document.createElement('h3');
+      h.textContent = 'Aap ke Badges';
+      panel.appendChild(h);
+      BADGES.forEach(function (b) {
+        var got = have.indexOf(b[0]) !== -1;
+        var it = document.createElement('div');
+        it.className = 'sq-badge-item' + (got ? ' got' : '');
+        it.innerHTML = '<span>' + b[1] + '</span><div><strong>' + b[2] + '</strong><em>' + b[3] + '</em></div>';
+        panel.appendChild(it);
+      });
+      document.body.appendChild(panel);
+      setTimeout(function () { document.addEventListener('click', function close(ev) { if (!panel.contains(ev.target) && ev.target !== tray) { panel.remove(); document.removeEventListener('click', close); } }); }, 30);
+    };
+    document.body.appendChild(tray);
+    renderTray();
+    /* Explorer: distinct sections seen */
+    try {
+      var seenIds = {};
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          var id = en.target.id || 'anon';
+          if (id && !seenIds[id]) {
+            seenIds[id] = true;
+            var distinct = Object.keys(seenIds).filter(function (k) { return k !== 'anon'; }).length;
+            if (distinct >= 5) { unlock('ghoomo'); io.disconnect(); }
+          }
+        });
+      }, { threshold: 0.25 });
+      var watch = function () { document.querySelectorAll('section[id]').forEach(function (s) { io.observe(s); }); };
+      watch();
+      setTimeout(watch, 4000);
+    } catch (e) {}
+    return true;
+  }
+  function renderTray() {
+    var tray = q('#sq-badge-tray');
+    if (!tray) return;
+    var have = earned();
+    var n = BADGES.filter(function (b) { return have.indexOf(b[0]) !== -1; }).length;
+    tray.innerHTML = '\uD83C\uDFC5' + (n ? '<b>' + n + '</b>' : '');
+    tray.classList.toggle('has', n > 0);
+  }
+
+  var tries = 0;
+  var t = setInterval(function () {
+    tries++;
+    var a = buildUserSher(), b2 = buildHearts(), c = buildBadges();
+    if ((a && b2 && c) || tries > 75) clearInterval(t);
+  }, 600);
+})();
+
+
+/* ===== Kit: Sub-home Hub (Saqib World) — dock ke sath floating button ===== */
+(function () {
+  function q(s) { return document.querySelector(s); }
+  function close() { var ov = q('#sq-hub-overlay'); if (ov) ov.remove(); }
+  function open() {
+    var ov = q('#sq-hub-overlay');
+    if (ov) { close(); return; }
+    ov = document.createElement('div');
+    ov.id = 'sq-hub-overlay';
+    var panel = document.createElement('div');
+    panel.className = 'sq-hub-panel';
+    var head = document.createElement('div');
+    head.className = 'sq-hub-head';
+    head.innerHTML = '<h3>\uD83C\uDFE0 Saqib World</h3>';
+    var sub = document.createElement('p');
+    sub.className = 'sq-hub-sub';
+    sub.textContent = 'Saqib ki duniya \u2014 dekho, suno, enjoy karo';
+    head.appendChild(sub);
+    var x = document.createElement('button');
+    x.type = 'button'; x.className = 'sq-hub-close'; x.innerHTML = '\u00D7';
+    x.setAttribute('aria-label', 'Band karein');
+    x.onclick = close;
+    head.appendChild(x);
+    panel.appendChild(head);
+    var grid = document.createElement('div');
+    grid.className = 'sq-hub-grid';
+    var TILES = [
+      ['\u270D\uFE0F', 'Shayari', 'sq-poetry-sher'],
+      ['\uD83D\uDCD6', 'Ghazal', 'sq-poetry-ghazal'],
+      ['\uD83C\uDFB5', 'Music', 'music'],
+      ['\u2764\uFE0F', 'Deewar e Dil', 'sq-hearts'],
+      ['\uD83D\uDCDD', 'Aap ka Sher', 'sq-user-sher'],
+      ['\uD83D\uDDFA\uFE0F', 'Visitor Map', 'sq-visitor-map'],
+      ['\uD83D\uDCBC', 'Kaam poochein?', 'wa'],
+      ['\uD83C\uDFC5', 'Badges', null]
+    ];
+    TILES.forEach(function (t) {
+      var tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'sq-hub-tile';
+      tile.innerHTML = '<span>' + t[0] + '</span>' + t[1];
+      tile.onclick = function () {
+        close();
+        if (t[2] === 'wa') {
+          window.open('https://wa.me/923134182952?text=' + encodeURIComponent('Assalam o Alaikum! Main aapki website dekhi \u2014 mujhe apne kaam ke baray mein batana tha.'), '_blank');
+          return;
+        }
+        if (t[2] === null) {
+          setTimeout(function () { var tr = q('#sq-badge-tray'); if (tr) tr.click(); }, 220);
+          return;
+        }
+        setTimeout(function () {
+          if (t[2] === 'top') { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } return; }
+          var el = document.getElementById(t[2]);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
+      };
+      grid.appendChild(tile);
+    });
+    panel.appendChild(grid);
+    var back = document.createElement('button');
+    back.type = 'button'; back.className = 'sq-hub-back';
+    back.innerHTML = '<span>\u25C0</span>Wapas';
+    back.setAttribute('aria-label', 'Wapas home par jayen');
+    back.onclick = close;
+    ov.appendChild(back);
+    ov.appendChild(panel);
+    ov.onclick = function (e) { if (e.target === ov) close(); };
+    document.body.appendChild(ov);
+  }
+  function build() {
+    if (!document.body || !q('#sq-dock-btn')) return false;
+    if (q('#sq-hub-btn')) return true;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.id = 'sq-hub-btn';
+    b.innerHTML = '\uD83C\uDFE0';
+    b.setAttribute('aria-label', 'Saqib World hub kholen');
+    b.onclick = open;
+    document.body.appendChild(b);
+    return true;
+  }
+  var tries = 0;
+  var t = setInterval(function () { tries++; if (build() || tries > 40) clearInterval(t); }, 600);
 })();

@@ -1,23 +1,20 @@
-/* Saqib portfolio — network-first service worker.
-   Only ONE thing is cached: the offline fallback page. Everything else goes
-   straight to the network so the site never serves stale content after a
-   deploy (maintenance first). If a navigation fails offline, show fallback. */
-self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open('sq-offline-v1').then(function (c) {
-    return c.add('/offline.html').catch(function () {});
-  }).then(function () { return self.skipWaiting(); }));
+/* Saqib Iqbal PWA — network-first, cache fallback for offline */
+self.addEventListener('install', function (e) { self.skipWaiting(); });
+self.addEventListener('activate', function (e) {
+  e.waitUntil(self.clients.claim());
 });
-self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim()); });
 self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
+  if (e.request.url.includes('/v1/')) return; /* never cache API calls */
   e.respondWith(
-    fetch(e.request).catch(function () {
-      if (e.request.mode === 'navigate') {
-        return caches.match('/offline.html').then(function (r) {
-          return r || new Response('Offline', { status: 503, statusText: 'Offline' });
-        });
+    fetch(e.request).then(function (res) {
+      var copy = res.clone();
+      if (res && res.ok) {
+        caches.open('sq-pwa-v1').then(function (c) { c.put(e.request, copy); }).catch(function () {});
       }
-      return new Response('Offline', { status: 503, statusText: 'Offline' });
+      return res;
+    }).catch(function () {
+      return caches.match(e.request).then(function (m) { return m || Response.error(); });
     })
   );
 });
