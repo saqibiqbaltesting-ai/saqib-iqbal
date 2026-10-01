@@ -4296,6 +4296,12 @@
       var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn2';
       b.style.cssText += 'display:block;width:100%;text-align:left;margin:5px 0;' + (cur === cs[0] ? 'border-color:#f0c96a;color:#f0c96a' : '');
       b.innerHTML = '<span style="font-family:inherit">' + cs[1] + '</span><br><span style="font-size:11px;opacity:.7;font-family:inherit">' + cs[2] + '</span>';
+      if (fine && cs[0] !== 'normal') {
+        try {
+          var pu = cursorPNG(cs[0] === 'mix' ? 'ring' : cs[0]);
+          if (pu) b.style.cursor = 'url(' + pu + ') 16 16, auto';
+        } catch (e) {}
+      }
       b.onclick = function () { apply(cs[0]); ov.remove(); };
       card.appendChild(b);
     });
@@ -4304,10 +4310,11 @@
     document.body.appendChild(ov);
   }
   function injectBtn() {
-    if (document.getElementById('sq-cursor-btn')) return true;
     var anchor = document.querySelector('.font-toggle');
     if (!anchor || !anchor.parentNode) return false;
-    var b = document.createElement('button');
+    var b = document.getElementById('sq-cursor-btn');
+    if (b) { if (b.parentNode !== anchor.parentNode) anchor.parentNode.insertBefore(b, anchor); return true; }
+    b = document.createElement('button');
     b.type = 'button'; b.id = 'sq-cursor-btn'; b.className = 'nav-toggle sq-cursor-toggle';
     b.innerHTML = '<span style="font-size:14px" aria-hidden="true">\uD83D\uDDBC\uFE0F</span>';
     b.setAttribute('aria-label', 'Cursor change karein');
