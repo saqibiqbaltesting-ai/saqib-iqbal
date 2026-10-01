@@ -36,28 +36,30 @@
     <link rel="stylesheet" href="features.css">
 <link rel="stylesheet" href="enhancements.css">
   <script src="features.js"></script>
-<script>(function(){function p(n){return String(n).padStart(2,"0")}function tick(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"}));var el=document.getElementById("sq-pk-clock");if(!el)return;var h=d.getHours(),ap=h<12?"AM":"PM";h=h%12||12;el.textContent="\u{1F1F5}\u{1F1F0} "+h+":"+p(d.getMinutes())+":"+p(d.getSeconds())+" "+ap;}var st=document.createElement("style");st.textContent="#sq-pk-clock{position:fixed;bottom:78px;left:14px;z-index:11500;background:rgba(10,7,14,.85);border:1px solid rgba(240,201,106,.5);color:#f0c96a;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;font-family:inherit;box-shadow:0 4px 18px rgba(0,0,0,.5);pointer-events:none}";document.head.appendChild(st);var el=document.createElement("div");el.id="sq-pk-clock";document.body.appendChild(el);tick();setInterval(tick,1e3)})();</script><script src="/enhancements.js" defer></script>
+<script>(function(){function p(n){return String(n).padStart(2,"0")}function tick(){var d=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Karachi"}));var el=document.getElementById("sq-pk-clock");if(!el)return;var h=d.getHours(),ap=h<12?"AM":"PM";h=h%12||12;el.textContent="\u{1F1F5}\u{1F1F0} "+h+":"+p(d.getMinutes())+" "+ap;}var st=document.createElement("style");st.textContent="#sq-pk-clock{position:fixed;bottom:78px;left:14px;z-index:11500;background:rgba(10,7,14,.85);border:1px solid rgba(240,201,106,.5);color:#f0c96a;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;font-family:inherit;box-shadow:0 4px 18px rgba(0,0,0,.5);pointer-events:none}";document.head.appendChild(st);var el=document.createElement("div");el.id="sq-pk-clock";document.body.appendChild(el);tick();setInterval(tick,1e3)})();</script><script src="/enhancements.js" defer></script>
 
 <style id="sq-kit-fixes">
 /* ==== Kit: mobile layout fixes v1 ==== */
 /* top bar: language + theme side by side at the start corner */
-.lang-toggle{inset-inline-start:8px!important;inset-inline-end:auto!important;min-width:96px;text-align:center}
-.theme-toggle{inset-inline-start:112px!important;inset-inline-end:auto!important}
+.lang-toggle{inset-inline-start:8px!important;inset-inline-end:auto!important;width:96px;min-width:96px;text-align:center}
+.theme-toggle{inset-inline-start:108px!important;inset-inline-end:auto!important}
 .nav-toggle:not(.font-toggle){inset-inline-start:auto!important;inset-inline-end:8px!important}
-body.sq-dock-open #sq-top-btn{opacity:0!important;visibility:hidden!important}
+body.sq-dock-open #sq-top-btn,body.sq-dock-open #sq-bottom-btn{opacity:0!important;visibility:hidden!important}
+#sq-bottom-btn{position:fixed;bottom:134px;inset-inline-end:23px;z-index:9400;width:40px;height:40px;border-radius:50%;border:1px solid rgba(240,201,106,.5);background:rgba(10,7,14,.85);color:var(--sq-accent,#f0c96a);font-size:16px;cursor:pointer;opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#sq-bottom-btn.sq-on{opacity:1;visibility:visible}
 .lb-tools{flex-wrap:wrap;justify-content:center;max-width:94vw}
 @media (max-width:620px){#sq-cookie{bottom:112px!important;max-width:calc(100vw - 24px)}}
 /* social icons: small, tight, right after the toggles */
-.social-row{top:calc(max(8px,env(safe-area-inset-top)) + 4px)!important;inset-inline-start:164px!important;inset-inline-end:auto!important;gap:5px!important}
+.social-row{top:calc(max(8px,env(safe-area-inset-top)) + 4px)!important;inset-inline-start:152px!important;inset-inline-end:auto!important;gap:5px!important}
 .wa-top{width:30px!important;height:30px!important}
 .wa-top svg{width:16px!important;height:16px!important}
 /* gate (login/signup): social links + cookie pill off */
 body:has(.gate-overlay) .social-row{display:none!important}
 body:has(.gate-overlay) #sq-cookie{display:none!important}
 /* lightbox (photo viewer): every floating widget off */
-body:has(.lightbox) .social-row,body:has(.lightbox) #sq-pk-clock,body:has(.lightbox) #sq-refresh-btn,body:has(.lightbox) #sq-chat-btn,body:has(.lightbox) #sq-fab,body:has(.lightbox) #sq-dash-btn,body:has(.lightbox) #sq-anim-toggle,body:has(.lightbox) #sq-top-btn{display:none!important}
+body:has(.lightbox) .social-row,body:has(.lightbox) #sq-pk-clock,body:has(.lightbox) #sq-refresh-btn,body:has(.lightbox) #sq-chat-btn,body:has(.lightbox) #sq-fab,body:has(.lightbox) #sq-dash-btn,body:has(.lightbox) #sq-anim-toggle,body:has(.lightbox) #sq-top-btn,body:has(.lightbox) #sq-bottom-btn{display:none!important}
 /* clock: compact, stacked neatly above refresh */
-#sq-pk-clock{bottom:74px!important;left:14px!important;font-size:11px!important;padding:4px 10px!important}
+#sq-pk-clock{bottom:74px!important;left:14px!important;font-size:10px!important;padding:3px 8px!important;font-weight:600!important;letter-spacing:-.2px!important}
 /* floating dock: widgets live behind one button */
 #sq-chat-btn,#sq-fab,#sq-dash-btn,#sq-anim-toggle{opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .22s,visibility .22s,transform .22s,bottom .22s}
 body.sq-dock-open #sq-chat-btn{opacity:1;visibility:visible;transform:none;bottom:86px!important}
@@ -68,6 +70,6 @@ body.sq-dock-open #sq-dash-btn{opacity:1;visibility:visible;transform:none;botto
 #sq-dock-btn:active{transform:scale(.92)}
 body.sq-dock-open #sq-dock-btn{transform:rotate(45deg)}
 </style>
-<script>(function(){function mk(){if(document.getElementById("sq-dock-btn"))return;var b=document.createElement("button");b.id="sq-dock-btn";b.type="button";b.setAttribute("aria-label","Menu");b.textContent="+";b.addEventListener("click",function(){document.body.classList.toggle("sq-dock-open")});(document.body||document.documentElement).appendChild(b)}if(document.body)mk();else document.addEventListener("DOMContentLoaded",mk)})();</script>
+<script>(function(){var bb=null;function mkBottom(){if(bb)return;bb=document.createElement("button");bb.id="sq-bottom-btn";bb.type="button";bb.title="Bottom";bb.setAttribute("aria-label","Scroll to bottom");bb.textContent="\u2193";bb.addEventListener("click",function(){try{window.scrollTo({top:document.documentElement.scrollHeight,behavior:"smooth"})}catch(e){window.scrollTo(0,999999)}});document.body.appendChild(bb);var tick=function(){try{var h=document.documentElement,mx=h.scrollHeight-h.clientHeight;bb.classList.toggle("sq-on",h.scrollTop<400&&mx>800)}catch(e){}};window.addEventListener("scroll",tick,{passive:true});tick()};function mk(){mkBottom();if(document.getElementById("sq-dock-btn"))return;var b=document.createElement("button");b.id="sq-dock-btn";b.type="button";b.setAttribute("aria-label","Menu");b.textContent="+";b.addEventListener("click",function(){document.body.classList.toggle("sq-dock-open")});(document.body||document.documentElement).appendChild(b)}if(document.body)mk();else document.addEventListener("DOMContentLoaded",mk)})();</script>
 </body>
 </html>
