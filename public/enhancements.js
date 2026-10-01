@@ -1840,26 +1840,7 @@
   }, 600);
 })();
 
-(function hireMe(){
-  var WA = '923134182952';
-  var msg = encodeURIComponent('Assalam o Alaikum! Main aapki website dekhi — mujhe apne kaam ke baray mein batana tha.');
-  var tries = 0;
-  var t = setInterval(function(){
-    tries++;
-    if (document.getElementById('sq-hire-btn')) { clearInterval(t); return; }
-    if (!document.body || tries > 40) { if (tries > 40) clearInterval(t); return; }
-    clearInterval(t);
-    var a = document.createElement('a');
-    a.id = 'sq-hire-btn';
-    a.href = 'https://wa.me/' + WA + '?text=' + msg;
-    a.target = '_blank';
-    a.rel = 'noopener';
-    a.className = 'sq-hire-btn';
-    a.setAttribute('aria-label', 'WhatsApp par rabta karein');
-    a.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.6.8-.8 1-.1.2-.3.2-.5.1-.3-.1-1.1-.4-2-1.2-.8-.7-1.3-1.5-1.4-1.8-.2-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.3 0-.5l-.8-1.8c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.7 2.7 4.2 3.7.6.2 1 .4 1.4.5.6.2 1.1.2 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2 0-.1-.2-.2-.4-.3z" fill="#fff"/></svg><span>Kaam poochein?</span>';
-    document.body.appendChild(a);
-  }, 600);
-})();
+/* hireMe pill: ab Saqib World hub tile hai */
 
 (function visitorMap(){
   function q(s){ return document.querySelector(s); }
@@ -2239,6 +2220,7 @@
       ['\u2764\uFE0F', 'Deewar e Dil', 'sq-hearts'],
       ['\uD83D\uDCDD', 'Aap ka Sher', 'sq-user-sher'],
       ['\uD83D\uDDFA\uFE0F', 'Visitor Map', 'sq-visitor-map'],
+      ['\uD83D\uDCBC', 'Kaam poochein?', 'wa'],
       ['\uD83C\uDFC5', 'Badges', null]
     ];
     TILES.forEach(function (t) {
@@ -2248,6 +2230,10 @@
       tile.innerHTML = '<span>' + t[0] + '</span>' + t[1];
       tile.onclick = function () {
         close();
+        if (t[2] === 'wa') {
+          window.open('https://wa.me/923134182952?text=' + encodeURIComponent('Assalam o Alaikum! Main aapki website dekhi \u2014 mujhe apne kaam ke baray mein batana tha.'), '_blank');
+          return;
+        }
         if (t[2] === null) {
           setTimeout(function () { var tr = q('#sq-badge-tray'); if (tr) tr.click(); }, 220);
           return;
