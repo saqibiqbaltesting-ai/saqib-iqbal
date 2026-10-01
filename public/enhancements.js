@@ -2576,9 +2576,9 @@
 
   var st = document.createElement('style');
   st.textContent = [
-    '#sq-app-btn{position:fixed;bottom:168px;left:14px;z-index:11000;border:1px solid rgba(233,123,156,.45);',
-    'background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:10px 16px;',
-    'font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 18px #0008;transition:transform .15s}',
+    '#sq-app-btn{position:fixed;bottom:160px;left:14px;z-index:11000;border:1px solid rgba(233,123,156,.45);',
+    'background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:5px 12px;',
+    'font:inherit;font-size:11px;cursor:pointer;box-shadow:0 4px 12px #0008;transition:transform .15s}',
     '#sq-app-btn:active{transform:scale(.94)}',
     '#sq-app-btn.sq-installed{display:none}',
     '#sq-app-overlay{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}',
@@ -2655,7 +2655,7 @@
     '.sq-mode-teaser .sq-mt-ico{font-size:30px;margin-bottom:8px}',
     '.sq-mode-teaser .sq-mt-t{color:#f0c96a;font-size:16px;margin-bottom:6px}',
     '.sq-mode-teaser .sq-mt-btn{margin-top:14px;background:linear-gradient(135deg,#e97b9c,#d9a94e);color:#fff;border:none;border-radius:999px;padding:10px 22px;font:inherit;font-size:14px;cursor:pointer}',
-    '#sq-mode-btn{position:fixed;bottom:118px;left:14px;z-index:11000;border:1px solid rgba(240,201,106,.5);background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer;box-shadow:0 6px 18px #0008;transition:transform .15s}',
+    '#sq-mode-btn{position:fixed;bottom:118px;left:14px;z-index:11000;border:1px solid rgba(240,201,106,.5);background:#0a0a0ecc;color:#f0c96a;backdrop-filter:blur(8px);border-radius:999px;padding:4px 11px;font:inherit;font-size:11px;cursor:pointer;box-shadow:0 4px 12px #0008;transition:transform .15s}',
     '#sq-mode-btn:active{transform:scale(.94)}',
     '#sq-mode-btn.sq-full-on{color:#5fdc8a;border-color:rgba(95,220,138,.5)}',
     '#sq-mode-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}',
