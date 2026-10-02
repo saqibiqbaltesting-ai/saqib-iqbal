@@ -4218,7 +4218,7 @@
   var iv = setInterval(function () { if (build() || ++tries > 50) clearInterval(iv); }, 1200);
 })();
 
-/* ===== Kit: Cursor Picker — user apna cursor chune (naam ke sath) ===== */
+/* ===== Kit: Cursor Picker v2 — cursor + trails (sparkle / heart / comet fixed) ===== */
 (function () {
   'use strict';
   if (window.__sqCursor) return;
@@ -4229,7 +4229,8 @@
 
   function cursorPNG(kind) {
     var cv = document.createElement('canvas'); cv.width = 32; cv.height = 32;
-    var x = cv.getContext('2d');
+    var x = cv.getContext('2d'); if (!x) return '';
+    x.textBaseline = 'middle'; x.textAlign = 'center';
     if (kind === 'ring') {
       x.strokeStyle = '#f0c96a'; x.lineWidth = 3;
       x.shadowColor = '#f0c96a'; x.shadowBlur = 8;
@@ -4241,37 +4242,64 @@
       x.fillStyle = g; x.shadowColor = '#e97b9c'; x.shadowBlur = 10;
       x.beginPath(); x.arc(16, 16, 9, 0, 7); x.fill();
       x.fillStyle = '#ffffffcc'; x.beginPath(); x.arc(12, 12, 3, 0, 7); x.fill();
-    } else if (kind === 'crown') { x.font = '22px serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText('\uD83D\uDC51', 16, 17); }
-    else if (kind === 'crescent') { x.font = '22px serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText('\uD83C\uDF19', 16, 17); }
-    else if (kind === 'heartdot') { x.font = '20px serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText('\u2764\uFE0F', 16, 17); }
+    } else if (kind === 'sparkle') {
+      x.font = '24px serif'; x.fillText('\u2728', 16, 17);
+      x.font = '12px serif'; x.fillText('\u2B50', 26, 26);
+    } else if (kind === 'heart') {
+      x.font = '24px serif'; x.fillText('\u2764\uFE0F', 16, 17);
+    } else if (kind === 'comet') {
+      x.font = '24px serif'; x.fillText('\uD83D\uDCAB', 16, 17);
+    } else if (kind === 'crown') { x.font = '22px serif'; x.fillText('\uD83D\uDC51', 16, 17); }
+    else if (kind === 'crescent') { x.font = '22px serif'; x.fillText('\uD83C\uDF19', 16, 17); }
+    else if (kind === 'heartdot') { x.font = '20px serif'; x.fillText('\u2764\uFE0F', 16, 17); }
     try { return cv.toDataURL('image/png'); } catch (e) { return ''; }
   }
+
+  /* trail icons per cursor kind (sparkle / heart / comet / mix) */
+  var TRAILS = {
+    mix: ['\u2728'],
+    sparkle: ['\u2728', '\u2B50', '\uD83D\uDCAB'],
+    heart: ['\u2764\uFE0F', '\uD83D\uDC9C'],
+    comet: ['\uD83D\uDCAB', '\u2728', '\u2604\uFE0F']
+  };
+
   function apply(kind) {
-    if (!fine) return;
-    if (kind === 'normal') { document.body.style.cursor = ''; trailOn = null; lsS('sq-cursor', 'normal'); return; }
+    if (kind === 'normal') {
+      document.body.style.cursor = '';
+      window.__sqTrailIcons = null;
+      lsS('sq-cursor', 'normal');
+      return;
+    }
     var url = cursorPNG(kind === 'mix' ? 'ring' : kind);
     document.body.style.cursor = url ? 'url(' + url + ') 16 16, auto' : '';
-    if (kind === 'mix') {
-      trailOn = ['\u2728'];
-    } else if (kind === 'sparkle') trailOn = ['\u2728', '\u2B50', '\uD83D\uDCAB'];
-    else if (kind === 'heart') trailOn = ['\u2764\uFE0F', '\uD83D\uDC9C'];
-    else if (kind === 'comet') trailOn = ['\uD83D\uDCAB', '\u2728'];
-    else trailOn = null;
+    window.__sqTrailIcons = TRAILS[kind] || null;
     lsS('sq-cursor', kind);
   }
-  var trailOn = null, lastT = 0;
-  if (fine) {
-    document.addEventListener('mousemove', function (e) {
-      if (!trailOn || Date.now() - lastT < 70) return;
-      lastT = Date.now();
-      var s = document.createElement('div');
-      s.textContent = trailOn[Math.floor(Math.random() * trailOn.length)];
-      s.style.cssText = 'position:fixed;z-index:12998;pointer-events:none;left:' + (e.clientX - 8) + 'px;top:' + (e.clientY - 8) + 'px;font-size:13px;opacity:1;transition:transform .8s ease-out,opacity .8s';
-      document.body.appendChild(s);
-      requestAnimationFrame(function () { s.style.transform = 'translateY(18px) scale(.4)'; s.style.opacity = '0'; });
-      setTimeout(function () { s.remove(); }, 850);
-    }, { passive: true });
+  window.sqApplyCursor = apply;
+
+  /* trail spawner — chalta hai jab trail cursor ON ho */
+  var lastT = 0;
+  function spawn(e) {
+    var icons = window.__sqTrailIcons;
+    if (!icons || !icons.length) return;
+    var now = Date.now();
+    if (now - lastT < 55) return;
+    lastT = now;
+    var s = document.createElement('div');
+    s.textContent = icons[Math.floor(Math.random() * icons.length)];
+    s.style.cssText = 'position:fixed;z-index:12998;pointer-events:none;left:' + (e.clientX - 10 + (Math.random() * 12 - 6)) + 'px;top:' + (e.clientY - 10 + (Math.random() * 12 - 6)) + 'px;font-size:14px;opacity:1;transition:transform 1.2s ease-out,opacity 1.2s;will-change:transform,opacity';
+    document.body.appendChild(s);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        s.style.transform = 'translateY(26px) scale(.35) rotate(' + (Math.random() * 40 - 20) + 'deg)';
+        s.style.opacity = '0';
+      });
+    });
+    setTimeout(function () { try { s.remove(); } catch (e2) {} }, 1500);
   }
+  document.addEventListener('mousemove', spawn, { passive: true });
+  document.addEventListener('pointermove', function (e) { if (!e.pointerType || e.pointerType === 'mouse') spawn(e); }, { passive: true });
+
   var CURSORS = [
     ['normal', '\u2B1C Normal', 'Default cursor'],
     ['ring', '\uD83D\uDFE1 Golden Glow Ring', 'Chamakta sunehri ring'],
@@ -4283,6 +4311,7 @@
     ['orb', '\uD83D\uDD2E Gradient Orb', 'Rang badalta ball'],
     ['mix', '\uD83C\uDFAF Mix Mode', 'Ring + sparkle combo']
   ];
+
   function picker() {
     var old = document.getElementById('sq-feat-ov'); if (old) old.remove();
     var ov = document.createElement('div'); ov.id = 'sq-feat-ov';
@@ -4331,6 +4360,151 @@
   var applied = false;
   setInterval(function () {
     var ok = injectBtn();
-    if (!applied && ok) { applied = true; if (fine) apply(lsG('sq-cursor') || 'normal'); }
+    if (!applied && ok) { applied = true; apply(lsG('sq-cursor') || 'normal'); }
   }, 1200);
 })();
+
+/* ===== Kit v34: mobile icon sizes + categories dots + left dock ===== */
+(function () {
+  'use strict';
+  /* ---------- CSS (body ke end par inject — sab se aakhri word) ---------- */
+  var css = [
+    '/* --- v34 fixes --- */',
+    /* 1) mobile: top icons chhote, laptop par same */
+    '@media (max-width:640px){',
+    'html body .lang-toggle{width:64px!important;min-width:64px!important;padding:4px 4px!important;min-height:32px!important;font-size:11.5px!important}',
+    'html body .theme-toggle{width:32px!important;height:32px!important;left:calc(max(8px, env(safe-area-inset-left)) + 68px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 68px)!important}',
+    'html body .social-row{left:calc(max(8px, env(safe-area-inset-left)) + 106px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 106px)!important;gap:4px!important}',
+    'html body .wa-top{width:30px!important;height:30px!important}',
+    'html body .wa-top svg{width:14px!important;height:14px!important}',
+    'html body .nav-toggle{width:32px!important;height:32px!important}',
+    'html body .font-toggle{inset-inline-end:44px!important;right:44px!important}',
+    'html body #sq-cursor-btn{width:32px!important;height:32px!important;inset-inline-end:80px!important;right:80px!important}',
+    'html body #sq-dots-btn{width:32px!important;height:32px!important;inset-inline-end:116px!important;right:116px!important;font-size:12px!important}',
+    'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important}',
+    'html body #sq-dock-left-btn{width:44px!important;height:44px!important;font-size:19px!important}',
+    '}',
+    /* dots button — cursor icon ke pehle */
+    'html body #sq-dots-btn{inset-inline-end:104px!important;right:104px!important;z-index:12;flex-shrink:0}',
+    /* 3) left dock button */
+    'html body #sq-dock-left-btn{position:fixed;bottom:18px;inset-inline-start:18px;left:18px;right:auto;z-index:11006;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;font-size:21px;line-height:1;padding:0;background:linear-gradient(135deg,#7c5cff,#e97b9c 60%,#f0c96a);color:#fff;box-shadow:0 8px 24px #7c5cff66;transition:transform .25s,box-shadow .25s}',
+    'html body #sq-dock-left-btn:active{transform:scale(.92)}',
+    'body.sq-dock-left-open #sq-dock-left-btn{transform:rotate(90deg) scale(1.05);box-shadow:0 0 0 5px #ffffff33,0 8px 24px #7c5cff66}',
+    /* left widgets default chhupi — dock khulne par nikalti hain */
+    'html body #sq-app-btn,html body #sq-mode-btn,html body #sq-pk-clock,html body #sq-refresh-btn,html body #sq-anim-toggle{opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .22s,visibility .22s,transform .22s,bottom .22s}',
+    'body.sq-dock-left-open #sq-refresh-btn{opacity:1;visibility:visible;transform:none;bottom:86px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-pk-clock{opacity:1;visibility:visible;transform:none;bottom:146px!important;left:14px!important}',
+    'body.sq-dock-left-open #sq-anim-toggle{opacity:1;visibility:visible;transform:none;bottom:190px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-mode-btn{opacity:1;visibility:visible;transform:none;bottom:248px!important;left:14px!important}',
+    'body.sq-dock-left-open #sq-app-btn{opacity:1;visibility:visible;transform:none;bottom:292px!important;left:20px!important}',
+    /* gate (login) par naye buttons chhupi */
+    'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn{display:none!important}',
+    /* dots menu panel */
+    '#sq-dots-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
+    '#sq-dots-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:18px 16px;width:min(92vw,340px);max-height:80vh;overflow-y:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6);font-family:inherit}',
+    '#sq-dots-card h3{margin:0 0 10px;font-size:17px;color:#f0c96a;display:flex;justify-content:space-between;align-items:center;gap:10px}',
+    '#sq-dots-card .sq-fx{width:30px;height:30px;border-radius:50%;border:1px solid #ffffff22;background:transparent;color:#fff;font-size:16px;cursor:pointer;line-height:1}',
+    '#sq-dots-card .sq-f-btn2{display:block;width:100%;text-align:left;margin:5px 0;padding:10px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font:inherit;font-size:13.5px;cursor:pointer;transition:border-color .15s,color .15s}',
+    '#sq-dots-card .sq-f-btn2:hover{border-color:#f0c96a;color:#f0c96a}',
+    '#sq-dots-empty{font-size:12px;opacity:.6;text-align:center;padding:14px 0}'
+  ].join('\n');
+  function addCss() {
+    if (document.getElementById('sq-v34-css')) return;
+    var st = document.createElement('style');
+    st.id = 'sq-v34-css';
+    st.textContent = css;
+    (document.body || document.head).appendChild(st);
+  }
+  if (document.body) addCss(); else document.addEventListener('DOMContentLoaded', addCss);
+
+  /* ---------- 3) left dock — + jaisa, lekin khoobsurat sitara ---------- */
+  (function () {
+    function mk() {
+      if (!document.body) return false;
+      if (document.getElementById('sq-dock-left-btn')) return true;
+      var b = document.createElement('button');
+      b.id = 'sq-dock-left-btn';
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Menu kholen');
+      b.title = 'Menu';
+      b.innerHTML = '\u2726';
+      b.addEventListener('click', function () { document.body.classList.toggle('sq-dock-left-open'); });
+      document.body.appendChild(b);
+      return true;
+    }
+    if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
+    setInterval(function () {
+      var panel = document.getElementById('sq-chat-panel');
+      var open = false;
+      try { open = !!(panel && window.getComputedStyle(panel).display !== 'none'); } catch (e) {}
+      var b = document.getElementById('sq-dock-left-btn');
+      if (b) b.style.display = open ? 'none' : '';
+      if (open) document.body.classList.remove('sq-dock-left-open');
+    }, 400);
+  })();
+
+  /* ---------- 2) three dots — categories menu (cursor icon ke pehle) ---------- */
+  (function () {
+    function mk() {
+      if (!document.body) return false;
+      if (document.getElementById('sq-dots-btn')) return true;
+      var anchor = document.querySelector('.font-toggle');
+      if (!anchor || !anchor.parentNode) return false;
+      var ref = document.getElementById('sq-cursor-btn') || anchor;
+      var d = document.createElement('button');
+      d.type = 'button'; d.id = 'sq-dots-btn'; d.className = 'nav-toggle sq-dots-toggle';
+      d.innerHTML = '<span style="font-size:15px;letter-spacing:1px;line-height:1" aria-hidden="true">\u22EF</span>';
+      d.setAttribute('aria-label', 'Categories kholen');
+      d.title = 'Categories';
+      d.onclick = openMenu;
+      try {
+        var cs = window.getComputedStyle(anchor);
+        ['width','height','border-radius','background','border','box-shadow','color','font-size','line-height','display','align-items','justify-content','padding','margin'].forEach(function (p) { d.style[p] = cs[p]; });
+        d.style.flexShrink = '0';
+      } catch (e) {}
+      ref.parentNode.insertBefore(d, ref);
+      return true;
+    }
+    var tries = 0;
+    var iv = setInterval(function () { if (mk() || ++tries > 60) clearInterval(iv); }, 800);
+    function openMenu() {
+      var old = document.getElementById('sq-dots-ov');
+      if (old) { old.remove(); return; }
+      var ov = document.createElement('div'); ov.id = 'sq-dots-ov';
+      var card = document.createElement('div'); card.id = 'sq-dots-card';
+      var x = document.createElement('button'); x.className = 'sq-fx'; x.type = 'button'; x.innerHTML = '\u00D7';
+      x.setAttribute('aria-label', 'Band karein'); x.onclick = function () { ov.remove(); };
+      var h = document.createElement('h3'); h.textContent = '\uD83D\uDDC2\uFE0F Categories'; h.appendChild(x);
+      card.appendChild(h);
+      var items = [], seen = {};
+      var NICE = { bio: '01 \u2014 Bio', achievements: '02 \u2014 Achievements', gallery: '03 \u2014 My Memories (Gallery)', quote: '05 \u2014 Quote of the Day', guestbook: '09 \u2014 Guestbook', quiz: '10 \u2014 Quiz', qa: '11 \u2014 Q&A', contact: '14 \u2014 Contact', 'sq-poetry': '04 \u2014 Poetry', 'sq-music': '06 \u2014 Music', 'sq-user-sher': '07 \u2014 Aap ka Sher', 'sq-hearts': '12 \u2014 Deewar e Dil', 'sq-zone': '13 \u2014 Saqib Zone' };
+      var secs = document.querySelectorAll('section.section[id]');
+      for (var i = 0; i < secs.length; i++) {
+        var id = secs[i].id; if (!id || seen[id]) continue; seen[id] = true;
+        var h2 = secs[i].querySelector('h2');
+        var label = NICE[id] || ((h2 && h2.textContent.trim()) || id);
+        items.push({ id: id, label: label });
+      }
+      if (document.getElementById('sq-dock-btn')) items.unshift({ id: 'top', label: '\u2302 Top / Hero' });
+      if (!items.length) items.push({ id: null, label: 'Is page par koi category nahi' });
+      items.forEach(function (it) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-f-btn2';
+        var label = it.label || it.id;
+        if (label.length > 34) label = label.slice(0, 33) + '\u2026';
+        b.textContent = label;
+        b.onclick = function () {
+          ov.remove();
+          if (!it.id) return;
+          if (it.id === 'top') { try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } return; }
+          var el = document.getElementById(it.id);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        };
+        card.appendChild(b);
+      });
+      ov.appendChild(card);
+      ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+      document.body.appendChild(ov);
+    }
+  })();
+})();
+
