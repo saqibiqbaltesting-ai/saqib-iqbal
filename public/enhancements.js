@@ -2504,6 +2504,7 @@
       ['\uD83C\uDFB5', 'Music', 'sq-music'],
       ['\u2764\uFE0F', 'Deewar e Dil', 'sq-hearts'],
       ['\uD83D\uDCDD', 'Aap ka Sher', 'sq-user-sher'],
+      ['\uD83D\uDCF1', 'WhatsApp DPs', 'sq-dps'],
       ['\uD83D\uDCBC', 'Kaam poochein?', 'wa'],
       ['\uD83D\uDCC5', 'Aaj ka Target', 'sqx:target'],
       ['\u23F3', 'Countdown', 'sqx:countdown'],
@@ -5070,5 +5071,117 @@
         });
       } catch (e) {}
     }, 400);
+  } catch (e) {}
+})();
+
+/* ===== v76: WhatsApp DPs — Boys/Girls cards (100+100, 640x640, WhatsApp-fit) ===== */
+(function () {
+  try {
+    if (window.__sqDps) return; window.__sqDps = true;
+    var CATS = [
+      { key: 'boys', label: 'For Boys', count: 100, pre: 'B' },
+      { key: 'girls', label: 'For Girls', count: 100, pre: 'G' }
+    ];
+    var CSS = '#sq-dps-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;max-width:640px;margin:0 auto}' +
+      '.sq-dps-card{position:relative;border-radius:20px;overflow:hidden;cursor:pointer;border:1px solid rgba(233,123,156,.4);box-shadow:0 10px 30px #0006,0 0 0 1px #ffffff10 inset;transition:transform .2s,box-shadow .2s;padding:0;background:none}' +
+      '.sq-dps-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px #e97b9c55}' +
+      '.sq-dps-card img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}' +
+      '.sq-dps-card .sq-dps-label{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 12px;background:linear-gradient(transparent,#000000d9);color:#fff;font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center;letter-spacing:.03em}' +
+      '.sq-dps-card .sq-dps-count{font-size:12px;font-weight:600;background:#e97b9c55;border:1px solid #e97b9c88;border-radius:999px;padding:3px 10px}' +
+      '#sq-dps-ov{position:fixed;inset:0;z-index:12000;background:#07070ccf;backdrop-filter:blur(8px);display:flex;flex-direction:column}' +
+      '#sq-dps-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;color:#f2d9e1;font-weight:700;letter-spacing:.04em;border-bottom:1px solid #ffffff14}' +
+      '#sq-dps-x{border:none;background:transparent;color:#f2d9e1;font-size:22px;cursor:pointer;padding:4px 10px}' +
+      '.sq-dps-body{flex:1;overflow-y:auto;padding:16px}' +
+      '.sq-dps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}' +
+      '.sq-dps-thumb{padding:0;border:none;background:none;border-radius:14px;overflow:hidden;cursor:pointer;aspect-ratio:1/1;border:1px solid #ffffff18;transition:transform .15s}' +
+      '.sq-dps-thumb:hover{transform:scale(1.04)}' +
+      '.sq-dps-thumb img{width:100%;height:100%;object-fit:cover;display:block}' +
+      '.sq-dps-view{display:flex;flex-direction:column;align-items:center;gap:14px;padding:10px 0 24px}' +
+      '.sq-dps-view img{width:min(84vw,420px);aspect-ratio:1/1;object-fit:cover;border-radius:18px;border:1px solid #ffffff22;box-shadow:0 20px 60px #000c}' +
+      '.sq-dps-dl{display:inline-flex;align-items:center;gap:8px;padding:12px 26px;border-radius:999px;border:none;cursor:pointer;font-weight:700;font-size:15px;color:#fff;background:linear-gradient(135deg,#e97b9c,#d9a94e);box-shadow:0 8px 24px #e97b9c66;text-decoration:none}' +
+      '.sq-dps-back{border:none;background:#ffffff14;color:#f2d9e1;border-radius:999px;padding:10px 22px;cursor:pointer;font-weight:600}';
+    function injectCss() {
+      if (document.getElementById('sq-dps-style')) return;
+      var s = document.createElement('style'); s.id = 'sq-dps-style'; s.textContent = CSS;
+      document.head.appendChild(s);
+    }
+    function mkSec(id, title, sub) {
+      var sec = document.createElement('section');
+      sec.className = 'section sq-sec'; sec.id = id;
+      var head = document.createElement('div'); head.className = 'section-header';
+      head.innerHTML = '<h2>' + title + '</h2>';
+      var p = document.createElement('p'); p.className = 'sq-sec-sub'; p.textContent = sub;
+      head.appendChild(p); sec.appendChild(head);
+      return sec;
+    }
+    function dpSrc(cat, n) { return 'assets/dps/' + cat.key + '/' + cat.pre + String(n).padStart(3, '0') + '.png'; }
+    function ensureSection() {
+      if (document.getElementById('sq-dps')) return true;
+      if (!document.body) return false;
+      injectCss();
+      var sec = mkSec('sq-dps', '\ud83d\udcf1 WhatsApp DPs', 'Profile picture ke liye ready DPs \u2014 har DP 640\u00d7640 square, WhatsApp par perfect fit');
+      var grid = document.createElement('div'); grid.id = 'sq-dps-cards';
+      CATS.forEach(function (c) {
+        var card = document.createElement('button');
+        card.type = 'button'; card.className = 'sq-dps-card';
+        card.setAttribute('aria-label', c.label + ' DPs kholen');
+        var img = document.createElement('img'); img.src = dpSrc(c, 1); img.alt = c.label + ' DP preview'; img.loading = 'lazy';
+        var lab = document.createElement('span'); lab.className = 'sq-dps-label';
+        lab.innerHTML = '<span>' + c.label + '</span><span class="sq-dps-count">' + c.count + ' DPs</span>';
+        card.appendChild(img); card.appendChild(lab);
+        card.onclick = function () { openOv(c); };
+        grid.appendChild(card);
+      });
+      sec.appendChild(grid);
+      var anchor = document.getElementById('contact');
+      (anchor && anchor.parentNode ? anchor.parentNode : document.body).insertBefore(sec, anchor || null);
+      return true;
+    }
+    function closeOv(ov) {
+      ov.remove();
+      document.body.style.overflow = '';
+    }
+    function openOv(cat) {
+      var old = document.getElementById('sq-dps-ov'); if (old) old.remove();
+      var ov = document.createElement('div'); ov.id = 'sq-dps-ov';
+      var head = document.createElement('div'); head.id = 'sq-dps-head';
+      head.innerHTML = '<span>\ud83d\udcf1 WhatsApp DPs \u2014 ' + cat.label + '</span>';
+      var x = document.createElement('button'); x.id = 'sq-dps-x'; x.textContent = '\u00d7';
+      x.setAttribute('aria-label', 'Band karein');
+      x.onclick = function () { closeOv(ov); };
+      head.appendChild(x);
+      var body = document.createElement('div'); body.className = 'sq-dps-body';
+      var grid = document.createElement('div'); grid.className = 'sq-dps-grid';
+      for (var i = 1; i <= cat.count; i++) {
+        (function (n) {
+          var t = document.createElement('button');
+          t.type = 'button'; t.className = 'sq-dps-thumb';
+          var im = document.createElement('img'); im.src = dpSrc(cat, n); im.alt = cat.label + ' DP ' + n; im.loading = 'lazy';
+          t.appendChild(im);
+          t.onclick = function () { showView(cat, n); };
+          grid.appendChild(t);
+        })(i);
+      }
+      body.appendChild(grid);
+      ov.appendChild(head); ov.appendChild(body);
+      document.body.appendChild(ov);
+      document.body.style.overflow = 'hidden';
+      ov.addEventListener('click', function (e) { if (e.target === ov) closeOv(ov); });
+    }
+    function showView(cat, n) {
+      var ov = document.getElementById('sq-dps-ov'); if (!ov) return;
+      var body = ov.querySelector('.sq-dps-body');
+      body.innerHTML = '';
+      var view = document.createElement('div'); view.className = 'sq-dps-view';
+      var im = document.createElement('img'); im.src = dpSrc(cat, n); im.alt = cat.label + ' DP ' + n;
+      var dl = document.createElement('a'); dl.className = 'sq-dps-dl'; dl.textContent = '\u2b07\ufe0f Download DP';
+      dl.href = dpSrc(cat, n); dl.download = 'whatsapp-dp-' + cat.key + '-' + String(n).padStart(3, '0') + '.png';
+      var back = document.createElement('button'); back.className = 'sq-dps-back'; back.textContent = '\u2190 Wapas';
+      back.onclick = function () { openOv(cat); };
+      view.appendChild(im); view.appendChild(dl); view.appendChild(back);
+      body.appendChild(view);
+    }
+    var tries = 0;
+    var iv = setInterval(function () { var ok = ensureSection(); if (ok || ++tries > 50) clearInterval(iv); }, 1200);
   } catch (e) {}
 })();
