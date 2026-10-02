@@ -4758,6 +4758,8 @@
         /* mobile: dock ke upar float (header small screens par bharta hai) */
         '@media (max-width:640px){html body #sq-magic-btn{top:auto;right:auto;bottom:74px;left:20px;width:40px;height:40px;font-size:17px}}',
         /* v56: default font Pacifico — base + sab themes (font panel ki inline choice phir bhi jeetegi) */
+        /* v58: Pacifico ab SELF-HOSTED (/fonts/pacifico.woff2) — Google CDN par depend nahi, har device par load hoga */
+        '@font-face{font-family:"Pacifico";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/pacifico.woff2) format("woff2")}',
         ':root,:root[data-sq-theme]{--serif:"Pacifico",Georgia,serif}',
         'html body{font-family:var(--serif)}'
       ].join('\n');
