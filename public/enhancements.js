@@ -4466,8 +4466,8 @@
     'html body.sq-dock-open #sq-dash-btn{bottom:254px!important;left:auto!important;inset-inline-start:auto!important;right:7px!important;inset-inline-end:7px!important}',
     /* mobile: dock 44px hai (center 22) — chat/fab/anim/dash centers bhi 22 par */
     '@media (max-width:640px){html body.sq-dock-open #sq-chat-btn{right:-5px!important;inset-inline-end:-5px!important}html body.sq-dock-open #sq-fab{right:0!important;inset-inline-end:0!important}html body.sq-dock-open #sq-anim-toggle,html body.sq-dock-open #sq-dash-btn{right:2px!important;inset-inline-end:2px!important}}',
-    'html body #sq-top-btn{bottom:184px!important}',
-    'html body #sq-bottom-btn{bottom:238px!important}',
+    'html body #sq-top-btn{bottom:132px!important}',
+    'html body #sq-bottom-btn{bottom:184px!important}',
     'html body #sq-pk-clock{left:2px!important;inset-inline-start:2px!important}',
     'html body #sq-refresh-btn,html body #sq-anim-toggle,html body #sq-app-btn{left:2px!important;inset-inline-start:2px!important}',
     'html body #sq-mode-btn{left:2px!important;inset-inline-start:2px!important}',
