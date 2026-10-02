@@ -4384,10 +4384,7 @@
     /* dots (ab ☰ categories) — cursor icon ke baad, Aa uske baad */
     'html body #sq-dots-btn{inset-inline-end:56px!important;right:56px!important;z-index:12;flex-shrink:0;font-size:15px!important}',
     'html body .font-toggle{inset-inline-end:104px!important;right:104px!important}',
-    /* 4) theme button — sparkle dock ke upar */
-    'html body #sq-theme-btn{position:fixed;bottom:82px;inset-inline-start:24px;left:24px;right:auto;z-index:11005;width:44px;height:44px;border-radius:50%;border:1px solid rgba(240,201,106,.5);cursor:pointer;font-size:18px;line-height:1;padding:0;background:rgba(18,8,28,.88);color:#f0c96a;box-shadow:0 4px 16px rgba(0,0,0,.5);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);transition:transform .2s,box-shadow .2s}',
-    'html body #sq-theme-btn:active{transform:scale(.9)}',
-    /* 3) left dock button */
+    /* left widgets default chhupi — dock khulne par nikalti hain */
     'html body #sq-dock-left-btn{position:fixed;bottom:18px;inset-inline-start:18px;left:18px;right:auto;z-index:11006;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;font-size:21px;line-height:1;padding:0;background:linear-gradient(135deg,#7c5cff,#e97b9c 60%,#f0c96a);color:#fff;box-shadow:0 8px 24px #7c5cff66;transition:transform .25s,box-shadow .25s}',
     'html body #sq-dock-left-btn:active{transform:scale(.92)}',
     'body.sq-dock-left-open #sq-dock-left-btn{transform:rotate(90deg) scale(1.05);box-shadow:0 0 0 5px #ffffff33,0 8px 24px #7c5cff66}',
@@ -4399,7 +4396,7 @@
     'body.sq-dock-left-open #sq-mode-btn{opacity:1;visibility:visible;transform:none;bottom:300px!important;left:14px!important}',
     'body.sq-dock-left-open #sq-app-btn{opacity:1;visibility:visible;transform:none;bottom:344px!important;left:20px!important}',
     /* gate (login) par naye buttons chhupi */
-    'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn,body:has(.gate-overlay) #sq-theme-btn{display:none!important}',
+    'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn,body:has(.gate-overlay) #sq-magic-btn{display:none!important}',
     /* dots menu panel */
     '#sq-dots-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
     '#sq-dots-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:18px 16px;width:min(92vw,340px);max-height:80vh;overflow-y:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6);font-family:inherit}',
@@ -4408,25 +4405,6 @@
     '#sq-dots-card .sq-f-btn2{display:block;width:100%;text-align:left;margin:5px 0;padding:10px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font:inherit;font-size:13.5px;cursor:pointer;transition:border-color .15s,color .15s}',
     '#sq-dots-card .sq-f-btn2:hover{border-color:#f0c96a;color:#f0c96a}',
     '#sq-dots-empty{font-size:12px;opacity:.6;text-align:center;padding:14px 0}',
-    /* 4) theme versions — poora look badalta hai */
-    'html[data-theme="emerald"]{--bg:#04120c;--bg-soft:#0a1f16;--ink:#eefbf2;--ink-dim:#b9d9c2;--ink-mute:#7fa58c;--accent:#4ade80;--accent-deep:#22c55e;--gold:#a7f3d0;--line:rgba(74,222,128,.18);--sq-accent:#4ade80}',
-    'html[data-theme="ocean"]{--bg:#04101f;--bg-soft:#0a1b30;--ink:#eaf6ff;--ink-dim:#b3d3ea;--ink-mute:#7e9ab0;--accent:#38bdf8;--accent-deep:#0ea5e9;--gold:#7dd3fc;--line:rgba(56,189,248,.18);--sq-accent:#38bdf8}',
-    'html[data-theme="rose"]{--bg:#170409;--bg-soft:#2a0a14;--ink:#fff0f4;--ink-dim:#e6b8c6;--ink-mute:#b07f8f;--accent:#fb7185;--accent-deep:#e11d48;--gold:#fda4af;--line:rgba(251,113,133,.2);--sq-accent:#fb7185}',
-    'html[data-theme="royal"]{--bg:#0a0618;--bg-soft:#150c2e;--ink:#f3efff;--ink-dim:#c7bce6;--ink-mute:#948ab3;--accent:#a78bfa;--accent-deep:#7c3aed;--gold:#c4b5fd;--line:rgba(167,139,250,.2);--sq-accent:#a78bfa}',
-    'html[data-theme="emerald"] body,html[data-theme="ocean"] body,html[data-theme="rose"] body,html[data-theme="royal"] body{background-color:var(--bg)!important;background-attachment:fixed}',
-    'html[data-theme="emerald"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(74,222,128,.14),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(74,222,128,.07),transparent 70%)!important}',
-    'html[data-theme="ocean"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(56,189,248,.14),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(56,189,248,.07),transparent 70%)!important}',
-    'html[data-theme="rose"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(251,113,133,.15),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(251,113,133,.07),transparent 70%)!important}',
-    'html[data-theme="royal"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(167,139,250,.15),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(167,139,250,.07),transparent 70%)!important}',
-    /* theme panel */
-    '#sq-theme-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
-    '#sq-theme-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:18px 16px;width:min(92vw,340px);max-height:80vh;overflow-y:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6);font-family:inherit}',
-    '#sq-theme-card h3{margin:0 0 10px;font-size:17px;color:#f0c96a;display:flex;justify-content:space-between;align-items:center;gap:10px}',
-    '#sq-theme-card .sq-fx{width:30px;height:30px;border-radius:50%;border:1px solid #ffffff22;background:transparent;color:#fff;font-size:16px;cursor:pointer;line-height:1}',
-    '#sq-theme-card .sq-t-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin:5px 0;padding:9px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font:inherit;font-size:13.5px;cursor:pointer;transition:border-color .15s,color .15s}',
-    '#sq-theme-card .sq-t-btn:hover{border-color:#f0c96a;color:#f0c96a}',
-    '#sq-theme-card .sq-t-btn.sq-cur{border-color:#f0c96a;color:#f0c96a}',
-    '#sq-theme-card .sq-t-swatch{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:1px solid #ffffff44}',
     /* 1) mobile: top icons chhote, laptop par same — media block sab se aakhir mein */
     '@media (max-width:640px){',
     'html body .lang-toggle{width:64px!important;min-width:64px!important;padding:4px 4px!important;min-height:32px!important;font-size:11.5px!important}',
@@ -4440,7 +4418,6 @@
     'html body #sq-dots-btn{width:32px!important;height:32px!important;inset-inline-end:80px!important;right:80px!important;font-size:13px!important}',
     'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important}',
     'html body #sq-dock-left-btn{width:44px!important;height:44px!important;font-size:19px!important}',
-    'html body #sq-theme-btn{width:34px!important;height:34px!important;font-size:15px!important;bottom:76px!important;left:27px!important;inset-inline-start:27px!important}',
     '}'
   ].join('\n');
   function addCss() {
@@ -4548,88 +4525,164 @@
     }
   })();
 
-  /* ---------- 4) theme switcher — sparkle dock ke upar, poora look badalta hai ---------- */
+
+
+  /* ---------- 4) MAGIC THEME ENGINE — ek website, 5 mukhtalif visual identities ---------- */
   (function () {
+    if (window.__sqMagicTheme) return;
+    window.__sqMagicTheme = true;
     var THEMES = [
-      ['default', '\uD83D\uDC51 Royal Gold', '#070509', '#f0c96a'],
-      ['emerald', '\uD83C\uDF3F Emerald Night', '#04120c', '#4ade80'],
-      ['ocean', '\uD83C\uDF0A Ocean Blue', '#04101f', '#38bdf8'],
-      ['rose', '\uD83C\uDF39 Rose Noir', '#170409', '#fb7185'],
-      ['royal', '\uD83D\uDC9C Royal Violet', '#0a0618', '#a78bfa'],
-      ['light', '\u2600\uFE0F Light Pearl', '#fdf6f7', '#b23a5f']
+      ['midnight', '\uD83C\uDF19 Modern Dark', 'Glassmorphism, glowing accents, premium dark', '#0b0713', '#f0c96a'],
+      ['luxury', '\u2728 Luxury Premium', 'Cream aur gold, elegant serif look', '#f6efe3', '#b8860b'],
+      ['cyber', '\u26A1 Futuristic Cyber', 'Neon glow, grid background, mono font', '#01050c', '#22d3ee'],
+      ['minimal', '\u25FB Minimal Clean', 'Safed, sharp corners, zero shadows', '#ffffff', '#111110'],
+      ['creative', '\uD83C\uDFA8 Creative', 'Bold gradients, playful aur energetic', '#7f00ff', '#ff5d8f']
     ];
+    var KEY = 'sq-theme';
+    function themeName(id) { for (var i = 0; i < THEMES.length; i++) if (THEMES[i][0] === id) return THEMES[i][1]; return 'Theme'; }
     function currentTheme() {
-      var dt = document.documentElement.getAttribute('data-theme');
-      if (dt) return dt;
-      if (document.documentElement.classList.contains('theme-light')) return 'light';
-      return 'default';
+      var a = document.documentElement.getAttribute('data-sq-theme');
+      return a || 'midnight';
     }
-    function applyTheme(id) {
+    function applyTheme(id, silent) {
       var root = document.documentElement;
-      if (id === 'light') { root.removeAttribute('data-theme'); root.classList.add('theme-light'); }
-      else if (id === 'default') { root.removeAttribute('data-theme'); root.classList.remove('theme-light'); }
-      else { root.classList.remove('theme-light'); root.setAttribute('data-theme', id); }
-      try { localStorage.setItem('sq-theme', id); } catch (e) {}
-      if (window.sqToast) {
-        var t = null;
-        for (var i = 0; i < THEMES.length; i++) if (THEMES[i][0] === id) t = THEMES[i];
-        window.sqToast((t ? t[1] : 'Theme') + ' \u2014 theme lag gaya');
+      if (THEMES.map(function (t) { return t[0]; }).indexOf(id) === -1) id = 'midnight';
+      root.setAttribute('data-sq-theme', id);
+      /* site ka apna light palette light themes ke sath sync — baaki sab untouched */
+      if (id === 'luxury' || id === 'minimal') root.classList.add('theme-light');
+      else root.classList.remove('theme-light');
+      try { localStorage.setItem(KEY, id); } catch (e) {}
+      if (!silent) {
+        var reduce = false;
+        try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+        if (!reduce) {
+          root.classList.add('sq-morphing');
+          setTimeout(function () { root.classList.remove('sq-morphing'); }, 900);
+        }
+        if (window.sqToast) window.sqToast(themeName(id) + ' \u2014 naya look lag gaya');
       }
     }
     window.sqApplyTheme = applyTheme;
-    /* saved theme load */
+    /* saved theme load (purani values migrate: emerald/ocean/rose/royal -> midnight, light -> luxury) */
     var saved = null;
-    try { saved = localStorage.getItem('sq-theme'); } catch (e) {}
-    if (saved && saved !== 'default') applyTheme(saved);
-    /* sun toggle ke sath peace: agar .theme-light bahar se lagti hai to data-theme hata do */
-    var mo = null;
-    function startObs() {
-      if (!document.documentElement) { setTimeout(startObs, 400); return; }
-      mo = new MutationObserver(function () {
-        var root = document.documentElement;
-        try {
-          if (root.classList.contains('theme-light') && root.getAttribute('data-theme')) {
-            root.removeAttribute('data-theme');
-            try { localStorage.setItem('sq-theme', 'light'); } catch (e) {}
-          }
-        } catch (e) {}
-      });
-      mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    if (saved === 'light') saved = 'luxury';
+    else if (saved === 'emerald' || saved === 'ocean' || saved === 'rose' || saved === 'royal' || saved === 'default') saved = 'midnight';
+    applyTheme(saved || 'midnight', true);
+    /* engine CSS */
+    function addCss() {
+      if (document.getElementById('sq-magic-css')) return;
+      var css = [
+        /* cinematic transition helper */
+        'html.sq-morphing,html.sq-morphing body,html.sq-morphing *{transition:background-color .7s ease,color .7s ease,border-color .7s ease,box-shadow .7s ease,opacity .7s ease!important}',
+        '@media (prefers-reduced-motion:reduce){html.sq-morphing,html.sq-morphing body,html.sq-morphing *,html[data-sq-theme="creative"] body{animation:none!important;transition:none!important}}',
+        /* magic icon — header ke andar (desktop), mobile par dock ke upar float */
+        'html body #sq-magic-btn{position:fixed;top:calc(max(12px,env(safe-area-inset-top)) + 4px);right:152px;z-index:11005;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg-soft);color:var(--accent);cursor:pointer;font-size:17px;line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:transform .2s,box-shadow .3s,color .4s,border-color .4s}',
+        'html body #sq-magic-btn:hover{transform:scale(1.08)}',
+        'html body #sq-magic-btn:active{transform:scale(.92)}',
+        /* icon khud theme ke sath morph hota hai */
+        'html[data-sq-theme="midnight"] #sq-magic-btn{color:#f0c96a;border-color:rgba(240,201,106,.45);text-shadow:0 0 10px rgba(240,201,106,.55);box-shadow:0 0 14px rgba(240,201,106,.2)}',
+        'html[data-sq-theme="luxury"] #sq-magic-btn{color:#b8860b;border-color:rgba(184,134,11,.5);box-shadow:0 4px 14px rgba(138,101,8,.25)}',
+        'html[data-sq-theme="cyber"] #sq-magic-btn{color:#22d3ee;border-color:rgba(34,211,238,.55);text-shadow:0 0 10px rgba(34,211,238,.9);box-shadow:0 0 16px rgba(34,211,238,.4)}',
+        'html[data-sq-theme="minimal"] #sq-magic-btn{color:#111;border-color:rgba(0,0,0,.25);box-shadow:none}',
+        'html[data-sq-theme="creative"] #sq-magic-btn{background:linear-gradient(135deg,#ff5d8f,#ffb703);color:#fff;border-color:transparent;box-shadow:0 0 16px rgba(255,93,143,.5)}',
+        /* ---------- THEME 1: midnight — glass polish on current dark ---------- */
+        'html[data-sq-theme="midnight"] .nav-menu,html[data-sq-theme="midnight"] .font-panel,html[data-sq-theme="midnight"] .gb-item,html[data-sq-theme="midnight"] .gal-card,html[data-sq-theme="midnight"] .tile,html[data-sq-theme="midnight"] .sq-hub-tile{backdrop-filter:blur(10px) saturate(1.25);-webkit-backdrop-filter:blur(10px) saturate(1.25);box-shadow:0 10px 30px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.06)}',
+        'html[data-sq-theme="midnight"] .hero-name{text-shadow:0 0 34px rgba(240,201,106,.22)}',
+        /* ---------- THEME 2: luxury — cream + gold, serif ---------- */
+        ':root[data-sq-theme="luxury"]{--bg:#f6efe3;--bg-soft:#efe6d4;--ink:#2d2013;--ink-dim:#6d5a41;--ink-mute:#a3927a;--accent:#b8860b;--accent-deep:#8a6508;--gold:#a67c2e;--line:rgba(140,101,8,.25);--sq-accent:#b8860b}',
+        'html[data-sq-theme="luxury"] body{background-color:#f6efe3!important;background-image:radial-gradient(70% 45% at 80% -5%,rgba(184,134,11,.1),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(184,134,11,.06),transparent 70%)!important;background-attachment:fixed}',
+        'html[data-sq-theme="luxury"] h1,html[data-sq-theme="luxury"] h2,html[data-sq-theme="luxury"] h3,html[data-sq-theme="luxury"] .hero-name{font-family:var(--serif)!important;letter-spacing:.015em}',
+        'html[data-sq-theme="luxury"] .btn{border-radius:6px;font-family:var(--serif);letter-spacing:.14em;box-shadow:0 6px 18px rgba(138,101,8,.28)}',
+        'html[data-sq-theme="luxury"] .gal-card,html[data-sq-theme="luxury"] .gb-item,html[data-sq-theme="luxury"] .tile,html[data-sq-theme="luxury"] .sq-hub-tile,html[data-sq-theme="luxury"] .nav-menu,html[data-sq-theme="luxury"] .font-panel,html[data-sq-theme="luxury"] .gate-card{border-radius:10px;box-shadow:0 12px 34px rgba(60,40,10,.14);border-color:rgba(140,101,8,.3)}',
+        /* ---------- THEME 3: cyber — neon grid ---------- */
+        ':root[data-sq-theme="cyber"]{--bg:#01050c;--bg-soft:#04101f;--ink:#d8faff;--ink-dim:#7fd6e8;--ink-mute:#4e7f8f;--accent:#22d3ee;--accent-deep:#0891b2;--gold:#f472d0;--line:rgba(34,211,238,.28);--sq-accent:#22d3ee;--serif:ui-monospace,Menlo,Consolas,monospace;--mono:ui-monospace,Menlo,Consolas,monospace}',
+        'html[data-sq-theme="cyber"] body{background-color:#01050c!important;background-image:linear-gradient(rgba(34,211,238,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.05) 1px,transparent 1px),radial-gradient(60% 40% at 50% 0%,rgba(34,211,238,.12),transparent 70%)!important;background-size:34px 34px,34px 34px,100% 100%!important;background-attachment:fixed!important}',
+        'html[data-sq-theme="cyber"] h1,html[data-sq-theme="cyber"] h2,html[data-sq-theme="cyber"] h3,html[data-sq-theme="cyber"] .hero-name{text-shadow:0 0 14px rgba(34,211,238,.5);letter-spacing:.05em}',
+        'html[data-sq-theme="cyber"] .btn{border-radius:4px;background:linear-gradient(135deg,#0891b2,#22d3ee);box-shadow:0 0 18px rgba(34,211,238,.4)}',
+        'html[data-sq-theme="cyber"] .gal-card,html[data-sq-theme="cyber"] .gb-item,html[data-sq-theme="cyber"] .tile,html[data-sq-theme="cyber"] .sq-hub-tile,html[data-sq-theme="cyber"] .nav-menu,html[data-sq-theme="cyber"] .font-panel,html[data-sq-theme="cyber"] .gate-card{border-radius:4px;border:1px solid rgba(34,211,238,.4);box-shadow:0 0 16px rgba(34,211,238,.14),inset 0 0 14px rgba(34,211,238,.05)}',
+        /* ---------- THEME 4: minimal — white, sharp, flat ---------- */
+        ':root[data-sq-theme="minimal"]{--bg:#ffffff;--bg-soft:#f6f6f5;--ink:#131312;--ink-dim:#4a4a46;--ink-mute:#8d8d88;--accent:#131312;--accent-deep:#000000;--gold:#131312;--line:rgba(0,0,0,.14);--sq-accent:#131312;--serif:"Helvetica Neue",Helvetica,Arial,sans-serif;--mono:"Helvetica Neue",Helvetica,Arial,sans-serif}',
+        ':root[data-sq-theme="minimal"] body{background:#ffffff!important}:root[data-sq-theme="minimal"] canvas{display:none!important}:root[data-sq-theme="minimal"] .hero,:root[data-sq-theme="minimal"] section,:root[data-sq-theme="minimal"] .gal-card,:root[data-sq-theme="minimal"] .gb-item,:root[data-sq-theme="minimal"] .tile,:root[data-sq-theme="minimal"] .sq-hub-tile,:root[data-sq-theme="minimal"] .nav-menu,:root[data-sq-theme="minimal"] .font-panel,:root[data-sq-theme="minimal"] .gate-card{background-image:none!important}:root[data-sq-theme="minimal"] #sq-dots-btn,:root[data-sq-theme="minimal"] #sq-cursor-btn,:root[data-sq-theme="minimal"] #sq-dock-btn,:root[data-sq-theme="minimal"] #sq-dock-left-btn,:root[data-sq-theme="minimal"] #sq-refresh-btn,:root[data-sq-theme="minimal"] #sq-app-btn,:root[data-sq-theme="minimal"] #sq-mode-btn{background:#fff!important;color:#111!important;border:1px solid rgba(0,0,0,.25)!important;box-shadow:none!important;text-shadow:none!important}',
+        'html[data-sq-theme="minimal"] .btn{background:#131312!important;color:#fff!important;border-radius:2px;box-shadow:none!important;letter-spacing:.16em}',
+        'html[data-sq-theme="minimal"] .gal-card,html[data-sq-theme="minimal"] .gb-item,html[data-sq-theme="minimal"] .tile,html[data-sq-theme="minimal"] .sq-hub-tile,html[data-sq-theme="minimal"] .nav-menu,html[data-sq-theme="minimal"] .font-panel,html[data-sq-theme="minimal"] .gate-card,html[data-sq-theme="minimal"] .hero-name{text-shadow:none!important}',
+        'html[data-sq-theme="minimal"] .gal-card,html[data-sq-theme="minimal"] .gb-item,html[data-sq-theme="minimal"] .tile,html[data-sq-theme="minimal"] .sq-hub-tile,html[data-sq-theme="minimal"] .nav-menu,html[data-sq-theme="minimal"] .font-panel{border-radius:0!important;box-shadow:none!important;border:1px solid rgba(0,0,0,.16)}',
+        'html[data-sq-theme="minimal"] .hero-name{letter-spacing:-.02em!important}',
+        /* ---------- THEME 5: creative — animated bold gradient ---------- */
+        ':root[data-sq-theme="creative"]{--bg:#2b1055;--bg-soft:#3b1668;--ink:#fff7fb;--ink-dim:#ffd6ec;--ink-mute:#e0a7f0;--accent:#ff5d8f;--accent-deep:#ff8fab;--gold:#ffb703;--line:rgba(255,141,184,.35);--sq-accent:#ff5d8f;--serif:"Trebuchet MS",Verdana,sans-serif;--mono:"Trebuchet MS",Verdana,sans-serif}',
+        '@keyframes sqCreativeBg{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}',
+        'html[data-sq-theme="creative"] body{background:linear-gradient(135deg,#7f00ff,#e100ff 35%,#ff5d8f 65%,#ffb703)!important;background-size:300% 300%!important;background-attachment:fixed!important;animation:sqCreativeBg 18s ease infinite}',
+        'html[data-sq-theme="creative"] .btn{border-radius:999px;background:linear-gradient(90deg,#ffb703,#ff5d8f);box-shadow:0 8px 22px rgba(255,93,143,.4);font-weight:700}',
+        'html[data-sq-theme="creative"] .gal-card,html[data-sq-theme="creative"] .gb-item,html[data-sq-theme="creative"] .tile,html[data-sq-theme="creative"] .sq-hub-tile,html[data-sq-theme="creative"] .nav-menu,html[data-sq-theme="creative"] .font-panel,html[data-sq-theme="creative"] .gate-card{border-radius:20px;border:2px solid rgba(255,255,255,.28);box-shadow:0 12px 34px rgba(120,20,120,.3)}',
+        'html[data-sq-theme="creative"] .gal-card:hover,html[data-sq-theme="creative"] .tile:hover{transform:rotate(-1.2deg) scale(1.03)}',
+        'html[data-sq-theme="creative"] .hero-name{text-shadow:0 4px 24px rgba(80,0,120,.5)}',
+        /* ---------- panel: Choose Your Experience ---------- */
+        '#sq-magic-ov{position:fixed;inset:0;z-index:12000;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
+        '#sq-magic-card{background:rgba(16,10,26,.98);border:1px solid rgba(240,201,106,.55);border-radius:16px;padding:18px 16px;width:min(92vw,380px);max-height:82vh;overflow-y:auto;color:#fff;box-shadow:0 14px 50px rgba(0,0,0,.6);font-family:inherit}',
+        '#sq-magic-card h3{margin:0 0 2px;font-size:16.5px;color:#f0c96a;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:600}',
+        '#sq-magic-card .sq-mg-sub{font-size:12px;opacity:.6;margin:0 0 12px}',
+        '#sq-magic-card .sq-mg-x{width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:transparent;color:#fff;font-size:16px;cursor:pointer;line-height:1}',
+        '#sq-magic-card .sq-mg-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font:inherit;cursor:pointer;transition:border-color .2s,transform .15s,background .2s}',
+        '#sq-magic-card .sq-mg-opt:hover{border-color:#f0c96a;transform:translateY(-1px)}',
+        '#sq-magic-card .sq-mg-opt.sq-cur{border-color:#f0c96a;background:rgba(240,201,106,.12)}',
+        '#sq-magic-card .sq-mg-prev{width:46px;height:34px;border-radius:8px;flex-shrink:0;border:1px solid rgba(255,255,255,.3)}',
+        '#sq-magic-card .sq-mg-name{font-weight:600;font-size:13.5px;display:block}',
+        '#sq-magic-card .sq-mg-desc{font-size:11.5px;opacity:.65;display:block;margin-top:1px}',
+        '#sq-magic-card .sq-mg-check{margin-left:auto;color:#f0c96a;font-size:15px;flex-shrink:0}',
+        /* mobile: dock ke upar float (header small screens par bharta hai) */
+        '@media (max-width:640px){html body #sq-magic-btn{top:auto;right:auto;bottom:76px;left:27px;width:34px;height:34px;font-size:15px}}'
+      ].join('\n');
+      var st = document.createElement('style');
+      st.id = 'sq-magic-css';
+      st.textContent = css;
+      document.head.appendChild(st);
     }
-    startObs();
     function openPanel() {
-      var old = document.getElementById('sq-theme-ov');
+      var old = document.getElementById('sq-magic-ov');
       if (old) { old.remove(); return; }
-      var ov = document.createElement('div'); ov.id = 'sq-theme-ov';
-      var card = document.createElement('div'); card.id = 'sq-theme-card';
-      var x = document.createElement('button'); x.className = 'sq-fx'; x.type = 'button'; x.innerHTML = '\u00D7';
+      var ov = document.createElement('div'); ov.id = 'sq-magic-ov';
+      ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Theme chunein');
+      var card = document.createElement('div'); card.id = 'sq-magic-card';
+      var x = document.createElement('button'); x.className = 'sq-mg-x'; x.type = 'button'; x.innerHTML = '\u00D7';
       x.setAttribute('aria-label', 'Band karein'); x.onclick = function () { ov.remove(); };
-      var h = document.createElement('h3'); h.textContent = '\uD83C\uDFA8 Theme chunein'; h.appendChild(x);
+      var h = document.createElement('h3'); h.innerHTML = '\u2726 Choose Your Experience'; h.appendChild(x);
       card.appendChild(h);
+      var sub = document.createElement('p'); sub.className = 'sq-mg-sub';
+      sub.textContent = 'Ek hi website \u2014 mukhtalif duniya. Data aur content same rehta hai.';
+      card.appendChild(sub);
       var cur = currentTheme();
       THEMES.forEach(function (t) {
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-t-btn' + (cur === t[0] ? ' sq-cur' : '');
-        var sw = document.createElement('span'); sw.className = 'sq-t-swatch';
-        sw.style.background = 'linear-gradient(135deg,' + t[2] + ' 55%,' + t[3] + ' 55%)';
-        var lb = document.createElement('span');
-        lb.innerHTML = '<b style="font-weight:600">' + t[1] + '</b>';
-        b.appendChild(sw); b.appendChild(lb);
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-mg-opt' + (cur === t[0] ? ' sq-cur' : '');
+        b.setAttribute('aria-label', t[1] + ' theme');
+        var prev = document.createElement('span'); prev.className = 'sq-mg-prev';
+        prev.style.background = t[0] === 'creative'
+          ? 'linear-gradient(120deg,#7f00ff,#ff5d8f,#ffb703)'
+          : 'linear-gradient(135deg,' + t[3] + ' 55%,' + t[4] + ' 55%)';
+        var tx = document.createElement('span');
+        tx.innerHTML = '<span class="sq-mg-name">' + t[1] + '</span><span class="sq-mg-desc">' + t[2] + '</span>';
+        b.appendChild(prev); b.appendChild(tx);
+        if (cur === t[0]) { var c = document.createElement('span'); c.className = 'sq-mg-check'; c.innerHTML = '\u2713'; b.appendChild(c); }
         b.onclick = function () { applyTheme(t[0]); ov.remove(); };
         card.appendChild(b);
       });
       ov.appendChild(card);
       ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+      document.addEventListener('keydown', function esc(e) {
+        if (e.key === 'Escape') { ov.remove(); document.removeEventListener('keydown', esc); }
+      });
       document.body.appendChild(ov);
+      var first = card.querySelector('.sq-mg-opt'); if (first) first.focus();
     }
     function mk() {
       if (!document.body) return false;
-      if (document.getElementById('sq-theme-btn')) return true;
+      if (document.getElementById('sq-magic-btn')) return true;
+      addCss();
       var b = document.createElement('button');
-      b.id = 'sq-theme-btn';
+      b.id = 'sq-magic-btn';
       b.type = 'button';
-      b.innerHTML = '\uD83C\uDFA8';
-      b.setAttribute('aria-label', 'Theme badlein');
-      b.title = 'Theme badlein';
+      b.innerHTML = '\u25D0'; /* ◐ — chhota elegant magic icon */
+      b.setAttribute('aria-label', 'Magic theme badlein');
+      b.title = 'Choose Your Experience';
       b.onclick = openPanel;
       document.body.appendChild(b);
       return true;
@@ -4637,4 +4690,3 @@
     if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
   })();
 })();
-
