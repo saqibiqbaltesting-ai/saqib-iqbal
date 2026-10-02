@@ -5134,7 +5134,8 @@
       });
       sec.appendChild(grid);
       var anchor = document.getElementById('contact');
-      (anchor && anchor.parentNode ? anchor.parentNode : document.body).insertBefore(sec, anchor || null);
+      var target = anchor && anchor.closest ? (anchor.closest('section') || anchor) : null;
+      (target && target.parentNode ? target.parentNode : document.body).insertBefore(sec, target || null);
       return true;
     }
     function closeOv(ov) {
