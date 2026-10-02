@@ -1,6 +1,5 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { loadJSON, saveJSON } from "./blob-store";
 
 // Stateless signed tokens (HMAC) — no server-side session storage needed,
 // so login/refresh work instantly even with eventually-consistent blob storage.
@@ -33,19 +32,25 @@ export const description = "Portfolio auth — email signup/login with token ses
 
 const OWNER = "fizanali6267@gmail.com";
 
-const FILE = join(process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data", "data", "portfolio-users.json");
-
+// Persistent user storage via the GitHub-backed data store (same backend as
+// guestbook etc.). The old /tmp file died with every serverless instance,
+// which made "signup works, immediate login says account not found".
+const FILE_NAME = "portfolio-users.json";
 type LoginRec = { ts: number; ip?: string; ua?: string };
 type User = { name: string; email: string; salt: string; hash: string; lastLogins?: LoginRec[]; joined?: number };
 type Session = { token: string; email: string; createdAt: string };
+type DB = { users: User[]; sessions: Session[] };
 
-const load = (): { users: User[]; sessions: Session[] } => {
-  try { return JSON.parse(readFileSync(FILE, "utf-8")); } catch { return { users: [], sessions: [] }; }
+const load = async (): Promise<DB> => {
+  try {
+    const j = (await loadJSON(FILE_NAME)) as DB | null;
+    if (j && Array.isArray(j.users)) return j;
+  } catch {}
+  return { users: [], sessions: [] };
 };
-const save = (db: { users: User[]; sessions: Session[] }) => {
-  mkdirSync(join(process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data", "data"), { recursive: true });
-  writeFileSync(FILE, JSON.stringify(db, null, 2));
-};
+// only users/sessions persist — transient fields (rate-limit map) stay out
+const save = (db: DB): Promise<void> =>
+  saveJSON(FILE_NAME, { users: db.users, sessions: db.sessions });
 
 const hashPw = (pw: string, salt: string) =>
   createHash("sha256").update(`${salt}:${pw}`).digest("hex");
@@ -55,7 +60,7 @@ const ok = (extra: Record<string, unknown> = {}) => Response.json({ ok: true, ..
 export async function POST(req: Request): Promise<Response> {
   const body = await req.json().catch(() => ({}));
   const action = String(body?.action ?? "");
-  const db = load();
+  const db = await load();
 
   if (action === "signup") {
     const name = String(body?.name ?? "").trim().slice(0, 60);
@@ -68,7 +73,7 @@ export async function POST(req: Request): Promise<Response> {
     const salt = randomBytes(16).toString("hex");
     db.users.push({ name, email, salt, hash: hashPw(password, salt), lastLogins: [], joined: Date.now() });
     const token = issueToken(email, name);
-    save(db);
+    await save(db);
     return ok({ token, user: { name, email } });
   }
 
@@ -88,7 +93,7 @@ export async function POST(req: Request): Promise<Response> {
       ua: String(req.headers.get("user-agent") ?? "").slice(0, 120),
     });
     user.lastLogins = user.lastLogins.slice(0, 10);
-    save(db);
+    await save(db);
     const token = issueToken(email, user.name);
     return ok({ token, user: { name: user.name, email: user.email } });
   }
@@ -115,7 +120,7 @@ export async function POST(req: Request): Promise<Response> {
     if (user.hash !== hashPw(password, user.salt))
       return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
     db.users.splice(idx, 1);
-    save(db);
+    await save(db);
     return ok();
   }
 
@@ -136,7 +141,7 @@ export async function POST(req: Request): Promise<Response> {
     if (!user) return Response.json({ ok: false, error: "not found" }, { status: 404 });
     user.salt = randomBytes(16).toString("hex");
     user.hash = hashPw(newPassword, user.salt);
-    save(db);
+    await save(db);
     return ok();
   }
 
