@@ -1519,12 +1519,57 @@
     var LOCK_PW = 'love';
     var unlocked = false;
     try { unlocked = localStorage.getItem('sq-poetry-unlocked') === '1' || sessionStorage.getItem('sq-poetry-unlocked') === '1' || /(?:^|;\s*)sq-poetry-unlocked=1/.test(document.cookie); } catch (e) {}
-    var lockBox = document.createElement('div');
-    lockBox.id = 'sq-poetry-lock';
-    lockBox.innerHTML = '<p class="sq-lock-title">\u{1F512} Poetry locked hai \u2014 dekhne ke liye password likhein</p>'
-      + '<div class="sq-lock-row"><input type="password" id="sq-poetry-pw" placeholder="Password" aria-label="Poetry password">'
-      + '<button type="button" id="sq-poetry-unlock">Unlock</button></div>'
-      + '<p class="sq-lock-err" style="display:none"></p>';
+    /* ---- Gallery-style overlay lock (v68: user ask — poetry lock photo/gallery ki tarah) ---- */
+    var ov = null;
+    var pendingPanel = null;
+    function poetryOv() {
+      if (ov && document.body.contains(ov)) return ov;
+      if (!document.getElementById('sq-poetry-ov-style')) {
+        var st = document.createElement('style');
+        st.id = 'sq-poetry-ov-style';
+        st.textContent = '#sq-poetry-ov{position:fixed;inset:0;z-index:11050;background:rgba(8,3,14,.97);display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}'
+          + '#sq-poetry-ov-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:24px 20px;width:min(88vw,320px);color:#fff;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.6)}'
+          + '#sq-poetry-ov-card h3{margin:0 0 6px;font-size:16px;color:#f0c96a}#sq-poetry-ov-card p{margin:0 0 14px;font-size:12px;opacity:.7}'
+          + '#sq-poetry-ov-in{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:9px;border:1px solid #ffffff30;background:#ffffff10;color:#fff;font-size:14px;text-align:center}'
+          + '#sq-poetry-ov-in::placeholder{color:#ffffff60}'
+          + '#sq-poetry-ov-btn{width:100%;margin-top:10px;padding:11px;border-radius:9px;border:none;background:#f0c96a;color:#1a0f26;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit}'
+          + '#sq-poetry-ov-err{display:none;color:#ff6b81;font-size:12.5px;margin-top:10px}'
+          + '#sq-poetry-ov-back{width:100%;margin-top:8px;padding:11px;border-radius:9px;border:1px solid rgba(240,201,106,.4);background:transparent;color:#f0c96a;font-weight:600;cursor:pointer;font-size:14px;font-family:inherit}';
+        document.head.appendChild(st);
+      }
+      ov = document.createElement('div');
+      ov.id = 'sq-poetry-ov';
+      ov.innerHTML = '<div id="sq-poetry-ov-card"><h3>\u{1F512} Poetry</h3><p>Ye poetry password se mehfooz hai</p>'
+        + '<input id="sq-poetry-ov-in" type="password" placeholder="Password" autocomplete="off">'
+        + '<button id="sq-poetry-ov-btn" type="button">Unlock</button>'
+        + '<div id="sq-poetry-ov-err">Ghalat password \u2014 dobara koshish karein.</div>'
+        + '<button id="sq-poetry-ov-back" type="button">\u2B05 Wapis jayein</button></div>';
+      document.body.appendChild(ov);
+      var inp = ov.querySelector('#sq-poetry-ov-in');
+      var err = ov.querySelector('#sq-poetry-ov-err');
+      function tryUnlock() {
+        if (String(inp.value || '').trim().toLowerCase() === LOCK_PW) {
+          unlocked = true;
+          try { localStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { sessionStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { document.cookie = 'sq-poetry-unlocked=1;max-age=31536000;path=/'; } catch (e) {}
+          var target = pendingPanel;
+          pendingPanel = null;
+          closeOv();
+          if (target) openPanel(target);
+        } else {
+          err.style.display = 'block';
+          inp.value = '';
+          try { inp.focus(); } catch (e) {}
+        }
+      }
+      ov.querySelector('#sq-poetry-ov-btn').addEventListener('click', tryUnlock);
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); tryUnlock(); } });
+      ov.querySelector('#sq-poetry-ov-back').addEventListener('click', function () { closeOv(); });
+      setTimeout(function () { try { inp.focus(); } catch (e) {} }, 100);
+      return ov;
+    }
+    function closeOv() {
+      if (ov) { try { ov.remove(); } catch (e) {} ov = null; }
+    }
 
     /* ---- Cards (My Memories pattern): Sher pehle, phir Ghazal ---- */
     var cards = document.createElement('div');
@@ -1594,13 +1639,9 @@
       (which === 'sher' ? cardSher : cardGhaz).classList.add('active');
       try { (which === 'sher' ? sher : ghaz).scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
     }
-    var pendingPanel = null;
     function showLock(which) {
       pendingPanel = which;
-      lockBox.style.display = '';
-      var tt = lockBox.querySelector('.sq-lock-title');
-      if (tt) tt.textContent = '\u{1F512} ' + (which === 'sher' ? 'Sher' : 'Ghazal') + ' dekhne ke liye password likhein';
-      try { lockBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+      try { poetryOv(); } catch (e) {}
     }
     cardSher.onclick = function () {
       if (!unlocked) { showLock('sher'); return; }
@@ -1614,29 +1655,9 @@
     };
 
     function applyLock() {
-      lockBox.style.display = 'none';
       cards.style.display = '';
       if (!unlocked) closePanels();
     }
-    lockBox.querySelector('#sq-poetry-unlock').onclick = function () {
-      var inp = lockBox.querySelector('#sq-poetry-pw');
-      var err = lockBox.querySelector('.sq-lock-err');
-      if (String(inp.value || '').trim().toLowerCase() === LOCK_PW) {
-        unlocked = true;
-        try { localStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { sessionStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { document.cookie = 'sq-poetry-unlocked=1;max-age=31536000;path=/'; } catch (e) {}
-        lockBox.style.display = 'none';
-        err.style.display = 'none';
-        var target = pendingPanel;
-        pendingPanel = null;
-        if (target) openPanel(target);
-      } else {
-        err.textContent = 'Ghalat password — dobara koshish karein.';
-        err.style.display = '';
-      }
-    };
-    lockBox.querySelector('#sq-poetry-pw').onkeydown = function (e) {
-      if (e.key === 'Enter') { e.preventDefault(); lockBox.querySelector('#sq-poetry-unlock').click(); }
-    };
 
     /* ---- Poetry wrapper (like My Memories) ---- */
     var wrap = document.createElement('section');
@@ -1650,7 +1671,6 @@
     wsub.textContent = 'Sher aur Ghazal — ek hi chhat ke neeche';
     whead.appendChild(wsub);
     wrap.appendChild(whead);
-    wrap.appendChild(lockBox);
     wrap.appendChild(cards);
     wrap.appendChild(sher);
     wrap.appendChild(ghaz);
