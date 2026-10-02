@@ -5182,7 +5182,6 @@
       view.appendChild(im); view.appendChild(dl); view.appendChild(back);
       body.appendChild(view);
     }
-    var tries = 0;
-    var iv = setInterval(function () { var ok = ensureSection(); if (ok || ++tries > 50) clearInterval(iv); }, 1200);
+    var iv = setInterval(function () { ensureSection(); }, 1200);
   } catch (e) {}
 })();
