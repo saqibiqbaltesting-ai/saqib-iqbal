@@ -4338,6 +4338,9 @@
     ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
     document.body.appendChild(ov);
   }
+  function isTouchOnly() {
+    try { return window.matchMedia('(hover: none), (pointer: coarse)').matches; } catch (e) { return false; }
+  }
   function injectBtn() {
     var anchor = document.querySelector('.font-toggle');
     if (!anchor || !anchor.parentNode) return false;
@@ -4353,7 +4356,15 @@
       ['width','height','border-radius','background','border','box-shadow','color','font-size','line-height','display','align-items','justify-content','padding','margin'].forEach(function (p) { b.style[p] = cs[p]; });
       b.style.flexShrink = '0';
     } catch (e) {}
-    b.onclick = picker;
+    b.onclick = function () {
+      if (isTouchOnly()) {
+        var msg = '\uD83D\uDDA5\uFE0F Ye function sirf laptop / computer par kaam karta hai';
+        if (window.sqToast) window.sqToast(msg);
+        else alert(msg);
+        return;
+      }
+      picker();
+    };
     anchor.parentNode.insertBefore(b, anchor);
     return true;
   }
@@ -4370,35 +4381,25 @@
   /* ---------- CSS (body ke end par inject — sab se aakhri word) ---------- */
   var css = [
     '/* --- v34 fixes --- */',
-    /* 1) mobile: top icons chhote, laptop par same */
-    '@media (max-width:640px){',
-    'html body .lang-toggle{width:64px!important;min-width:64px!important;padding:4px 4px!important;min-height:32px!important;font-size:11.5px!important}',
-    'html body .theme-toggle{width:32px!important;height:32px!important;left:calc(max(8px, env(safe-area-inset-left)) + 68px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 68px)!important}',
-    'html body .social-row{left:calc(max(8px, env(safe-area-inset-left)) + 106px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 106px)!important;gap:4px!important}',
-    'html body .wa-top{width:30px!important;height:30px!important}',
-    'html body .wa-top svg{width:14px!important;height:14px!important}',
-    'html body .nav-toggle{width:32px!important;height:32px!important}',
-    'html body .font-toggle{inset-inline-end:44px!important;right:44px!important}',
-    'html body #sq-cursor-btn{width:32px!important;height:32px!important;inset-inline-end:80px!important;right:80px!important}',
-    'html body #sq-dots-btn{width:32px!important;height:32px!important;inset-inline-end:116px!important;right:116px!important;font-size:12px!important}',
-    'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important}',
-    'html body #sq-dock-left-btn{width:44px!important;height:44px!important;font-size:19px!important}',
-    '}',
-    /* dots button — cursor icon ke pehle */
-    'html body #sq-dots-btn{inset-inline-end:104px!important;right:104px!important;z-index:12;flex-shrink:0}',
+    /* dots (ab ☰ categories) — cursor icon ke baad, Aa uske baad */
+    'html body #sq-dots-btn{inset-inline-end:56px!important;right:56px!important;z-index:12;flex-shrink:0;font-size:15px!important}',
+    'html body .font-toggle{inset-inline-end:104px!important;right:104px!important}',
+    /* 4) theme button — sparkle dock ke upar */
+    'html body #sq-theme-btn{position:fixed;bottom:82px;inset-inline-start:24px;left:24px;right:auto;z-index:11005;width:44px;height:44px;border-radius:50%;border:1px solid rgba(240,201,106,.5);cursor:pointer;font-size:18px;line-height:1;padding:0;background:rgba(18,8,28,.88);color:#f0c96a;box-shadow:0 4px 16px rgba(0,0,0,.5);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);transition:transform .2s,box-shadow .2s}',
+    'html body #sq-theme-btn:active{transform:scale(.9)}',
     /* 3) left dock button */
     'html body #sq-dock-left-btn{position:fixed;bottom:18px;inset-inline-start:18px;left:18px;right:auto;z-index:11006;width:54px;height:54px;border-radius:50%;border:none;cursor:pointer;font-size:21px;line-height:1;padding:0;background:linear-gradient(135deg,#7c5cff,#e97b9c 60%,#f0c96a);color:#fff;box-shadow:0 8px 24px #7c5cff66;transition:transform .25s,box-shadow .25s}',
     'html body #sq-dock-left-btn:active{transform:scale(.92)}',
     'body.sq-dock-left-open #sq-dock-left-btn{transform:rotate(90deg) scale(1.05);box-shadow:0 0 0 5px #ffffff33,0 8px 24px #7c5cff66}',
     /* left widgets default chhupi — dock khulne par nikalti hain */
     'html body #sq-app-btn,html body #sq-mode-btn,html body #sq-pk-clock,html body #sq-refresh-btn,html body #sq-anim-toggle{opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .22s,visibility .22s,transform .22s,bottom .22s}',
-    'body.sq-dock-left-open #sq-refresh-btn{opacity:1;visibility:visible;transform:none;bottom:86px!important;left:20px!important}',
-    'body.sq-dock-left-open #sq-pk-clock{opacity:1;visibility:visible;transform:none;bottom:146px!important;left:14px!important}',
-    'body.sq-dock-left-open #sq-anim-toggle{opacity:1;visibility:visible;transform:none;bottom:190px!important;left:20px!important}',
-    'body.sq-dock-left-open #sq-mode-btn{opacity:1;visibility:visible;transform:none;bottom:248px!important;left:14px!important}',
-    'body.sq-dock-left-open #sq-app-btn{opacity:1;visibility:visible;transform:none;bottom:292px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-refresh-btn{opacity:1;visibility:visible;transform:none;bottom:140px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-pk-clock{opacity:1;visibility:visible;transform:none;bottom:200px!important;left:14px!important}',
+    'body.sq-dock-left-open #sq-anim-toggle{opacity:1;visibility:visible;transform:none;bottom:244px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-mode-btn{opacity:1;visibility:visible;transform:none;bottom:300px!important;left:14px!important}',
+    'body.sq-dock-left-open #sq-app-btn{opacity:1;visibility:visible;transform:none;bottom:344px!important;left:20px!important}',
     /* gate (login) par naye buttons chhupi */
-    'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn{display:none!important}',
+    'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn,body:has(.gate-overlay) #sq-theme-btn{display:none!important}',
     /* dots menu panel */
     '#sq-dots-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
     '#sq-dots-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:18px 16px;width:min(92vw,340px);max-height:80vh;overflow-y:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6);font-family:inherit}',
@@ -4406,7 +4407,41 @@
     '#sq-dots-card .sq-fx{width:30px;height:30px;border-radius:50%;border:1px solid #ffffff22;background:transparent;color:#fff;font-size:16px;cursor:pointer;line-height:1}',
     '#sq-dots-card .sq-f-btn2{display:block;width:100%;text-align:left;margin:5px 0;padding:10px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font:inherit;font-size:13.5px;cursor:pointer;transition:border-color .15s,color .15s}',
     '#sq-dots-card .sq-f-btn2:hover{border-color:#f0c96a;color:#f0c96a}',
-    '#sq-dots-empty{font-size:12px;opacity:.6;text-align:center;padding:14px 0}'
+    '#sq-dots-empty{font-size:12px;opacity:.6;text-align:center;padding:14px 0}',
+    /* 4) theme versions — poora look badalta hai */
+    'html[data-theme="emerald"]{--bg:#04120c;--bg-soft:#0a1f16;--ink:#eefbf2;--ink-dim:#b9d9c2;--ink-mute:#7fa58c;--accent:#4ade80;--accent-deep:#22c55e;--gold:#a7f3d0;--line:rgba(74,222,128,.18);--sq-accent:#4ade80}',
+    'html[data-theme="ocean"]{--bg:#04101f;--bg-soft:#0a1b30;--ink:#eaf6ff;--ink-dim:#b3d3ea;--ink-mute:#7e9ab0;--accent:#38bdf8;--accent-deep:#0ea5e9;--gold:#7dd3fc;--line:rgba(56,189,248,.18);--sq-accent:#38bdf8}',
+    'html[data-theme="rose"]{--bg:#170409;--bg-soft:#2a0a14;--ink:#fff0f4;--ink-dim:#e6b8c6;--ink-mute:#b07f8f;--accent:#fb7185;--accent-deep:#e11d48;--gold:#fda4af;--line:rgba(251,113,133,.2);--sq-accent:#fb7185}',
+    'html[data-theme="royal"]{--bg:#0a0618;--bg-soft:#150c2e;--ink:#f3efff;--ink-dim:#c7bce6;--ink-mute:#948ab3;--accent:#a78bfa;--accent-deep:#7c3aed;--gold:#c4b5fd;--line:rgba(167,139,250,.2);--sq-accent:#a78bfa}',
+    'html[data-theme="emerald"] body,html[data-theme="ocean"] body,html[data-theme="rose"] body,html[data-theme="royal"] body{background-color:var(--bg)!important;background-attachment:fixed}',
+    'html[data-theme="emerald"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(74,222,128,.14),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(74,222,128,.07),transparent 70%)!important}',
+    'html[data-theme="ocean"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(56,189,248,.14),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(56,189,248,.07),transparent 70%)!important}',
+    'html[data-theme="rose"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(251,113,133,.15),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(251,113,133,.07),transparent 70%)!important}',
+    'html[data-theme="royal"] body{background-image:radial-gradient(70% 45% at 80% -5%,rgba(167,139,250,.15),transparent 70%),radial-gradient(50% 35% at 0% 30%,rgba(167,139,250,.07),transparent 70%)!important}',
+    /* theme panel */
+    '#sq-theme-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
+    '#sq-theme-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:18px 16px;width:min(92vw,340px);max-height:80vh;overflow-y:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6);font-family:inherit}',
+    '#sq-theme-card h3{margin:0 0 10px;font-size:17px;color:#f0c96a;display:flex;justify-content:space-between;align-items:center;gap:10px}',
+    '#sq-theme-card .sq-fx{width:30px;height:30px;border-radius:50%;border:1px solid #ffffff22;background:transparent;color:#fff;font-size:16px;cursor:pointer;line-height:1}',
+    '#sq-theme-card .sq-t-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;margin:5px 0;padding:9px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font:inherit;font-size:13.5px;cursor:pointer;transition:border-color .15s,color .15s}',
+    '#sq-theme-card .sq-t-btn:hover{border-color:#f0c96a;color:#f0c96a}',
+    '#sq-theme-card .sq-t-btn.sq-cur{border-color:#f0c96a;color:#f0c96a}',
+    '#sq-theme-card .sq-t-swatch{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:1px solid #ffffff44}',
+    /* 1) mobile: top icons chhote, laptop par same — media block sab se aakhir mein */
+    '@media (max-width:640px){',
+    'html body .lang-toggle{width:64px!important;min-width:64px!important;padding:4px 4px!important;min-height:32px!important;font-size:11.5px!important}',
+    'html body .theme-toggle{width:32px!important;height:32px!important;left:calc(max(8px, env(safe-area-inset-left)) + 68px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 68px)!important}',
+    'html body .social-row{left:calc(max(8px, env(safe-area-inset-left)) + 106px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 106px)!important;gap:4px!important}',
+    'html body .wa-top{width:30px!important;height:30px!important}',
+    'html body .wa-top svg{width:14px!important;height:14px!important}',
+    'html body .nav-toggle{width:32px!important;height:32px!important}',
+    'html body .font-toggle{inset-inline-end:116px!important;right:116px!important}',
+    'html body #sq-cursor-btn{width:32px!important;height:32px!important;inset-inline-end:44px!important;right:44px!important}',
+    'html body #sq-dots-btn{width:32px!important;height:32px!important;inset-inline-end:80px!important;right:80px!important;font-size:13px!important}',
+    'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important}',
+    'html body #sq-dock-left-btn{width:44px!important;height:44px!important;font-size:19px!important}',
+    'html body #sq-theme-btn{width:34px!important;height:34px!important;font-size:15px!important;bottom:76px!important;left:27px!important;inset-inline-start:27px!important}',
+    '}'
   ].join('\n');
   function addCss() {
     if (document.getElementById('sq-v34-css')) return;
@@ -4447,13 +4482,18 @@
   (function () {
     function mk() {
       if (!document.body) return false;
-      if (document.getElementById('sq-dots-btn')) return true;
+      var ex = document.getElementById('sq-dots-btn');
+      if (ex) {
+        var cb2 = document.getElementById('sq-cursor-btn');
+        try { if (cb2 && cb2.parentNode && cb2.nextSibling !== ex) cb2.parentNode.insertBefore(ex, cb2.nextSibling); } catch (e) {}
+        return true;
+      }
       var anchor = document.querySelector('.font-toggle');
       if (!anchor || !anchor.parentNode) return false;
       var ref = document.getElementById('sq-cursor-btn') || anchor;
       var d = document.createElement('button');
       d.type = 'button'; d.id = 'sq-dots-btn'; d.className = 'nav-toggle sq-dots-toggle';
-      d.innerHTML = '<span style="font-size:15px;letter-spacing:1px;line-height:1" aria-hidden="true">\u22EF</span>';
+      d.innerHTML = '<span style="font-size:15px;line-height:1" aria-hidden="true">\u2630</span>';
       d.setAttribute('aria-label', 'Categories kholen');
       d.title = 'Categories';
       d.onclick = openMenu;
@@ -4462,7 +4502,8 @@
         ['width','height','border-radius','background','border','box-shadow','color','font-size','line-height','display','align-items','justify-content','padding','margin'].forEach(function (p) { d.style[p] = cs[p]; });
         d.style.flexShrink = '0';
       } catch (e) {}
-      ref.parentNode.insertBefore(d, ref);
+      /* cursor icon ke BAAD insert karo */
+      if (ref.parentNode) ref.parentNode.insertBefore(d, ref.nextSibling);
       return true;
     }
     var tries = 0;
@@ -4505,6 +4546,95 @@
       ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
       document.body.appendChild(ov);
     }
+  })();
+
+  /* ---------- 4) theme switcher — sparkle dock ke upar, poora look badalta hai ---------- */
+  (function () {
+    var THEMES = [
+      ['default', '\uD83D\uDC51 Royal Gold', '#070509', '#f0c96a'],
+      ['emerald', '\uD83C\uDF3F Emerald Night', '#04120c', '#4ade80'],
+      ['ocean', '\uD83C\uDF0A Ocean Blue', '#04101f', '#38bdf8'],
+      ['rose', '\uD83C\uDF39 Rose Noir', '#170409', '#fb7185'],
+      ['royal', '\uD83D\uDC9C Royal Violet', '#0a0618', '#a78bfa'],
+      ['light', '\u2600\uFE0F Light Pearl', '#fdf6f7', '#b23a5f']
+    ];
+    function currentTheme() {
+      var dt = document.documentElement.getAttribute('data-theme');
+      if (dt) return dt;
+      if (document.documentElement.classList.contains('theme-light')) return 'light';
+      return 'default';
+    }
+    function applyTheme(id) {
+      var root = document.documentElement;
+      if (id === 'light') { root.removeAttribute('data-theme'); root.classList.add('theme-light'); }
+      else if (id === 'default') { root.removeAttribute('data-theme'); root.classList.remove('theme-light'); }
+      else { root.classList.remove('theme-light'); root.setAttribute('data-theme', id); }
+      try { localStorage.setItem('sq-theme', id); } catch (e) {}
+      if (window.sqToast) {
+        var t = null;
+        for (var i = 0; i < THEMES.length; i++) if (THEMES[i][0] === id) t = THEMES[i];
+        window.sqToast((t ? t[1] : 'Theme') + ' \u2014 theme lag gaya');
+      }
+    }
+    window.sqApplyTheme = applyTheme;
+    /* saved theme load */
+    var saved = null;
+    try { saved = localStorage.getItem('sq-theme'); } catch (e) {}
+    if (saved && saved !== 'default') applyTheme(saved);
+    /* sun toggle ke sath peace: agar .theme-light bahar se lagti hai to data-theme hata do */
+    var mo = null;
+    function startObs() {
+      if (!document.documentElement) { setTimeout(startObs, 400); return; }
+      mo = new MutationObserver(function () {
+        var root = document.documentElement;
+        try {
+          if (root.classList.contains('theme-light') && root.getAttribute('data-theme')) {
+            root.removeAttribute('data-theme');
+            try { localStorage.setItem('sq-theme', 'light'); } catch (e) {}
+          }
+        } catch (e) {}
+      });
+      mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    }
+    startObs();
+    function openPanel() {
+      var old = document.getElementById('sq-theme-ov');
+      if (old) { old.remove(); return; }
+      var ov = document.createElement('div'); ov.id = 'sq-theme-ov';
+      var card = document.createElement('div'); card.id = 'sq-theme-card';
+      var x = document.createElement('button'); x.className = 'sq-fx'; x.type = 'button'; x.innerHTML = '\u00D7';
+      x.setAttribute('aria-label', 'Band karein'); x.onclick = function () { ov.remove(); };
+      var h = document.createElement('h3'); h.textContent = '\uD83C\uDFA8 Theme chunein'; h.appendChild(x);
+      card.appendChild(h);
+      var cur = currentTheme();
+      THEMES.forEach(function (t) {
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'sq-t-btn' + (cur === t[0] ? ' sq-cur' : '');
+        var sw = document.createElement('span'); sw.className = 'sq-t-swatch';
+        sw.style.background = 'linear-gradient(135deg,' + t[2] + ' 55%,' + t[3] + ' 55%)';
+        var lb = document.createElement('span');
+        lb.innerHTML = '<b style="font-weight:600">' + t[1] + '</b>';
+        b.appendChild(sw); b.appendChild(lb);
+        b.onclick = function () { applyTheme(t[0]); ov.remove(); };
+        card.appendChild(b);
+      });
+      ov.appendChild(card);
+      ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+      document.body.appendChild(ov);
+    }
+    function mk() {
+      if (!document.body) return false;
+      if (document.getElementById('sq-theme-btn')) return true;
+      var b = document.createElement('button');
+      b.id = 'sq-theme-btn';
+      b.type = 'button';
+      b.innerHTML = '\uD83C\uDFA8';
+      b.setAttribute('aria-label', 'Theme badlein');
+      b.title = 'Theme badlein';
+      b.onclick = openPanel;
+      document.body.appendChild(b);
+      return true;
+    }
+    if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
   })();
 })();
 
