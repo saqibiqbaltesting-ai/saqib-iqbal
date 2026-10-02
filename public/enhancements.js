@@ -4395,7 +4395,8 @@
     'body.sq-dock-left-open #sq-anim-toggle{opacity:1;visibility:visible;transform:none;bottom:244px!important;left:20px!important}',
     'body.sq-dock-left-open #sq-mode-btn{opacity:1;visibility:visible;transform:none;bottom:300px!important;left:14px!important}',
     'body.sq-dock-left-open #sq-app-btn{opacity:1;visibility:visible;transform:none;bottom:344px!important;left:20px!important}',
-    /* gate (login) par naye buttons chhupi */
+    /* gate (login) par naye buttons chhupi — class-based taake :has() na support karne wale phones par bhi chale */
+    'body.sq-on-gate #sq-dots-btn,body.sq-on-gate #sq-dock-left-btn,body.sq-on-gate #sq-magic-btn{display:none!important}',
     'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn,body:has(.gate-overlay) #sq-magic-btn{display:none!important}',
     'body:has(.font-panel) #sq-magic-btn,body:has(.font-panel) #sq-dots-btn,body:has(.font-panel) #sq-cursor-btn,body:has(.font-panel) #sq-dock-btn,body:has(.font-panel) #sq-dock-left-btn,body:has(.font-panel) #sq-top-btn,body:has(.font-panel) #sq-bottom-btn,body:has(.font-panel) #sq-fab,body:has(.font-panel) #sq-hub-btn,body:has(.font-panel) #sq-pk-clock,body:has(.font-panel) #sq-refresh-btn,body:has(.font-panel) #sq-app-btn,body:has(.font-panel) #sq-mode-btn{display:none!important}',
     /* dots menu panel */
@@ -4411,9 +4412,11 @@
     'html body #sq-hub-btn{right:22px!important;inset-inline-end:22px!important}',
     'body.sq-dock-open #sq-anim-toggle,body.sq-dock-open #sq-dash-btn{right:25px!important;inset-inline-end:25px!important}',
     /* gate (login/signup) par bhi right column seedhi line mein */
-    'body:has(.gate-overlay) #sq-dock-btn,body:has(.gate-overlay) #sq-hub-btn{opacity:1!important;visibility:visible!important;display:block!important}',
+    'body.sq-on-gate:not(.sq-chat-open) #sq-dock-btn,body.sq-on-gate:not(.sq-chat-open) #sq-hub-btn{opacity:1!important;visibility:visible!important;display:block!important}',
+    'body:has(.gate-overlay):not(.sq-chat-open) #sq-dock-btn,body:has(.gate-overlay):not(.sq-chat-open) #sq-hub-btn{opacity:1!important;visibility:visible!important;display:block!important}',
+    'body.sq-chat-open #sq-dock-btn,body.sq-chat-open #sq-chat-btn,body.sq-chat-open #sq-hub-btn,body.sq-chat-open #sq-fab,body.sq-chat-open #sq-anim-toggle,body.sq-chat-open #sq-dash-btn,body.sq-chat-open #sq-top-btn,body.sq-chat-open #sq-bottom-btn,body.sq-chat-open #sq-dock-left-btn,body.sq-chat-open #sq-dots-btn,body.sq-chat-open #sq-magic-btn,body.sq-chat-open #sq-pk-clock,body.sq-chat-open #sq-refresh-btn{display:none!important}',
     /* gate par PK time left side par nazar aaye */
-    'body:has(.gate-overlay) #sq-pk-clock,body:has(.gate-card) #sq-pk-clock{opacity:1!important;visibility:visible!important;transform:none!important;left:14px!important;inset-inline-start:14px!important;bottom:24px!important;z-index:11500!important;display:block!important}',
+    'body.sq-on-gate #sq-pk-clock{opacity:1!important;visibility:visible!important;transform:none!important;left:14px!important;inset-inline-start:14px!important;bottom:24px!important;z-index:11500!important;display:block!important}',
     /* premium welcome — login/signup ke baad */
     '#sq-welcome{position:fixed;left:50%;transform:translateX(-50%) translateY(140%);bottom:20px;z-index:13200;width:min(92vw,420px);pointer-events:none;transition:transform .55s cubic-bezier(.22,1.2,.36,1),opacity .4s;opacity:0}',
     '#sq-welcome.sq-wl-on{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}',
@@ -4819,5 +4822,38 @@
       w.querySelector('.sq-wl-x').onclick = hide;
       setTimeout(hide, 8000);
     }
+  })();
+
+  /* ---------- Kit v50: gate-class watch + chat-open par saare floating buttons chhupao ---------- */
+  /* Purane mobile browsers :has() support nahi karte — is liye body par sq-on-gate class lagate hain
+     aur chat khulne par dock-open widgets (jo chat panel ke upar float kar rahe the) inline chhupate hain. */
+  (function () {
+    var IDS = ['sq-dock-btn', 'sq-chat-btn', 'sq-hub-btn', 'sq-fab', 'sq-anim-toggle', 'sq-dash-btn', 'sq-top-btn', 'sq-bottom-btn', 'sq-dock-left-btn', 'sq-dots-btn', 'sq-pk-clock', 'sq-refresh-btn'];
+    setInterval(function () {
+      var b = document.body;
+      if (!b) return;
+      var gate = false, open = false;
+      try { gate = !!(document.querySelector('.gate-overlay') || document.querySelector('.gate-card')); } catch (e) {}
+      try {
+        var p = document.getElementById('sq-chat-panel');
+        open = !!(p && window.getComputedStyle(p).display !== 'none');
+      } catch (e) {}
+      try {
+        b.classList.toggle('sq-on-gate', gate);
+        b.classList.toggle('sq-chat-open', open);
+      } catch (e) {}
+      if (open) {
+        for (var i = 0; i < IDS.length; i++) {
+          var el = document.getElementById(IDS[i]);
+          if (el) el.style.display = 'none';
+        }
+        try { b.classList.remove('sq-dock-open'); b.classList.remove('sq-dock-left-open'); } catch (e) {}
+      } else {
+        for (var j = 0; j < IDS.length; j++) {
+          var el2 = document.getElementById(IDS[j]);
+          if (el2 && el2.style.display === 'none') el2.style.display = '';
+        }
+      }
+    }, 400);
   })();
 })();
