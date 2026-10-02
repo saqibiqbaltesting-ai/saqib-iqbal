@@ -5074,13 +5074,13 @@
   } catch (e) {}
 })();
 
-/* ===== v77: WhatsApp DPs — 2 empty cards (Boys/Girls), Quote of the day ke baad; DPs baad me owner bhejega ===== */
+/* ===== v80: WhatsApp DPs — 2 empty cards, section#quote ke FORAN baad, self-healing position ===== */
 (function () {
   try {
     if (window.__sqDps) return; window.__sqDps = true;
     var CATS = [
-      { key: 'boys', label: 'For Boys', emoji: '\ud83d\udc66' },
-      { key: 'girls', label: 'For Girls', emoji: '\ud83d\udc67' }
+      { label: 'For Boys', emoji: '\ud83d\udc66' },
+      { label: 'For Girls', emoji: '\ud83d\udc67' }
     ];
     function injectCss() {
       if (document.getElementById('sq-dps-style')) return;
@@ -5094,20 +5094,13 @@
         '#sq-dps-note{display:none;text-align:center;margin:14px auto 0;max-width:640px;padding:10px 16px;border-radius:12px;background:#e97b9c1a;border:1px solid #e97b9c55;color:inherit;font-size:14px;opacity:.9}';
       document.head.appendChild(s);
     }
-    function mkSec(id, title, sub) {
+    function build() {
       var sec = document.createElement('section');
-      sec.className = 'section sq-sec'; sec.id = id;
+      sec.className = 'section sq-sec'; sec.id = 'sq-dps';
       var head = document.createElement('div'); head.className = 'section-header';
-      head.innerHTML = '<h2>' + title + '</h2>';
-      var p = document.createElement('p'); p.className = 'sq-sec-sub'; p.textContent = sub;
+      head.innerHTML = '<h2>\ud83d\udcf1 WhatsApp DPs</h2>';
+      var p = document.createElement('p'); p.className = 'sq-sec-sub'; p.textContent = 'Profile pictures \u2014 Boys aur Girls ke liye alag alag collections';
       head.appendChild(p); sec.appendChild(head);
-      return sec;
-    }
-    function ensureSection() {
-      if (document.getElementById('sq-dps')) return;
-      if (!document.body) return;
-      injectCss();
-      var sec = mkSec('sq-dps', '\ud83d\udcf1 WhatsApp DPs', 'Profile pictures \u2014 Boys aur Girls ke liye alag alag collections');
       var grid = document.createElement('div'); grid.id = 'sq-dps-cards';
       CATS.forEach(function (c) {
         var card = document.createElement('button');
@@ -5121,18 +5114,24 @@
       note.textContent = 'DPs jald aa rahe hain \u2014 jald hi is jagah mojood honge.';
       sec.appendChild(note);
       grid.onclick = function () { note.style.display = 'block'; };
-      // position: section#quote (05 \u2014 Quote of the day) ke FORAN baad
+      return sec;
+    }
+    function ensureSection() {
+      // home view render hone ka intezar: #quote (05 \u2014 Quote of the day) tabhi mojood hota hai
       var quote = document.getElementById('quote');
-      var anchor = quote || document.getElementById('contact');
-      if (anchor && anchor.parentNode) {
-        if (quote) {
-          if (quote.nextSibling) quote.parentNode.insertBefore(sec, quote.nextSibling);
-          else quote.parentNode.appendChild(sec);
-        } else {
-          anchor.parentNode.insertBefore(sec, anchor);
-        }
+      if (!quote || !quote.parentNode) return;
+      injectCss();
+      var sec = document.getElementById('sq-dps');
+      if (!sec) {
+        sec = build();
+        if (quote.nextSibling) quote.parentNode.insertBefore(sec, quote.nextSibling);
+        else quote.parentNode.appendChild(sec);
+      } else if (sec.previousElementSibling !== quote) {
+        // React re-render ne idhar udhar kar diya \u2014 wapas quote ke foran baad
+        if (quote.nextSibling) quote.parentNode.insertBefore(sec, quote.nextSibling);
+        else quote.parentNode.appendChild(sec);
       }
     }
-    var iv = setInterval(function () { ensureSection(); }, 1200);
+    setInterval(function () { try { ensureSection(); } catch (e) {} }, 1200);
   } catch (e) {}
 })();
