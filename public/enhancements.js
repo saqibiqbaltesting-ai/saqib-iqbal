@@ -2538,8 +2538,8 @@
       tile.className = 'sq-hub-tile';
       tile.innerHTML = '<span>' + t[0] + '</span>' + t[1];
       tile.onclick = function () {
-        close();
         if (t[2].indexOf('sqx:') === 0) { var key = t[2].slice(4); setTimeout(function () { if (window.__sqHubFeature) window.__sqHubFeature(key); }, 120); return; }
+        close();
         if (t[2] === 'wa') {
           window.open('https://wa.me/923134182952?text=' + encodeURIComponent('Assalam o Alaikum! Main aapki website dekhi \u2014 mujhe apne kaam ke baray mein batana tha.'), '_blank');
           return;
