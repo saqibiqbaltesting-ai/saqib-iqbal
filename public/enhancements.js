@@ -4444,6 +4444,31 @@
     'html body .social-row{left:calc(max(8px, env(safe-area-inset-left)) + 112px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 112px)!important}',
     'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important;right:23px!important;inset-inline-end:23px!important}',
     'html body #sq-dock-left-btn{width:44px!important;height:44px!important;font-size:19px!important}',
+    '}',
+    /* ===== Kit v51: sab icons screen edges se chipke hue (flush), groups ke andar tight packing ===== */
+    /* NOTE: html body prefix zaroori — warna v48/v49 ke html-body-prefixed !important rules jeet jate hain */
+    /* bottom-right column: right edge se lage (44px dock center = 22, hub 46 center = 23, 40px wale center = 22) */
+    'html body #sq-dock-btn{right:0px!important;inset-inline-end:0px!important}',
+    'html body #sq-hub-btn{right:1px!important;inset-inline-end:1px!important}',
+    'html body #sq-top-btn,html body #sq-bottom-btn,html body #sq-anim-toggle,html body #sq-dash-btn{right:2px!important;inset-inline-end:2px!important}',
+    'html body #sq-fab{right:0px!important;inset-inline-end:0px!important}',
+    /* bottom-left column: left edge se lage (44px dock center = 22, magic 40 center = 22) */
+    'html body #sq-dock-left-btn{left:0px!important;inset-inline-start:0px!important}',
+    'html body #sq-magic-btn{left:2px!important;inset-inline-start:2px!important}',
+    'html body #sq-pk-clock{left:2px!important;inset-inline-start:2px!important}',
+    'html body #sq-refresh-btn,html body #sq-anim-toggle,html body #sq-app-btn{left:2px!important;inset-inline-start:2px!important}',
+    'html body #sq-mode-btn{left:2px!important;inset-inline-start:2px!important}',
+    '@media (max-width:640px){',
+    /* top-left group: bilkul left edge se, ek ke sath ek */
+    'html body .lang-toggle{left:0px!important;inset-inline-start:0px!important;border-top-left-radius:0!important;border-bottom-left-radius:0!important}',
+    'html body .theme-toggle{left:66px!important;inset-inline-start:66px!important}',
+    'html body .social-row{left:102px!important;inset-inline-start:102px!important}',
+    /* top-right group: bilkul right edge se, ek ke sath ek */
+    'html body #sq-cursor-btn{right:0px!important;inset-inline-end:0px!important;border-top-right-radius:0!important;border-bottom-right-radius:0!important}',
+    'html body #sq-dots-btn{right:36px!important;inset-inline-end:36px!important}',
+    'html body .font-toggle{right:72px!important;inset-inline-end:72px!important}',
+    /* VIP Portfolio line upar: hero top padding kam — neeche ka sab content bhi utna upar */
+    'html body .hero{padding-top:22px!important}',
     '}'
   ].join('\n');
   function addCss() {
