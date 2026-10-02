@@ -4903,3 +4903,23 @@
     }, 400);
   })();
 })();
+
+/* ===== v59: default font Pacifico — har device par ek dafa migrate, panel ki choice phir bhi respected ===== */
+(function () {
+  try {
+    if (!localStorage.getItem('sq-font-migrated')) {
+      var f = localStorage.getItem('portfolio-font');
+      if (!f || f === 'classic') localStorage.setItem('portfolio-font', 'pacifico');
+      localStorage.setItem('sq-font-migrated', '1');
+    }
+  } catch (e) {}
+  setInterval(function () {
+    try {
+      var f2 = localStorage.getItem('portfolio-font');
+      var b = document.body;
+      if (!b || f2 !== 'pacifico') return;
+      var cur = b.style.fontFamily;
+      if (cur && cur.indexOf('Pacifico') < 0) b.style.fontFamily = '"Pacifico", cursive';
+    } catch (e) {}
+  }, 500);
+})();
