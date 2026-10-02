@@ -4390,11 +4390,11 @@
     'body.sq-dock-left-open #sq-dock-left-btn{transform:rotate(90deg) scale(1.05);box-shadow:0 0 0 5px #ffffff33,0 8px 24px #7c5cff66}',
     /* left widgets default chhupi — dock khulne par nikalti hain */
     'html body #sq-app-btn,html body #sq-mode-btn,html body #sq-pk-clock,html body #sq-refresh-btn,html body #sq-anim-toggle{opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .22s,visibility .22s,transform .22s,bottom .22s}',
-    'body.sq-dock-left-open #sq-refresh-btn{opacity:1;visibility:visible;transform:none;bottom:140px!important;left:20px!important}',
-    'body.sq-dock-left-open #sq-pk-clock{opacity:1;visibility:visible;transform:none;bottom:200px!important;left:14px!important}',
-    'body.sq-dock-left-open #sq-anim-toggle{opacity:1;visibility:visible;transform:none;bottom:244px!important;left:20px!important}',
-    'body.sq-dock-left-open #sq-mode-btn{opacity:1;visibility:visible;transform:none;bottom:300px!important;left:14px!important}',
-    'body.sq-dock-left-open #sq-app-btn{opacity:1;visibility:visible;transform:none;bottom:344px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-refresh-btn{opacity:1!important;visibility:visible!important;transform:none;bottom:140px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-pk-clock{opacity:1!important;visibility:visible!important;transform:none;bottom:200px!important;left:14px!important}',
+    'body.sq-dock-left-open #sq-anim-toggle{opacity:1!important;visibility:visible!important;transform:none;bottom:244px!important;left:20px!important}',
+    'body.sq-dock-left-open #sq-mode-btn{opacity:1!important;visibility:visible!important;transform:none;bottom:300px!important;left:14px!important}',
+    'body.sq-dock-left-open #sq-app-btn{opacity:1!important;visibility:visible!important;transform:none;bottom:344px!important;left:20px!important}',
     /* gate (login) par naye buttons chhupi — class-based taake :has() na support karne wale phones par bhi chale */
     'body.sq-on-gate #sq-dots-btn,body.sq-on-gate #sq-dock-left-btn,body.sq-on-gate #sq-magic-btn{display:none!important}',
     'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn,body:has(.gate-overlay) #sq-magic-btn{display:none!important}',
@@ -4917,4 +4917,25 @@
       if (cur && cur.indexOf('Pacifico') < 0) b.style.fontFamily = '"Pacifico", cursive';
     } catch (e) {}
   }, 500);
+})();
+
+/* ===== v63: right column gap khatam — visible buttons ka cascade restack ===== */
+(function () {
+  try {
+    if (window.__sqRestack) return; window.__sqRestack = true;
+    var ORDER = ['sq-dock-btn', 'sq-hub-btn', 'sq-top-btn', 'sq-bottom-btn'];
+    var SLOTS = [18, 74, 132, 184];
+    setInterval(function () {
+      try {
+        var i = 0;
+        ORDER.forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          var cs = getComputedStyle(el);
+          var vis = cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+          if (vis && i < SLOTS.length) { el.style.setProperty('bottom', SLOTS[i] + 'px', 'important'); i++; }
+        });
+      } catch (e) {}
+    }, 400);
+  } catch (e) {}
 })();
