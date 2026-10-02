@@ -5062,6 +5062,10 @@
           if (!el) return;
           var cs = getComputedStyle(el);
           var vis = cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
+          if (document.body.classList.contains('sq-dock-open') && id === 'sq-hub-btn') {
+            if (el.style.getPropertyValue('bottom')) el.style.removeProperty('bottom');
+            return;
+          }
           if (vis && i < SLOTS.length) { el.style.setProperty('bottom', SLOTS[i] + 'px', 'important'); i++; }
         });
       } catch (e) {}
