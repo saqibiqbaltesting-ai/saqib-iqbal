@@ -4460,7 +4460,7 @@
     'html body #sq-dock-left-btn{left:0px!important;inset-inline-start:0px!important}',
     'html body #sq-magic-btn{top:auto!important;bottom:130px!important;left:auto!important;right:2px!important;inset-inline-start:auto!important;inset-inline-end:2px!important}',
     /* v54: magic ◐ ab LEFT column mein — left ✦ ke upar (bottom:74, left:2) */
-    'html body #sq-magic-btn{top:auto!important;bottom:74px!important;left:0!important;inset-inline-start:0!important;right:auto!important;inset-inline-end:auto!important;width:44px!important;height:44px!important;font-size:18px!important}',
+    'html body #sq-magic-btn{top:auto!important;bottom:74px!important;left:10px!important;inset-inline-start:10px!important;right:auto!important;inset-inline-end:auto!important;width:44px!important;height:44px!important;font-size:18px!important}',
     /* v54: + (dock) open hone par upar ke permanent column icons hide — x dabane par wapas */
     'html body.sq-dock-open #sq-hub-btn,html body.sq-dock-open #sq-top-btn,html body.sq-dock-open #sq-bottom-btn{display:none!important}',
     /* v55: dock open = right column ke saare items EK seedhi line (center 27) aur bina overlap ke stack */
