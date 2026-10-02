@@ -4406,6 +4406,7 @@
     '#sq-dots-card .sq-f-btn2{display:block;width:100%;text-align:left;margin:5px 0;padding:10px 12px;border-radius:10px;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font:inherit;font-size:13.5px;cursor:pointer;transition:border-color .15s,color .15s}',
     '#sq-dots-card .sq-f-btn2:hover{border-color:#f0c96a;color:#f0c96a}',
     '#sq-dots-empty{font-size:12px;opacity:.6;text-align:center;padding:14px 0}',
+    '#sq-top-btn,#sq-bottom-btn{right:25px!important;inset-inline-end:25px!important}',
     /* 1) mobile: top icons chhote, laptop par same — media block sab se aakhir mein */
     '@media (max-width:640px){',
     'html body .lang-toggle{width:64px!important;min-width:64px!important;padding:4px 4px!important;min-height:32px!important;font-size:11.5px!important}',
@@ -4417,6 +4418,11 @@
     'html body .font-toggle{inset-inline-end:116px!important;right:116px!important}',
     'html body #sq-cursor-btn{width:32px!important;height:32px!important;inset-inline-end:44px!important;right:44px!important}',
     'html body #sq-dots-btn{width:32px!important;height:32px!important;inset-inline-end:80px!important;right:80px!important;font-size:13px!important}',
+    'html body .nav-toggle{display:none!important}',
+    'html body .wa-top{width:32px!important;height:32px!important}',
+    'html body .font-toggle{width:32px!important;height:32px!important}',
+    'html body .lang-toggle,html body .theme-toggle,html body .social-row,html body .wa-top,html body .font-toggle,html body #sq-dots-btn,html body #sq-cursor-btn{top:calc(max(12px,env(safe-area-inset-top)) + 4px)!important}',
+    'html body .social-row{left:calc(max(8px, env(safe-area-inset-left)) + 112px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 112px)!important}',
     'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important}',
     'html body #sq-dock-left-btn{width:44px!important;height:44px!important;font-size:19px!important}',
     '}'
@@ -4690,7 +4696,7 @@
         '#sq-magic-card .sq-mg-desc{font-size:11.5px;opacity:.65;display:block;margin-top:1px}',
         '#sq-magic-card .sq-mg-check{margin-left:auto;color:#f0c96a;font-size:15px;flex-shrink:0}',
         /* mobile: dock ke upar float (header small screens par bharta hai) */
-        '@media (max-width:640px){html body #sq-magic-btn{top:auto;right:auto;bottom:76px;left:27px;width:34px;height:34px;font-size:15px}}'
+        '@media (max-width:640px){html body #sq-magic-btn{top:auto;right:auto;bottom:74px;left:20px;width:40px;height:40px;font-size:17px}}'
       ].join('\n');
       var st = document.createElement('style');
       st.id = 'sq-magic-css';
