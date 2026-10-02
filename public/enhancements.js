@@ -4614,6 +4614,13 @@
         'html[data-sq-theme="minimal"] .gal-card,html[data-sq-theme="minimal"] .gb-item,html[data-sq-theme="minimal"] .tile,html[data-sq-theme="minimal"] .sq-hub-tile,html[data-sq-theme="minimal"] .nav-menu,html[data-sq-theme="minimal"] .font-panel,html[data-sq-theme="minimal"] .gate-card,html[data-sq-theme="minimal"] .hero-name{text-shadow:none!important}',
         'html[data-sq-theme="minimal"] .gal-card,html[data-sq-theme="minimal"] .gb-item,html[data-sq-theme="minimal"] .tile,html[data-sq-theme="minimal"] .sq-hub-tile,html[data-sq-theme="minimal"] .nav-menu,html[data-sq-theme="minimal"] .font-panel{border-radius:0!important;box-shadow:none!important;border:1px solid rgba(0,0,0,.16)}',
         'html[data-sq-theme="minimal"] .hero-name{letter-spacing:-.02em!important}',
+        ':root[data-sq-theme="minimal"] .btn{border:1px solid #131312;transition:background .35s ease,color .35s ease,transform .3s ease,box-shadow .3s ease}',
+        ':root[data-sq-theme="minimal"] .btn:hover{background:#ffffff!important;color:#131312!important;box-shadow:0 12px 32px rgba(0,0,0,.14)!important}',
+        ':root[data-sq-theme="minimal"] .btn-ghost{background:#ffffff!important;color:#131312!important;border:1px solid #131312}',
+        ':root[data-sq-theme="minimal"] .btn-ghost:hover{background:#131312!important;color:#ffffff!important;box-shadow:0 12px 32px rgba(0,0,0,.14)!important}',
+        ':root[data-sq-theme="minimal"] .btn{background:linear-gradient(180deg,#2e2e2a,#131312)!important}',
+        ':root[data-sq-theme="minimal"] .btn::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:rgba(255,255,255,.25);z-index:1}',
+        ':root[data-sq-theme="minimal"] .btn-ghost{transition:background .35s ease,color .35s ease,transform .3s ease,box-shadow .3s ease}',
         /* ---------- THEME 5: creative — animated bold gradient ---------- */
         ':root[data-sq-theme="creative"]{--bg:#2b1055;--bg-soft:#3b1668;--ink:#fff7fb;--ink-dim:#ffd6ec;--ink-mute:#e0a7f0;--accent:#ff5d8f;--accent-deep:#ff8fab;--gold:#ffb703;--line:rgba(255,141,184,.35);--sq-accent:#ff5d8f;--serif:"Trebuchet MS",Verdana,sans-serif;--mono:"Trebuchet MS",Verdana,sans-serif}',
         '@keyframes sqCreativeBg{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}',
