@@ -1518,7 +1518,6 @@
     /* ---- Lock: poetry password se protected hai (Kit: user request) ---- */
     var LOCK_PW = 'love';
     var unlocked = false;
-    try { unlocked = localStorage.getItem('sq-poetry-unlocked') === '1' || sessionStorage.getItem('sq-poetry-unlocked') === '1' || /(?:^|;\s*)sq-poetry-unlocked=1/.test(document.cookie); } catch (e) {}
     /* ---- Gallery-style overlay lock (v68: user ask — poetry lock photo/gallery ki tarah) ---- */
     var ov = null;
     var pendingPanel = null;
@@ -1550,7 +1549,6 @@
       function tryUnlock() {
         if (String(inp.value || '').trim().toLowerCase() === LOCK_PW) {
           unlocked = true;
-          try { localStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { sessionStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { document.cookie = 'sq-poetry-unlocked=1;max-age=31536000;path=/'; } catch (e) {}
           var target = pendingPanel;
           pendingPanel = null;
           closeOv();
