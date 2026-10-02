@@ -4661,6 +4661,14 @@
         'html[data-sq-theme] .btn-ghost{box-shadow:none;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}',
         'html[data-sq-theme] .btn-ghost::after{background:linear-gradient(105deg,transparent,color-mix(in srgb,var(--accent) 14%,transparent),transparent)}',
         'html[data-sq-theme] .btn-ghost:hover{border-color:var(--accent);box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 18%,transparent)}',
+        /* ---------- gate (signup/login) text contrast — light themes par bhi readable ---------- */
+        ':root[data-sq-theme] .gate-overlay{color:#f5eee9}',
+        ':root[data-sq-theme] .gate-sub{color:#d8c5bf!important;opacity:1}',
+        ':root[data-sq-theme] .gate-kicker{color:#d9a94e!important}',
+        ':root[data-sq-theme] .gate-foot{color:#a89490!important;opacity:1}',
+        ':root[data-sq-theme] .gate-switch{color:#f5eee9}',
+        ':root[data-sq-theme] .gate-switch button,:root[data-sq-theme] .gate-switch a{color:#e97b9c!important}',
+        ':root[data-sq-theme] .gate-divider{color:#a89490!important}',
         /* ---------- panel: Choose Your Experience ---------- */
         '#sq-magic-ov{position:fixed;inset:0;z-index:12000;background:rgba(0,0,0,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
         '#sq-magic-card{background:rgba(16,10,26,.98);border:1px solid rgba(240,201,106,.55);border-radius:16px;padding:18px 16px;width:min(92vw,380px);max-height:82vh;overflow-y:auto;color:#fff;box-shadow:0 14px 50px rgba(0,0,0,.6);font-family:inherit}',
