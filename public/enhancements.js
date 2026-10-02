@@ -4459,6 +4459,13 @@
     'html body #sq-magic-btn{top:auto!important;bottom:74px!important;left:2px!important;inset-inline-start:2px!important;right:auto!important;inset-inline-end:auto!important}',
     /* v54: + (dock) open hone par upar ke permanent column icons hide — x dabane par wapas */
     'html body.sq-dock-open #sq-hub-btn,html body.sq-dock-open #sq-top-btn,html body.sq-dock-open #sq-bottom-btn{display:none!important}',
+    /* v55: dock open = right column ke saare items EK seedhi line (center 27) aur bina overlap ke stack */
+    'html body.sq-dock-open #sq-chat-btn{bottom:86px!important;right:0!important;inset-inline-end:0!important}',
+    'html body.sq-dock-open #sq-fab{bottom:148px!important;right:5px!important;inset-inline-end:5px!important}',
+    'html body.sq-dock-open #sq-anim-toggle{bottom:202px!important;left:auto!important;inset-inline-start:auto!important;right:7px!important;inset-inline-end:7px!important}',
+    'html body.sq-dock-open #sq-dash-btn{bottom:254px!important;left:auto!important;inset-inline-start:auto!important;right:7px!important;inset-inline-end:7px!important}',
+    /* mobile: dock 44px hai (center 22) — chat/fab/anim/dash centers bhi 22 par */
+    '@media (max-width:640px){html body.sq-dock-open #sq-chat-btn{right:-5px!important;inset-inline-end:-5px!important}html body.sq-dock-open #sq-fab{right:0!important;inset-inline-end:0!important}html body.sq-dock-open #sq-anim-toggle,html body.sq-dock-open #sq-dash-btn{right:2px!important;inset-inline-end:2px!important}}',
     'html body #sq-top-btn{bottom:184px!important}',
     'html body #sq-bottom-btn{bottom:238px!important}',
     'html body #sq-pk-clock{left:2px!important;inset-inline-start:2px!important}',
