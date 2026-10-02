@@ -4670,7 +4670,6 @@
         ':root[data-sq-theme="minimal"] .btn:active{transform:scale(.98)!important}',
         ':root[data-sq-theme="minimal"] .btn-ghost{background:linear-gradient(180deg,#ffffff,#f0eee8)!important;color:#131312!important;border:1px solid #131312!important;box-shadow:0 12px 26px rgba(0,0,0,.14),inset 0 1px 0 #ffffff!important}',
         ':root[data-sq-theme="minimal"] .btn-ghost:hover{background:#131312!important;color:#ffffff!important;box-shadow:0 20px 40px rgba(0,0,0,.3)!important;transform:translateY(-2px) scale(1.02)!important}',
-        ':root[data-sq-theme="minimal"] .btn-ghost:hover{background:#131312!important;color:#ffffff!important;box-shadow:0 12px 32px rgba(0,0,0,.14)!important}',
         ':root[data-sq-theme="minimal"] .btn{background:linear-gradient(180deg,#2e2e2a,#131312)!important}',
         ':root[data-sq-theme="minimal"] .btn::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:rgba(255,255,255,.25);z-index:1}',
         ':root[data-sq-theme="minimal"] .btn-ghost{transition:background .35s ease,color .35s ease,transform .3s ease,box-shadow .3s ease}',
@@ -4718,9 +4717,12 @@
         'html[data-sq-theme] .btn:hover::after{left:145%}',
         'html[data-sq-theme] .btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 18px 40px color-mix(in srgb,var(--accent) 55%,transparent),inset 0 1px 0 rgba(255,255,255,.35)}',
         'html[data-sq-theme] .btn:active{transform:translateY(0) scale(.98)}',
-        'html[data-sq-theme] .btn-ghost{box-shadow:none;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}',
-        'html[data-sq-theme] .btn-ghost::after{background:linear-gradient(105deg,transparent,color-mix(in srgb,var(--accent) 14%,transparent),transparent)}',
-        'html[data-sq-theme] .btn-ghost:hover{border-color:var(--accent);box-shadow:0 8px 22px color-mix(in srgb,var(--accent) 18%,transparent)}',
+        /* primary: har theme mein accent-based depth gradient (minimal apna rakhta hai) */
+        'html[data-sq-theme]:not([data-sq-theme="minimal"]) .btn{background-image:linear-gradient(100deg,color-mix(in srgb,var(--accent) 86%,#ffffff),color-mix(in srgb,var(--accent) 62%,#000000))!important;text-shadow:0 1px 2px rgba(0,0,0,.25)}',
+        /* ghost: flimsy border nahi — frosted glass premium (accent tint fill + glow + inner highlight) */
+        'html[data-sq-theme]:not([data-sq-theme="minimal"]) .btn-ghost{background:linear-gradient(100deg,color-mix(in srgb,var(--accent) 16%,transparent),color-mix(in srgb,var(--accent) 34%,transparent))!important;color:var(--accent)!important;border:1px solid color-mix(in srgb,var(--accent) 75%,transparent)!important;box-shadow:0 14px 32px color-mix(in srgb,var(--accent) 30%,transparent),inset 0 1px 0 rgba(255,255,255,.35)!important;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}',
+        'html[data-sq-theme]:not([data-sq-theme="minimal"]) .btn-ghost::after{background:linear-gradient(105deg,transparent,color-mix(in srgb,var(--accent) 22%,transparent),transparent)}',
+        'html[data-sq-theme]:not([data-sq-theme="minimal"]) .btn-ghost:hover{border-color:var(--accent);box-shadow:0 20px 44px color-mix(in srgb,var(--accent) 48%,transparent),inset 0 1px 0 rgba(255,255,255,.45)!important;transform:translateY(-2px) scale(1.02)}',
         /* ---------- gate (signup/login) text contrast — light themes par bhi readable ---------- */
         ':root[data-sq-theme] .gate-overlay{color:#f5eee9}',
         ':root[data-sq-theme] .gate-sub{color:#d8c5bf!important;opacity:1}',
