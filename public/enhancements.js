@@ -3705,13 +3705,38 @@
     b.appendChild(t);
     document.body ? document.body.appendChild(b) : document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(b); });
   }
+  var sqErrCount = 0;
+  function sqErrAllowed(msg, filename) {
+    // max 3 banners per session — a broken page shouldn't spam toasts
+    if (sqErrCount >= 3) return false;
+    var m = String(msg || '');
+    var f = String(filename || '');
+    // browser extensions / injected scripts — not our code, not our fix
+    if (f.indexOf('chrome-extension://') === 0 || f.indexOf('moz-extension://') === 0 || f.indexOf('safari-extension://') === 0) return false;
+    // cross-origin scripts are masked to this generic message — no actionable info
+    if (m === 'Script error.' || m.indexOf('Script error') === 0) return false;
+    // errors with no filename at all can't come from our own .js files —
+    // our bundles always carry enhancements.js / index.html / features.js
+    if (!f) return false;
+    sqErrCount++;
+    return true;
+  }
   window.addEventListener('error', function (e) {
     if (e && e.target && (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO' || e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) return;
-    banner((e && e.message ? e.message : 'Error') + (e && e.filename ? ' @ ' + String(e.filename).split('/').pop() + ':' + e.lineno : ''));
+    var msg = (e && e.message ? e.message : 'Error');
+    var file = e && e.filename ? String(e.filename).split('/').pop() + ':' + e.lineno : '';
+    if (!sqErrAllowed(msg + (file ? ' @ ' + file : ''), e && e.filename)) return;
+    banner(msg + (file ? ' @ ' + file : ''));
   }, true);
   window.addEventListener('unhandledrejection', function (e) {
     var r = e && e.reason;
-    banner(r && r.message ? r.message : String(r).slice(0, 160));
+    var msg = r && r.message ? r.message : (r ? String(r).slice(0, 160) : 'Unknown rejection');
+    var stack = (r && r.stack) ? String(r.stack) : '';
+    // only surface rejections that originate from our own deployed code —
+    // extension/CDN promise noise otherwise shows scary useless banners
+    if (stack.indexOf('saqib-iqbal.vercel.app') === -1 && stack.indexOf('localhost') === -1) return;
+    if (!sqErrAllowed(msg, 'rejection')) return;
+    banner(msg);
   });
 })();
 
