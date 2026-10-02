@@ -940,19 +940,45 @@
   } catch (e) {}
 })();
 
-/* ---- 16. pin social-row to body so position:fixed is viewport-relative ---- */
+/* ---- 16. pin social-row to body so position:fixed is viewport-relative ----
+   React re-renders (visitors count, theme, etc.) recreate .social-row inside
+   hero-top after we've moved the original — that showed a duplicate icon row
+   under "VIP Portfolio". Sweep forever: keep exactly ONE row pinned to body
+   (marked data-sq-keep), hide any duplicate IN PLACE (don't detach — React
+   owns those nodes and detaching under it risks reconciliation errors). */
 (function socialFix(){
   if (window.__sqSocialFix) return; window.__sqSocialFix = true;
-  var tries = 0;
-  var t = setInterval(function(){
+  function sweep(){
     try {
-      tries++;
-      var row = document.querySelector('.social-row');
-      if (!row) { if (tries > 60) clearInterval(t); return; }
-      clearInterval(t);
-      if (row.parentNode !== document.body) document.body.appendChild(row);
-    } catch(e) { try { clearInterval(t); } catch(_){} }
-  }, 400);
+      var rows = document.querySelectorAll('.social-row');
+      if (!rows.length) return;
+      var keeper = null;
+      for (var i = 0; i < rows.length; i++) {
+        var el = rows[i];
+        if (el.getAttribute('data-sq-keep') === '1' && el.parentNode === document.body) { keeper = el; break; }
+      }
+      if (!keeper) {
+        for (var j = 0; j < rows.length; j++) {
+          var cand = rows[j];
+          if (cand.getAttribute('data-sq-hide') !== '1') {
+            document.body.appendChild(cand);
+            cand.setAttribute('data-sq-keep', '1');
+            cand.style.display = '';
+            keeper = cand;
+            break;
+          }
+        }
+      }
+      for (var k = 0; k < rows.length; k++) {
+        var dup = rows[k];
+        if (dup === keeper) continue;
+        dup.setAttribute('data-sq-hide', '1');
+        if (dup.style.display !== 'none') dup.style.display = 'none';
+      }
+    } catch(e) {}
+  }
+  setInterval(sweep, 600);
+  sweep();
 })();
 
 /* ---- 17. keep 09-Contact as the VERY last section (right after Growth Hub) ---- */
@@ -1492,7 +1518,7 @@
     /* ---- Lock: poetry password se protected hai (Kit: user request) ---- */
     var LOCK_PW = 'love';
     var unlocked = false;
-    try { unlocked = localStorage.getItem('sq-poetry-unlocked') === '1'; } catch (e) {}
+    try { unlocked = localStorage.getItem('sq-poetry-unlocked') === '1' || sessionStorage.getItem('sq-poetry-unlocked') === '1' || /(?:^|;\s*)sq-poetry-unlocked=1/.test(document.cookie); } catch (e) {}
     var lockBox = document.createElement('div');
     lockBox.id = 'sq-poetry-lock';
     lockBox.innerHTML = '<p class="sq-lock-title">\u{1F512} Poetry locked hai \u2014 dekhne ke liye password likhein</p>'
@@ -1597,7 +1623,7 @@
       var err = lockBox.querySelector('.sq-lock-err');
       if (String(inp.value || '').trim().toLowerCase() === LOCK_PW) {
         unlocked = true;
-        try { localStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {}
+        try { localStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { sessionStorage.setItem('sq-poetry-unlocked', '1'); } catch (e) {} try { document.cookie = 'sq-poetry-unlocked=1;max-age=31536000;path=/'; } catch (e) {}
         lockBox.style.display = 'none';
         err.style.display = 'none';
         var target = pendingPanel;
@@ -4433,6 +4459,8 @@
     '#sq-dots-card .sq-f-btn2:hover{border-color:#f0c96a;color:#f0c96a}',
     '#sq-dots-empty{font-size:12px;opacity:.6;text-align:center;padding:14px 0}',
     '#sq-top-btn,#sq-bottom-btn{right:25px!important;inset-inline-end:25px!important}',
+    /* duplicate social-row (React re-render) — sweeper data-sq-hide lagata hai */
+    '.social-row[data-sq-hide]{display:none!important}',
     /* right column: sab buttons ka center ek hi line par — + , home, upar/neeche */
     'html body #sq-hub-btn{right:22px!important;inset-inline-end:22px!important}',
     'body.sq-dock-open #sq-anim-toggle,body.sq-dock-open #sq-dash-btn{right:25px!important;inset-inline-end:25px!important}',
