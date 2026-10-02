@@ -1,5 +1,5 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import { loadJSON, saveJSON } from "./blob-store";
+import { loadJSON, saveJSON } from "./blob-store.js";
 
 // Stateless signed tokens (HMAC) — no server-side session storage needed,
 // so login/refresh work instantly even with eventually-consistent blob storage.
