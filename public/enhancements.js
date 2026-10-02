@@ -3224,12 +3224,9 @@
     ['\u2728', 'Jab pata karna ho main kaisa sochta hoon', 'Itna ke aap mil jao to din ka hisaab hi kuch aur ho jata hai.\n\nAam log se baat karna padta hai, aap se milna hota hai. \u2728'],
     ['\uD83C\uDF1C', 'Jab raat ko hamari yaad aaye', 'Raat ki baat hai... sitare bhi aaj kal aap ka zikr karte hain \uD83C\uDF1C\n\nAb ankhein band karo — milte hain khwab mein.']
   ];
-  /* ---- Open When gate (v70: pehle gallery-style lock, letters uske baad) ---- */
-  function owUnlocked() {
-    try { return localStorage.getItem('sq-openwhen-ok') === '1' || sessionStorage.getItem('sq-openwhen-ok') === '1' || /(?:^|;\s*)sq-openwhen-ok=1/.test(document.cookie); } catch (e) { return false; }
-  }
+  /* ---- Open When gate (v71: HAR refresh par lock dobara mangay — koi persistence nahi) ---- */
+  var owOk = false;
   function owGate() {
-    if (owUnlocked()) { openWhen(); return; }
     if (document.getElementById('sq-ow-ov')) return;
     if (!document.getElementById('sq-ow-ov-style')) {
       var st = document.createElement('style');
@@ -3256,7 +3253,7 @@
     var err = ov.querySelector('#sq-ow-ov-err');
     function tryUnlock() {
       if (String(inp.value || '').trim().toLowerCase() === 'love') {
-        try { localStorage.setItem('sq-openwhen-ok', '1'); } catch (e) {} try { sessionStorage.setItem('sq-openwhen-ok', '1'); } catch (e) {} try { document.cookie = 'sq-openwhen-ok=1;max-age=31536000;path=/'; } catch (e) {}
+        owOk = true;
         ov.remove();
         openWhen();
       } else {
@@ -3273,7 +3270,7 @@
 
   function openWhen() {
     modal2('\uD83D\uDCE8 Open When\u2026 Letters', function (c) {
-      var unlockedL = lsG('sq-openwhen-ok') === '1';
+      var unlockedL = owOk;
       function render() {
         c.querySelectorAll('.sq-ow-l').forEach(function (e) { e.remove(); });
         LETTERS.forEach(function (L, i) {
