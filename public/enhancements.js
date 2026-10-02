@@ -4397,6 +4397,7 @@
     'body.sq-dock-left-open #sq-app-btn{opacity:1;visibility:visible;transform:none;bottom:344px!important;left:20px!important}',
     /* gate (login) par naye buttons chhupi */
     'body:has(.gate-overlay) #sq-dots-btn,body:has(.gate-overlay) #sq-dock-left-btn,body:has(.gate-overlay) #sq-magic-btn{display:none!important}',
+    'body:has(.font-panel) #sq-magic-btn,body:has(.font-panel) #sq-dots-btn,body:has(.font-panel) #sq-cursor-btn,body:has(.font-panel) #sq-dock-btn,body:has(.font-panel) #sq-dock-left-btn,body:has(.font-panel) #sq-top-btn,body:has(.font-panel) #sq-bottom-btn,body:has(.font-panel) #sq-fab,body:has(.font-panel) #sq-hub-btn,body:has(.font-panel) #sq-pk-clock,body:has(.font-panel) #sq-refresh-btn,body:has(.font-panel) #sq-app-btn,body:has(.font-panel) #sq-mode-btn{display:none!important}',
     /* dots menu panel */
     '#sq-dots-ov{position:fixed;inset:0;z-index:12000;background:#000a;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}',
     '#sq-dots-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:18px 16px;width:min(92vw,340px);max-height:80vh;overflow-y:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6);font-family:inherit}',
