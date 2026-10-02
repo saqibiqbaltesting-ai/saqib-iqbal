@@ -4716,7 +4716,7 @@
       var b = document.createElement('button');
       b.id = 'sq-magic-btn';
       b.type = 'button';
-      b.innerHTML = '\u25D0'; /* ◐ — chhota elegant magic icon */
+      b.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="display:block"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>'; /* magic icon - SVG, har device par render hota hai */
       b.setAttribute('aria-label', 'Magic theme badlein');
       b.title = 'Choose Your Experience';
       b.onclick = openPanel;
