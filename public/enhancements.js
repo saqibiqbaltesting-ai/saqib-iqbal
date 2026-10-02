@@ -4660,10 +4660,10 @@
         ':root[data-sq-theme="sunset"] .gal-card,:root[data-sq-theme="sunset"] .gb-item,:root[data-sq-theme="sunset"] .tile,:root[data-sq-theme="sunset"] .sq-hub-tile,:root[data-sq-theme="sunset"] .nav-menu,:root[data-sq-theme="sunset"] .font-panel,:root[data-sq-theme="sunset"] .gate-card{border-radius:14px;border-color:rgba(251,146,60,.3);box-shadow:0 10px 30px rgba(26,11,4,.5)}',
         ':root[data-sq-theme="sunset"] .hero-name{text-shadow:0 4px 30px rgba(251,146,60,.35)}',
         /* ---------- button polish — boring buttons ko premium ---------- */
-        'html[data-sq-theme] .btn{position:relative;overflow:hidden;font-weight:700;box-shadow:0 10px 26px color-mix(in srgb,var(--accent) 35%,transparent)}',
-        'html[data-sq-theme] .btn::after{content:"";position:absolute;top:0;left:-130%;width:55%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);transition:left .55s ease;pointer-events:none}',
+        'html[data-sq-theme] .btn{position:relative;overflow:hidden;font-weight:700;border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 12px 30px color-mix(in srgb,var(--accent) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.3)}',
+        'html[data-sq-theme] .btn::after{content:"";position:absolute;top:0;left:-130%;width:55%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);transition:left .55s ease;pointer-events:none}',
         'html[data-sq-theme] .btn:hover::after{left:145%}',
-        'html[data-sq-theme] .btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 50%,transparent)}',
+        'html[data-sq-theme] .btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 18px 40px color-mix(in srgb,var(--accent) 55%,transparent),inset 0 1px 0 rgba(255,255,255,.35)}',
         'html[data-sq-theme] .btn:active{transform:translateY(0) scale(.98)}',
         'html[data-sq-theme] .btn-ghost{box-shadow:none;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent)}',
         'html[data-sq-theme] .btn-ghost::after{background:linear-gradient(105deg,transparent,color-mix(in srgb,var(--accent) 14%,transparent),transparent)}',
