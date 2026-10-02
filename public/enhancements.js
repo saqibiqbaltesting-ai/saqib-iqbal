@@ -4407,6 +4407,22 @@
     '#sq-dots-card .sq-f-btn2:hover{border-color:#f0c96a;color:#f0c96a}',
     '#sq-dots-empty{font-size:12px;opacity:.6;text-align:center;padding:14px 0}',
     '#sq-top-btn,#sq-bottom-btn{right:25px!important;inset-inline-end:25px!important}',
+    /* right column: sab buttons ka center ek hi line par — + , home, upar/neeche */
+    'html body #sq-hub-btn{right:22px!important;inset-inline-end:22px!important}',
+    'body.sq-dock-open #sq-anim-toggle,body.sq-dock-open #sq-dash-btn{right:25px!important;inset-inline-end:25px!important}',
+    /* gate (login/signup) par bhi right column seedhi line mein */
+    'body:has(.gate-overlay) #sq-dock-btn,body:has(.gate-overlay) #sq-hub-btn{opacity:1!important;visibility:visible!important;display:block!important}',
+    /* gate par PK time left side par nazar aaye */
+    'body:has(.gate-overlay) #sq-pk-clock,body:has(.gate-card) #sq-pk-clock{opacity:1!important;visibility:visible!important;transform:none!important;left:14px!important;inset-inline-start:14px!important;bottom:24px!important;z-index:11500!important;display:block!important}',
+    /* premium welcome — login/signup ke baad */
+    '#sq-welcome{position:fixed;left:50%;transform:translateX(-50%) translateY(140%);bottom:20px;z-index:13200;width:min(92vw,420px);pointer-events:none;transition:transform .55s cubic-bezier(.22,1.2,.36,1),opacity .4s;opacity:0}',
+    '#sq-welcome.sq-wl-on{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}',
+    '#sq-welcome .sq-wl-card{position:relative;overflow:hidden;border-radius:18px;padding:16px 44px 16px 18px;background:linear-gradient(135deg,rgba(24,10,34,.96),rgba(10,7,14,.96));border:1px solid transparent;background-clip:padding-box;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(240,201,106,.35),0 0 30px rgba(233,123,156,.25);color:#fff;font-family:inherit;text-align:left}',
+    '#sq-welcome .sq-wl-card::before{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;background:linear-gradient(120deg,#f0c96a,#e97b9c,#7c5cff,#f0c96a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}',
+    '#sq-welcome .sq-wl-kicker{font-size:10px;letter-spacing:.28em;color:#f0c96a;font-weight:700;margin-bottom:4px}',
+    '#sq-welcome .sq-wl-title{margin:0 0 6px;font-size:19px;font-weight:800;background:linear-gradient(90deg,#f0c96a,#e97b9c);-webkit-background-clip:text;background-clip:text;color:transparent}',
+    '#sq-welcome .sq-wl-sub{margin:0;font-size:12.5px;line-height:1.55;color:#e9dff3}',
+    '#sq-welcome .sq-wl-x{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font-size:15px;cursor:pointer;line-height:1}',
     /* 1) mobile: top icons chhote, laptop par same — media block sab se aakhir mein */
     '@media (max-width:640px){',
     'html body .lang-toggle{width:64px!important;min-width:64px!important;padding:4px 4px!important;min-height:32px!important;font-size:11.5px!important}',
@@ -4418,12 +4434,12 @@
     'html body .font-toggle{inset-inline-end:116px!important;right:116px!important}',
     'html body #sq-cursor-btn{width:32px!important;height:32px!important;inset-inline-end:44px!important;right:44px!important}',
     'html body #sq-dots-btn{width:32px!important;height:32px!important;inset-inline-end:80px!important;right:80px!important;font-size:13px!important}',
-    'html body .nav-toggle{display:none!important}',
+    'html body .nav-toggle:not(.font-toggle):not(.sq-cursor-toggle):not(.sq-dots-toggle){display:none!important}',
     'html body .wa-top{width:32px!important;height:32px!important}',
     'html body .font-toggle{width:32px!important;height:32px!important}',
     'html body .lang-toggle,html body .theme-toggle,html body .social-row,html body .wa-top,html body .font-toggle,html body #sq-dots-btn,html body #sq-cursor-btn{top:calc(max(12px,env(safe-area-inset-top)) + 4px)!important}',
     'html body .social-row{left:calc(max(8px, env(safe-area-inset-left)) + 112px)!important;inset-inline-start:calc(max(8px, env(safe-area-inset-left)) + 112px)!important}',
-    'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important}',
+    'html body #sq-dock-btn{width:44px!important;height:44px!important;font-size:19px!important;right:23px!important;inset-inline-end:23px!important}',
     'html body #sq-dock-left-btn{width:44px!important;height:44px!important;font-size:19px!important}',
     '}'
   ].join('\n');
@@ -4754,5 +4770,54 @@
       return true;
     }
     if (document.body) mk(); else document.addEventListener('DOMContentLoaded', mk);
+  })();
+
+  /* ---------- premium welcome — login/signup complete hote hi ek bara, khoobsurat message ---------- */
+  (function () {
+    function getTok() { try { return localStorage.getItem('portfolio-auth-token') || ''; } catch (e) { return ''; } }
+    function nameOf() {
+      try {
+        var p = getTok().split('.')[1] || '';
+        if (!p) return '';
+        p = p.replace(/-/g, '+').replace(/_/g, '/');
+        while (p.length % 4) p += '=';
+        var m = JSON.parse(decodeURIComponent(escape(atob(p))));
+        return (m && (m.name || m.fullName)) ? String(m.name || m.fullName).split(' ')[0].replace(/[<>&]/g, '') : '';
+      } catch (e) { return ''; }
+    }
+    var shown = false;
+    var wasIn = !!getTok();
+    setInterval(function () {
+      var t = getTok();
+      if (t && !wasIn && !shown) {
+        wasIn = true;
+        try { if (sessionStorage.getItem('sq-welcomed') === '1') return; } catch (e) {}
+        try { sessionStorage.setItem('sq-welcomed', '1'); } catch (e) {}
+        show();
+      } else if (!t) { wasIn = false; }
+    }, 600);
+    function show() {
+      if (document.getElementById('sq-welcome')) return;
+      var nm = nameOf();
+      var w = document.createElement('div');
+      w.id = 'sq-welcome';
+      w.innerHTML =
+        '<div class="sq-wl-card">' +
+          '<button class="sq-wl-x" aria-label="Welcome band karein">\u00D7</button>' +
+          '<div class="sq-wl-kicker">\u2726 PREMIUM MEMBER \u2726</div>' +
+          '<div class="sq-wl-title">Khush Amdeed' + (nm ? ', ' + nm.replace(/[<>&]/g, '') : '') + '!</div>' +
+          '<p class="sq-wl-sub">Aap ka account activate ho gaya hai \u2014 ab portfolio ka har corner sirf aap ke liye khula hai. Gallery, poetry, quiz aur bohat kuch \u2014 maza karein! \u2728</p>' +
+        '</div>';
+      document.body.appendChild(w);
+      requestAnimationFrame(function () { requestAnimationFrame(function () { w.classList.add('sq-wl-on'); }); });
+      var gone = false;
+      function hide() {
+        if (gone) return; gone = true;
+        w.classList.remove('sq-wl-on');
+        setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 600);
+      }
+      w.querySelector('.sq-wl-x').onclick = hide;
+      setTimeout(hide, 8000);
+    }
   })();
 })();
