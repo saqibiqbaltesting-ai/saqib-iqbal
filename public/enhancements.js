@@ -3224,6 +3224,53 @@
     ['\u2728', 'Jab pata karna ho main kaisa sochta hoon', 'Itna ke aap mil jao to din ka hisaab hi kuch aur ho jata hai.\n\nAam log se baat karna padta hai, aap se milna hota hai. \u2728'],
     ['\uD83C\uDF1C', 'Jab raat ko hamari yaad aaye', 'Raat ki baat hai... sitare bhi aaj kal aap ka zikr karte hain \uD83C\uDF1C\n\nAb ankhein band karo — milte hain khwab mein.']
   ];
+  /* ---- Open When gate (v70: pehle gallery-style lock, letters uske baad) ---- */
+  function owUnlocked() {
+    try { return localStorage.getItem('sq-openwhen-ok') === '1' || sessionStorage.getItem('sq-openwhen-ok') === '1' || /(?:^|;\s*)sq-openwhen-ok=1/.test(document.cookie); } catch (e) { return false; }
+  }
+  function owGate() {
+    if (owUnlocked()) { openWhen(); return; }
+    if (document.getElementById('sq-ow-ov')) return;
+    if (!document.getElementById('sq-ow-ov-style')) {
+      var st = document.createElement('style');
+      st.id = 'sq-ow-ov-style';
+      st.textContent = '#sq-ow-ov{position:fixed;inset:0;z-index:12100;background:rgba(8,3,14,.97);display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}'
+        + '#sq-ow-ov-card{background:rgba(24,10,34,.98);border:1px solid #f0c96a;border-radius:14px;padding:24px 20px;width:min(88vw,320px);color:#fff;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.6)}'
+        + '#sq-ow-ov-card h3{margin:0 0 6px;font-size:16px;color:#f0c96a}#sq-ow-ov-card p{margin:0 0 14px;font-size:12px;opacity:.7}'
+        + '#sq-ow-ov-in{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:9px;border:1px solid #ffffff30;background:#ffffff10;color:#fff;font-size:14px;text-align:center}'
+        + '#sq-ow-ov-in::placeholder{color:#ffffff60}'
+        + '#sq-ow-ov-btn{width:100%;margin-top:10px;padding:11px;border-radius:9px;border:none;background:#f0c96a;color:#1a0f26;font-weight:700;cursor:pointer;font-size:14px;font-family:inherit}'
+        + '#sq-ow-ov-err{display:none;color:#ff6b81;font-size:12.5px;margin-top:10px}'
+        + '#sq-ow-ov-back{width:100%;margin-top:8px;padding:11px;border-radius:9px;border:1px solid rgba(240,201,106,.4);background:transparent;color:#f0c96a;font-weight:600;cursor:pointer;font-size:14px;font-family:inherit}';
+      document.head.appendChild(st);
+    }
+    var ov = document.createElement('div');
+    ov.id = 'sq-ow-ov';
+    ov.innerHTML = '<div id="sq-ow-ov-card"><h3>\u{1F512} Open When</h3><p>Ye letters password se mehfooz hai</p>'
+      + '<input id="sq-ow-ov-in" type="password" placeholder="Password" autocomplete="off">'
+      + '<button id="sq-ow-ov-btn" type="button">Unlock</button>'
+      + '<div id="sq-ow-ov-err">Ghalat password \u2014 dobara koshish karein.</div>'
+      + '<button id="sq-ow-ov-back" type="button">\u2B05 Wapis jayein</button></div>';
+    document.body.appendChild(ov);
+    var inp = ov.querySelector('#sq-ow-ov-in');
+    var err = ov.querySelector('#sq-ow-ov-err');
+    function tryUnlock() {
+      if (String(inp.value || '').trim().toLowerCase() === 'love') {
+        try { localStorage.setItem('sq-openwhen-ok', '1'); } catch (e) {} try { sessionStorage.setItem('sq-openwhen-ok', '1'); } catch (e) {} try { document.cookie = 'sq-openwhen-ok=1;max-age=31536000;path=/'; } catch (e) {}
+        ov.remove();
+        openWhen();
+      } else {
+        err.style.display = 'block';
+        inp.value = '';
+        try { inp.focus(); } catch (e) {}
+      }
+    }
+    ov.querySelector('#sq-ow-ov-btn').addEventListener('click', tryUnlock);
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); tryUnlock(); } });
+    ov.querySelector('#sq-ow-ov-back').addEventListener('click', function () { ov.remove(); });
+    setTimeout(function () { try { inp.focus(); } catch (e) {} }, 100);
+  }
+
   function openWhen() {
     modal2('\uD83D\uDCE8 Open When\u2026 Letters', function (c) {
       var unlockedL = lsG('sq-openwhen-ok') === '1';
@@ -3233,7 +3280,7 @@
           var b = document.createElement('button');
           b.className = 'sq-f-btn2 sq-ow-l'; b.type = 'button';
           b.style.cssText += 'display:block;width:100%;text-align:left';
-          b.textContent = L[0] + ' Open when you ' + L[1];
+          b.textContent = L[0] + ' Kholay jab' + String(L[1]).replace(/^Jab/i, '');
           b.onclick = function () {
             if (!unlockedL) {
               var pw = prompt('Ye letter kholne ke liye password likhein:');
@@ -3241,7 +3288,7 @@
               if (pw.trim().toLowerCase() !== 'love') { alert('Ghalat password \u2014 dobara koshish karein.'); return; }
               unlockedL = true; lsS('sq-openwhen-ok', '1'); render(); return;
             }
-            modal2(L[0] + ' Open when you ' + L[1], function (cc) {
+            modal2(L[0] + ' Kholay jab' + String(L[1]).replace(/^Jab/i, ''), function (cc) {
               var body = document.createElement('div');
               body.className = 'sq-f-big';
               body.style.fontFamily = "'Noto Nastaliq Urdu','Gulzar',serif";
@@ -3412,7 +3459,7 @@
   }
 
   window.__sqHubFeature = function (key) {
-    if (key === 'openwhen') openWhen();
+    if (key === 'openwhen') owGate();
     else if (key === 'gifts') gifts();
     else if (key === 'roulette') roulette();
     else if (key === 'scratch') scratch();
