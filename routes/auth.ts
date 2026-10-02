@@ -4,14 +4,19 @@ import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypt
 
 // Stateless signed tokens (HMAC) — no server-side session storage needed,
 // so login/refresh work instantly even with eventually-consistent blob storage.
-const SECRET = process.env.AUTH_SECRET || "sq-portfolio-fallback-secret-2026";
+// Fail-closed: if AUTH_SECRET is unset we reject/issue no tokens instead of
+// falling back to a guessable string (this repo is public — a hardcoded
+// fallback would let anyone forge tokens for any account, including the owner).
+const SECRET = process.env.AUTH_SECRET || "";
 type TokenPayload = { email: string; name: string; exp: number };
-const sig = (body: string) => createHmac("sha256", SECRET).update(body).digest("base64url");
+const sig = (body: string) => SECRET ? createHmac("sha256", SECRET).update(body).digest("base64url") : "";
 function issueToken(email: string, name: string): string {
+  if (!SECRET) throw new Error("AUTH_SECRET not configured");
   const body = Buffer.from(JSON.stringify({ email, name, exp: Date.now() + 1000 * 60 * 60 * 24 * 30 })).toString("base64url");
   return `${body}.${sig(body)}`;
 }
 export function readToken(token: string): TokenPayload | null {
+  if (!SECRET) return null;
   const parts = token.split(".");
   if (parts.length !== 2) return null;
   const expected = sig(parts[0]);
@@ -126,6 +131,7 @@ export async function POST(req: Request): Promise<Response> {
     rl[ip] = (rl[ip] || []).filter((t: number) => now - t < 3600000);
     if (rl[ip].length >= 10) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
     rl[ip].push(now);
+    if (email === OWNER) return Response.json({ ok: false, error: "owner_protected" }, { status: 403 });
     const user = db.users.find((u) => u.email === email);
     if (!user) return Response.json({ ok: false, error: "not found" }, { status: 404 });
     user.salt = randomBytes(16).toString("hex");

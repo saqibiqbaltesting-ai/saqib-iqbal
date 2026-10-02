@@ -82,6 +82,28 @@ async function persistData(only?: string[]) {
 // POST actions that change nothing — persisting after them is pure latency.
 const READ_ONLY_ACTIONS = new Set(["me", "logout", "chat"]);
 
+// Which data file each route actually writes. Persisting ONLY this file after a
+// POST is critical: pushing every file from a possibly-stale /tmp snapshot was
+// clobbering fresh data (e.g. a visitors POST wiping new guestbook entries).
+// Unknown/missing route falls back to a full persist (safe default).
+const ROUTE_FILES: Record<string, string[]> = {
+  auth: ["portfolio-users.json"],
+  contact: ["contact-msgs.json"],
+  "gallery-lock": ["gallery-lock.json"],
+  guestbook: ["guestbook.json"],
+  "photo-reactions": ["photo-reactions.json"],
+  qa: ["qa.json"],
+  quiz: ["quiz-scores.json"],
+  ratings: ["ratings.json"],
+  visitors: ["visitors.json"],
+  "visitor-geo": ["visitor-geo.json"],
+  hearts: ["hearts.json"],
+  "user-shers": ["user-shers.json"],
+  "sher-likes": ["sher-likes.json"],
+  // admin: only save-settings writes — and only site-settings.json
+  admin: [],
+};
+
 const routes: Record<string, { GET?: (req: Request) => Response | Promise<Response>; POST?: (req: Request) => Response | Promise<Response> }> = {
   auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
   "photo-reactions": photoReactions, qa, quiz, ratings, visitors,
@@ -120,13 +142,17 @@ async function handle(req: Request): Promise<Response> {
   const res = await fn(callReq);
   // login/chat touch only the users file — persist just that (fast), skip read-only actions
   if (req.method === "POST") {
-    // login/signup/forgot/delete only touch the users file — persist just that.
-    // A full persistData() here fires ~12 parallel PUTs to the GitHub Contents
-    // API on every signup, which trips GitHub's secondary rate limits and made
-    // portfolio-users.json silently fail to save (accounts vanished after signup).
+    // login/signup/forgot/delete only touch the users file
     const USERS_ONLY = new Set(["login", "signup", "forgot", "delete-account"]);
-    if (USERS_ONLY.has(action)) await persistData(["portfolio-users.json"]);
-    else if (!READ_ONLY_ACTIONS.has(action) && name !== "chat") await persistData();
+    if (name === "admin" && action === "save-settings") {
+      await persistData(["site-settings.json"]);
+    } else if (USERS_ONLY.has(action)) {
+      await persistData(["portfolio-users.json"]);
+    } else if (!READ_ONLY_ACTIONS.has(action) && name !== "chat") {
+      const files = ROUTE_FILES[name];
+      if (files) { if (files.length) await persistData(files); }
+      else await persistData(); // unknown route — safe full persist
+    }
   }
   return res;
 }

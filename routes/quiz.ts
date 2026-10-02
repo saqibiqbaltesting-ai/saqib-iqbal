@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { readToken } from "./auth.js";
 
 export const description = "Saqib quiz — questions + leaderboard (answers stay server-side)";
 
@@ -67,19 +68,14 @@ export async function POST(req: Request): Promise<Response> {
 
   // naam: logged-in user ka SERVER-VERIFIED naam, warna body ka naam
   let name = String(body.name ?? "").trim().slice(0, 24);
-  const token = String(body.token ?? "");
-  if (token) {
+  const claims = readToken(String(body.token ?? ""));
+  if (claims) {
     try {
       const db = JSON.parse(readFileSync(join(DIR, "portfolio-users.json"), "utf-8"));
-      const s = (db.sessions ?? []).find(
-        (x: Record<string, unknown>) => String(x.token ?? x.id ?? "") === token
+      const u = (db.users ?? []).find(
+        (x: Record<string, unknown>) => String(x.email ?? "") === claims.email.toLowerCase()
       );
-      if (s) {
-        const u = (db.users ?? []).find(
-          (x: Record<string, unknown>) => String(x.email ?? "") === String(s.email ?? "")
-        );
-        if (u && String(u.name ?? "")) name = String(u.name);
-      }
+      if (u && String(u.name ?? "")) name = String(u.name);
     } catch {}
   }
   if (!name) name = "Mehman";

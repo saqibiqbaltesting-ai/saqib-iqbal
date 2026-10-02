@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { readToken } from "./auth.js";
 
 export const description = "Site rating — 5 stars, one per user, average public";
 
@@ -21,14 +22,8 @@ const save = (ratings: Record<string, number>) => {
 };
 
 const emailOf = (token: string): string | null => {
-  if (!token) return null;
-  try {
-    const db = JSON.parse(readFileSync(join(DIR, "portfolio-users.json"), "utf-8"));
-    const s = (db.sessions ?? []).find((x: Record<string, unknown>) => String(x.token ?? x.id ?? "") === token);
-    return s ? String(s.email ?? "") : null;
-  } catch {
-    return null;
-  }
+  const p = readToken(String(token ?? ""));
+  return p ? p.email.toLowerCase() : null;
 };
 
 export async function GET(req: Request): Promise<Response> {

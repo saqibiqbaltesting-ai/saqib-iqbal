@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { readToken } from "./auth.js";
 
 export const description = "Portfolio guestbook — JSON file storage, with edit/delete/reply";
 
@@ -16,15 +17,10 @@ const save = (entries: Entry[]) => {
   writeFileSync(FILE, JSON.stringify(entries, null, 2));
 };
 
-// token -> email, or null
+// token -> email, or null (stateless signed tokens — see auth.ts readToken)
 const auth = (body: any): string | null => {
-  const token = String(body?.token ?? "");
-  if (!token) return null;
-  try {
-    const db = JSON.parse(readFileSync(join(process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data", "data", "portfolio-users.json"), "utf-8"));
-    const s = (db.sessions || []).find((x: any) => x.token === token);
-    return s ? String(s.email) : null;
-  } catch { return null; }
+  const p = readToken(String(body?.token ?? ""));
+  return p ? p.email.toLowerCase() : null;
 };
 
 export function GET(req: Request): Response {
