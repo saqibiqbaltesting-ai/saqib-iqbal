@@ -4418,14 +4418,18 @@
     /* gate par PK time left side par nazar aaye */
     'body.sq-on-gate #sq-pk-clock{opacity:1!important;visibility:visible!important;transform:none!important;left:14px!important;inset-inline-start:14px!important;bottom:24px!important;z-index:11500!important;display:block!important}',
     /* premium welcome — login/signup ke baad */
-    '#sq-welcome{position:fixed;left:50%;transform:translateX(-50%) translateY(140%);bottom:20px;z-index:13200;width:min(92vw,420px);pointer-events:none;transition:transform .55s cubic-bezier(.22,1.2,.36,1),opacity .4s;opacity:0}',
-    '#sq-welcome.sq-wl-on{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}',
-    '#sq-welcome .sq-wl-card{position:relative;overflow:hidden;border-radius:18px;padding:16px 44px 16px 18px;background:linear-gradient(135deg,rgba(24,10,34,.96),rgba(10,7,14,.96));border:1px solid transparent;background-clip:padding-box;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(240,201,106,.35),0 0 30px rgba(233,123,156,.25);color:#fff;font-family:inherit;text-align:left}',
-    '#sq-welcome .sq-wl-card::before{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;background:linear-gradient(120deg,#f0c96a,#e97b9c,#7c5cff,#f0c96a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}',
-    '#sq-welcome .sq-wl-kicker{font-size:10px;letter-spacing:.28em;color:#f0c96a;font-weight:700;margin-bottom:4px}',
-    '#sq-welcome .sq-wl-title{margin:0 0 6px;font-size:19px;font-weight:800;background:linear-gradient(90deg,#f0c96a,#e97b9c);-webkit-background-clip:text;background-clip:text;color:transparent}',
-    '#sq-welcome .sq-wl-sub{margin:0;font-size:12.5px;line-height:1.55;color:#e9dff3}',
-    '#sq-welcome .sq-wl-x{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font-size:15px;cursor:pointer;line-height:1}',
+    '#sq-welcome{position:fixed;inset:0;z-index:13200;display:flex;align-items:center;justify-content:center;padding:4vh 4vw;background:rgba(8,5,12,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none;transition:opacity .45s;opacity:0}',
+    '#sq-welcome.sq-wl-on{opacity:1;pointer-events:auto}',
+    '#sq-welcome .sq-wl-card{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;width:min(92vw,900px);max-height:88vh;border-radius:24px;padding:48px 64px 40px;background:linear-gradient(135deg,rgba(24,10,34,.97),rgba(10,7,14,.97));border:1px solid transparent;background-clip:padding-box;box-shadow:0 18px 50px rgba(0,0,0,.55),0 0 0 1px rgba(240,201,106,.35),0 0 60px rgba(233,123,156,.3);color:#fff;font-family:inherit;text-align:center}',
+    '#sq-welcome .sq-wl-card::before{content:"";position:absolute;inset:0;border-radius:24px;padding:2px;background:linear-gradient(120deg,#f0c96a,#e97b9c,#7c5cff,#f0c96a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}',
+    '#sq-welcome .sq-wl-kicker{font-size:13px;letter-spacing:.3em;color:#f0c96a;font-weight:700;margin-bottom:14px}',
+    '#sq-welcome .sq-wl-title{margin:0 0 16px;font-size:clamp(26px,6vw,44px);font-weight:800;background:linear-gradient(90deg,#f0c96a,#e97b9c);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.2}',
+    '#sq-welcome .sq-wl-sub{margin:0 auto;font-size:clamp(14px,2.4vw,17px);line-height:1.7;color:#e9dff3;max-width:640px}',
+    '#sq-welcome .sq-wl-x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:1px solid #ffffff22;background:#ffffff0d;color:#fff;font-size:22px;cursor:pointer;line-height:1;z-index:2}',
+    '#sq-welcome .sq-wl-x:active{transform:scale(.94)}',
+    '#sq-welcome .sq-wl-timer{margin-top:26px;font-size:11px;letter-spacing:.14em;color:#ffffff66;font-weight:600}',
+    '#sq-welcome .sq-wl-bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:#ffffff14}',
+    '#sq-welcome .sq-wl-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#f0c96a,#e97b9c);transition:width 20s linear}',
     /* 1) mobile: top icons chhote, laptop par same — media block sab se aakhir mein */
     '@media (max-width:640px){',
     'html body .lang-toggle{width:64px!important;min-width:64px!important;padding:4px 4px!important;min-height:32px!important;font-size:11.5px!important}',
@@ -4851,6 +4855,8 @@
           '<div class="sq-wl-kicker">\u2726 PREMIUM MEMBER \u2726</div>' +
           '<div class="sq-wl-title">Khush Amdeed' + (nm ? ', ' + nm.replace(/[<>&]/g, '') : '') + '!</div>' +
           '<p class="sq-wl-sub">Aap ka account activate ho gaya hai \u2014 ab portfolio ka har corner sirf aap ke liye khula hai. Gallery, poetry, quiz aur bohat kuch \u2014 maza karein! \u2728</p>' +
+          '<div class="sq-wl-timer">Yeh message <span id="sq-wl-sec">20</span> second mein khud band ho jayega</div>' +
+          '<div class="sq-wl-bar"><i></i></div>' +
         '</div>';
       document.body.appendChild(w);
       requestAnimationFrame(function () { requestAnimationFrame(function () { w.classList.add('sq-wl-on'); }); });
@@ -4861,7 +4867,15 @@
         setTimeout(function () { if (w.parentNode) w.parentNode.removeChild(w); }, 600);
       }
       w.querySelector('.sq-wl-x').onclick = hide;
-      setTimeout(hide, 8000);
+      var bar = w.querySelector('.sq-wl-bar i');
+      if (bar) requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = '0%'; }); });
+      var left = 20;
+      var tick = setInterval(function () {
+        left--;
+        try { var s = document.getElementById('sq-wl-sec'); if (s) s.textContent = String(Math.max(left, 0)); } catch (e) {}
+        if (left <= 0) clearInterval(tick);
+      }, 1000);
+      setTimeout(hide, 20000);
     }
   })();
 
