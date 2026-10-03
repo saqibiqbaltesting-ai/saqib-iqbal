@@ -5021,6 +5021,7 @@
         try { b.classList.remove('sq-dock-open'); b.classList.remove('sq-dock-left-open'); } catch (e) {}
       } else {
         for (var j = 0; j < IDS.length; j++) {
+          if (IDS[j] === 'sq-hub-btn') continue; /* v81: hub ki display sirf 350ms wala interval likhe — dobara yahan se wapas kholne se flicker hota tha */
           var el2 = document.getElementById(IDS[j]);
           if (el2 && el2.style.display === 'none') el2.style.display = '';
         }
