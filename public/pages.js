@@ -137,17 +137,20 @@
     var target;
 
     if (PAGE === 'home') {
-      /* Desired spot: inside the contact footer, immediately AFTER the
-         copyright line, i.e. welcome/logout -> copyright -> pill.
+      /* Required tail order, top to bottom:
+           contact form -> Explore More pill -> welcome/logout -> copyright
+         The pill therefore anchors to the welcome/logout row and sits directly
+         ABOVE it. If that row is absent (visitor not logged in) we fall back to
+         the copyright line, which still keeps the pill above the copyright.
 
-         Preact owns the footer's children and re-renders them, so we re-assert
-         our position on every tick. The important part is the guard: we only
-         touch the DOM when the pill is genuinely out of place. Re-inserting
-         every tick is what previously made the pill and the logout row swap. */
-      var note = q('#contact .footer-note');
-      if (note && note.parentNode) {
-        if (wrap.parentNode !== note.parentNode || wrap.previousSibling !== note) {
-          note.parentNode.insertBefore(wrap, note.nextSibling);
+         Preact owns the footer's children and re-renders them on its own
+         schedule, so we re-assert the position on every tick — but only when
+         the pill is genuinely out of place. Re-inserting unconditionally every
+         tick is what previously made the pill and the logout row swap. */
+      var anchor = q('#contact .logout-row') || q('#contact .footer-note');
+      if (anchor && anchor.parentNode) {
+        if (wrap.parentNode !== anchor.parentNode || wrap.nextSibling !== anchor) {
+          anchor.parentNode.insertBefore(wrap, anchor);
         }
         return;
       }
