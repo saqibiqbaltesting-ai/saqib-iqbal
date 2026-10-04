@@ -1,9 +1,15 @@
 {
   "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/v1/x/:path*",
       "destination": "/api/:path*"
+    },
+    {
+      "source": "/more",
+      "destination": "/more.html"
     }
   ]
 }

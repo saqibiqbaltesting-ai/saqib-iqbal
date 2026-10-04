@@ -617,7 +617,7 @@
     ['Web Development', 75], ['Problem Solving', 85], ['Computer Basics', 90],
     ['Communication', 70], ['English', 65], ['Time Management', 80],
   ];
-  var SECTION_NAMES = { 'sq-funfacts': '🎯 Fun Facts', 'sq-working': '🛠️ Currently Working On', 'sq-stack': '🧱 Tech Stack', 'sq-skills': '⚡ Interactive Skills', 'sq-projects': '🚀 Projects', 'sq-github': '🐙 GitHub Activity', 'sq-status': '📍 Live Status' };
+  var SECTION_NAMES = { 'sq-funfacts': '🎯 Fun Facts', 'sq-working': '🛠️ Currently Working On', 'sq-stack': '🧱 Tech Stack', 'sq-skills': '⚡ Interactive Skills', 'sq-projects': '🚀 Projects', 'sq-status': '📍 Live Status' };
 
   /* ---- inject sections after the hero ---- */
   var injectTries = 0;
@@ -671,14 +671,6 @@
         '</div><div id="sq-pj-list"><p class="sq-dash-note">Repos load ho rahi hain…</p></div>'
       ));
       frag.appendChild(s5);
-
-      // GitHub Activity
-      var s6 = buildSection('sq-github', '🐙', 'GitHub Activity', 'Contribution graph aur profile');
-      s6.appendChild(card(
-        '<img id="sq-gh-chart" alt="GitHub contribution graph" src="https://ghchart.rshah.org/' + GH_USER + '" loading="lazy" style="width:100%;border-radius:8px;background:#111">' +
-        '<a class="sq-gh-link" href="https://github.com/' + GH_USER + '" target="_blank" rel="noopener">GitHub profile dekhen ↗</a>'
-      ));
-      frag.appendChild(s6);
 
       // Live Status + business card
       var s7 = buildSection('sq-status', '📍', 'Live Status', 'Current status aur timezone');
@@ -2620,7 +2612,7 @@
 
 /* ===== Section order (user-chosen): bio, achievements, My Memories, Poetry, Quote, Music, Aap ka Sher, [CV], Guestbook, Quiz, Q&A, Deewar e Dil, Contact ===== */
 (function reorderSections(){
-  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-music','music','sq-user-sher','sq-daily-sher','guestbook','quiz','qa','sq-hearts','sq-zone','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-github','sq-status','contact'];
+  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-music','music','sq-user-sher','sq-daily-sher','guestbook','quiz','qa','sq-hearts','sq-zone','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-status','contact'];
   var tries = 0;
   var t = setInterval(function(){
     tries++;

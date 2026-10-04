@@ -1,5 +1,5 @@
 /* Saqib portfolio — two-page split
-   Home (index.html): personal info — bio, achievements, gallery, quote, music, CV, contact
+   Home (index.html): personal info — bio, achievements, gallery, quote, CV, contact
    More (more.html):  everything else — poetry, shers, guestbook, quiz, Q&A, Deewar e Dil, Saqib Zone
 
    Defensive: if anything here fails, the site still works exactly as before. */
@@ -14,7 +14,6 @@
     'achievements',  /* 02 — Achievements */
     'gallery',       /* 03 — Gallery */
     'quote',         /* 05 — Quote of the day */
-    'music',         /* 06 — Music */
     'sq-cv-btn',     /* 08 — CV */
     'contact'
   ];
@@ -22,6 +21,8 @@
   /* Sections owned by the additional / more page */
   var MORE_IDS = [
     'sq-poetry',     /* 04 — Poetry */
+    'music',         /* 06 — Music (Preact section — hidden once the rich player exists) */
+    'sq-music',      /* 06 — Music (enhancements.js rich player) */
     'sq-user-sher',  /* 07 — Aap ka Sher */
     'guestbook',     /* 09 — Guestbook */
     'quiz',          /* 10 — Quiz */
@@ -43,7 +44,7 @@
     st.id = 'sq-pages-css';
     st.textContent = [
       '.sq-hidden-page{display:none!important}',
-      '#sq-page-nav{display:flex;justify-content:center;gap:14px;padding:52px 18px 64px;flex-wrap:wrap}',
+      '#sq-page-nav{display:flex;justify-content:center;gap:14px;padding:34px 18px 30px;flex-wrap:wrap}',
       '#sq-page-nav a{display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:999px;',
       'text-decoration:none;font-weight:700;font-size:15px;letter-spacing:.03em;',
       'background:linear-gradient(135deg,#e97b9c,#d9a94e);color:#fff;',
@@ -59,12 +60,22 @@
     document.head.appendChild(st);
   }
 
-  /* Hide the sections that belong to the other page. */
+  /* Hide the sections that belong to the other page.
+     enhancements.js re-inserts sections via appendChild, which would drop a
+     class-based hide — so we also set an inline style with priority. */
   function hideSections() {
     var ids = PAGE === 'home' ? MORE_IDS : HOME_IDS;
     ids.forEach(function (id) {
       var el = document.getElementById(id);
-      if (el) el.classList.add('sq-hidden-page');
+      if (!el) return;
+      /* On the more page the plain #music section is the SOURCE the rich
+         #sq-music player is built from. Leave it alone until that player
+         exists, then hide the plain copy so only one player shows. */
+      if (id === 'music' && PAGE === 'more') {
+        if (!document.getElementById('sq-music')) return;
+      }
+      el.classList.add('sq-hidden-page');
+      try { el.style.setProperty('display', 'none', 'important'); } catch (e) {}
     });
 
     /* On the more page, also hide home-only blocks that have no stable id. */
@@ -102,16 +113,24 @@
     wrap.id = 'sq-page-nav';
     var a = document.createElement('a');
     if (PAGE === 'home') {
-      a.href = 'more.html';
+      a.href = '/more';
       a.innerHTML = '<span>Explore More</span><span aria-hidden="true">\u2192</span>';
     } else {
-      a.href = 'index.html';
+      a.href = '/';
       a.className = 'sq-ghost';
       a.innerHTML = '<span aria-hidden="true">\u2190</span><span>Back to home</span>';
     }
     wrap.appendChild(a);
+
+    /* Explore More sits at the TOP of the home page; the more page keeps it at the bottom. */
     var app = document.getElementById('app');
-    (app || document.body).appendChild(wrap);
+    if (PAGE === 'home' && app) {
+      app.insertBefore(wrap, app.firstChild);
+    } else if (app) {
+      app.appendChild(wrap);
+    } else {
+      document.body.appendChild(wrap);
+    }
   }
 
   function run() {
