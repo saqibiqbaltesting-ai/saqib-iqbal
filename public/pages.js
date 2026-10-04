@@ -128,25 +128,29 @@
   /* Both pages keep the pill at the bottom. On home it slots in just above the
      footer block, so the tail of the page reads: contact form ->
      welcome/logout -> Explore More -> copyright. Re-run until the anchor exists. */
+  /* Put the pill where we want it, and ONLY touch the DOM when it is in the
+     wrong place. The old version re-ran insertBefore every tick, which fought
+     with Preact re-rendering the footer and made the pill and the logout row
+     swap positions at random. */
   function placeNav(wrap) {
     var app = document.getElementById('app');
+    var target;
+
     if (PAGE === 'home') {
-      /* Target the copyright line specifically. Falling back to .logout-row
-         would park the pill ABOVE the welcome/logout row, which is not what
-         we want; better to wait a tick until .footer-note exists. */
-      var anchor = q('#contact .footer-note');
-      if (anchor && anchor.parentNode) {
-        if (wrap.nextSibling !== anchor) anchor.parentNode.insertBefore(wrap, anchor);
-      } else if (app) {
-        app.appendChild(wrap);
-      } else {
-        document.body.appendChild(wrap);
+      /* Keep the pill OUTSIDE the Preact-managed footer. Preact re-renders the
+         footer's children on its own schedule and will evict a foreign node
+         that we parked inside it, which is what made the pill and the logout
+         row trade places. #app is ours to append to, and appending to it puts
+         the pill after the whole footer, i.e. below the copyright line. */
+      target = app || document.body;
+      if (wrap.parentNode !== target || wrap !== target.lastElementChild) {
+        target.appendChild(wrap);
       }
-    } else if (app) {
-      if (wrap.parentNode !== app) app.appendChild(wrap);
-    } else {
-      document.body.appendChild(wrap);
+      return;
     }
+
+    target = app || document.body;
+    if (wrap.parentNode !== target) target.appendChild(wrap);
   }
 
   function run() {
