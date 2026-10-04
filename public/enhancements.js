@@ -5067,50 +5067,249 @@
   } catch (e) {}
 })();
 
-/* ===== v80: WhatsApp DPs — 2 empty cards, section#quote ke FORAN baad, self-healing position ===== */
+/* ===== v82: WhatsApp DPs — Boys ka pura gallery (photos + viewer + download)
+   section#quote ke FORAN baad, self-healing position.
+   Boys = 78 photos. Girls = coming soon card. ===== */
 (function () {
   try {
     if (window.__sqDps) return; window.__sqDps = true;
+
+    var BOYS = [];
+    for (var bi = 1; bi <= 78; bi++) {
+      BOYS.push('assets/dps/boys/sq-boy-' + (bi < 10 ? '0' + bi : bi) + '.jpg');
+    }
+
     var CATS = [
-      { label: 'For Boys', emoji: '\ud83d\udc66' },
-      { label: 'For Girls', emoji: '\ud83d\udc67' }
+      { id: 'boys', label: 'For Boys', emoji: '\ud83d\udc66', count: BOYS.length, ready: true },
+      { id: 'girls', label: 'For Girls', emoji: '\ud83d\udc67', count: 0, ready: false }
     ];
+
     function injectCss() {
       if (document.getElementById('sq-dps-style')) return;
       var s = document.createElement('style'); s.id = 'sq-dps-style';
-      s.textContent = '#sq-dps-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;max-width:640px;margin:0 auto}' +
-        '.sq-dps-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:220px;border-radius:20px;cursor:pointer;border:2px dashed rgba(233,123,156,.55);background:rgba(233,123,156,.06);box-shadow:0 10px 30px #0005;transition:transform .2s,box-shadow .2s,border-color .2s;padding:18px}' +
-        '.sq-dps-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px #e97b9c44;border-color:rgba(233,123,156,.9)}' +
-        '.sq-dps-card .sq-dps-emoji{font-size:44px;line-height:1}' +
-        '.sq-dps-card .sq-dps-title{color:inherit;font-weight:700;font-size:17px;letter-spacing:.03em}' +
-        '.sq-dps-card .sq-dps-count{font-size:12px;font-weight:600;background:#e97b9c33;border:1px solid #e97b9c77;border-radius:999px;padding:3px 12px;color:inherit;opacity:.85}' +
-        '#sq-dps-note{display:none;text-align:center;margin:14px auto 0;max-width:640px;padding:10px 16px;border-radius:12px;background:#e97b9c1a;border:1px solid #e97b9c55;color:inherit;font-size:14px;opacity:.9}';
+      s.textContent = [
+        '#sq-dps-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;max-width:640px;margin:0 auto}',
+        '.sq-dps-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:220px;border-radius:20px;cursor:pointer;border:2px dashed rgba(233,123,156,.55);background:rgba(233,123,156,.06);box-shadow:0 10px 30px #0005;transition:transform .2s,box-shadow .2s,border-color .2s;padding:18px;overflow:hidden}',
+        '.sq-dps-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px #e97b9c44;border-color:rgba(233,123,156,.9)}',
+        '.sq-dps-card .sq-dps-emoji{font-size:44px;line-height:1}',
+        '.sq-dps-card .sq-dps-title{color:inherit;font-weight:700;font-size:17px;letter-spacing:.03em}',
+        '.sq-dps-card .sq-dps-count{font-size:12px;font-weight:600;background:#e97b9c33;border:1px solid #e97b9c77;border-radius:999px;padding:3px 12px;color:inherit;opacity:.85}',
+        '.sq-dps-card.sq-dps-live{border-style:solid;border-color:rgba(233,123,156,.85)}',
+        '.sq-dps-card .sq-dps-strip{position:absolute;inset:auto 0 0 0;height:58px;display:flex;gap:4px;opacity:.5;pointer-events:none}',
+        '.sq-dps-card .sq-dps-strip img{flex:1 1 0;min-width:0;height:58px;object-fit:cover}',
+        '.sq-dps-card.sq-dps-live .sq-dps-emoji,.sq-dps-card.sq-dps-live .sq-dps-title,.sq-dps-card.sq-dps-live .sq-dps-count{position:relative;z-index:1;text-shadow:0 2px 12px #000b}',
+        '#sq-dps-note{display:none;text-align:center;margin:14px auto 0;max-width:640px;padding:10px 16px;border-radius:12px;background:#e97b9c1a;border:1px solid #e97b9c55;color:inherit;font-size:14px;opacity:.9}',
+        /* gallery panel */
+        '#sq-dps-panel{margin:22px auto 0;max-width:1000px}',
+        '#sq-dps-panel[hidden]{display:none}',
+        '.sq-dps-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 14px}',
+        '.sq-dps-bar h3{margin:0;font-size:18px}',
+        '.sq-dps-x{border:1.5px solid rgba(233,123,156,.6);background:transparent;color:inherit;border-radius:999px;padding:8px 18px;font-weight:700;font-size:13px;cursor:pointer}',
+        '.sq-dps-x:hover{border-color:#e97b9c}',
+        '.sq-dps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:10px}',
+        '.sq-dps-thumb{position:relative;padding:0;border:0;background:#0003;border-radius:14px;overflow:hidden;cursor:pointer;aspect-ratio:1/1;line-height:0}',
+        '.sq-dps-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s}',
+        '.sq-dps-thumb:hover img{transform:scale(1.06)}',
+        '.sq-dps-thumb:focus-visible{outline:2px solid #e97b9c;outline-offset:2px}',
+        /* viewer */
+        '#sq-dps-view{position:fixed;inset:0;z-index:9999;background:#000d;display:flex;align-items:center;justify-content:center;padding:20px}',
+        '#sq-dps-view[hidden]{display:none}',
+        '#sq-dps-view img{max-width:min(94vw,900px);max-height:82vh;object-fit:contain;border-radius:12px;box-shadow:0 24px 70px #000b}',
+        '.sq-dps-vbar{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:#111c;border:1px solid #ffffff22;border-radius:999px;padding:8px 14px;backdrop-filter:blur(8px)}',
+        '.sq-dps-vbtn{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:#fff;font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer;text-decoration:none}',
+        '.sq-dps-vbtn:hover{background:#ffffff1f}',
+        '.sq-dps-vbtn.sq-dps-primary{background:linear-gradient(135deg,#e97b9c,#d9a94e);color:#fff}',
+        '.sq-dps-vbtn.sq-dps-primary:hover{filter:brightness(1.08)}',
+        '.sq-dps-vnum{color:#fff9;font-size:12px;font-weight:600;padding:0 4px}',
+        '.sq-dps-vx{position:absolute;top:18px;right:18px;border:0;background:#111c;color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer}',
+        '.sq-dps-vx:hover{background:#333c}',
+        '.sq-dps-arrow{position:absolute;top:50%;transform:translateY(-50%);border:0;background:#111c;color:#fff;width:46px;height:46px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer}',
+        '.sq-dps-arrow:hover{background:#333c}',
+        '.sq-dps-arrow.sq-dps-prev{left:14px}',
+        '.sq-dps-arrow.sq-dps-next{right:14px}',
+        '@media(max-width:560px){.sq-dps-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}.sq-dps-vbar{bottom:12px;padding:6px 10px;gap:6px}.sq-dps-vbtn{font-size:12px;padding:6px 10px}}'
+      ].join('');
       document.head.appendChild(s);
     }
+
+    var OPEN = { boys: false };
+    var IDX = 0;
+    var panel, view;
+
     function build() {
       var sec = document.createElement('section');
       sec.className = 'section sq-sec'; sec.id = 'sq-dps';
       var head = document.createElement('div'); head.className = 'section-header';
       head.innerHTML = '<h2>\ud83d\udcf1 WhatsApp DPs</h2>';
-      var p = document.createElement('p'); p.className = 'sq-sec-sub'; p.textContent = 'Profile pictures \u2014 Boys aur Girls ke liye alag alag collections';
+      var p = document.createElement('p'); p.className = 'sq-sec-sub';
+      p.textContent = 'Profile pictures \u2014 Boys aur Girls ke liye alag alag collections';
       head.appendChild(p); sec.appendChild(head);
+
       var grid = document.createElement('div'); grid.id = 'sq-dps-cards';
       CATS.forEach(function (c) {
         var card = document.createElement('button');
-        card.type = 'button'; card.className = 'sq-dps-card';
-        card.setAttribute('aria-label', c.label + ' DPs \u2014 coming soon');
-        card.innerHTML = '<span class="sq-dps-emoji">' + c.emoji + '</span><span class="sq-dps-title">' + c.label + '</span><span class="sq-dps-count">Coming Soon</span>';
+        card.type = 'button';
+        card.className = 'sq-dps-card' + (c.ready ? ' sq-dps-live' : '');
+        card.setAttribute('data-cat', c.id);
+        card.setAttribute('aria-label', c.label + ' DPs');
+        var strip = '';
+        if (c.ready) {
+          strip = '<span class="sq-dps-strip" aria-hidden="true">';
+          for (var k = 0; k < 6; k++) {
+            strip += '<img src="' + BOYS[Math.floor(k * (BOYS.length - 1) / 5)] + '" alt="" loading="lazy">';
+          }
+          strip += '</span>';
+        }
+        card.innerHTML = '<span class="sq-dps-emoji">' + c.emoji + '</span>' +
+          '<span class="sq-dps-title">' + c.label + '</span>' +
+          '<span class="sq-dps-count">' + (c.ready ? c.count + ' DPs' : 'Coming Soon') + '</span>' + strip;
         grid.appendChild(card);
       });
       sec.appendChild(grid);
+
       var note = document.createElement('p'); note.id = 'sq-dps-note';
-      note.textContent = 'DPs jald aa rahe hain \u2014 jald hi is jagah mojood honge.';
+      note.textContent = 'Girls DPs jald aa rahe hain \u2014 jald hi is jagah mojood honge.';
       sec.appendChild(note);
-      grid.onclick = function () { note.style.display = 'block'; };
+
+      panel = document.createElement('div');
+      panel.id = 'sq-dps-panel'; panel.hidden = true;
+      sec.appendChild(panel);
+
+      grid.onclick = function (ev) {
+        var card = ev.target && ev.target.closest ? ev.target.closest('.sq-dps-card') : null;
+        if (!card) return;
+        if (card.getAttribute('data-cat') !== 'boys') { note.style.display = 'block'; return; }
+        note.style.display = 'none';
+        openPanel();
+      };
       return sec;
     }
+
+    function openPanel() {
+      if (!panel) return;
+      if (!OPEN.boys) {
+        var frag = document.createDocumentFragment();
+        BOYS.forEach(function (src, i) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 'sq-dps-thumb';
+          b.setAttribute('data-i', String(i));
+          b.setAttribute('aria-label', 'Boys DP ' + (i + 1) + ' kholen');
+          var im = document.createElement('img');
+          im.src = src; im.alt = 'Boys DP ' + (i + 1); im.loading = 'lazy';
+          b.appendChild(im);
+          frag.appendChild(b);
+        });
+        var bar = document.createElement('div'); bar.className = 'sq-dps-bar';
+        bar.innerHTML = '<h3>For Boys \u2014 ' + BOYS.length + ' DPs</h3>' +
+          '<button type="button" class="sq-dps-x" data-close="1">Band karen</button>';
+        var g = document.createElement('div'); g.className = 'sq-dps-grid';
+        g.appendChild(frag);
+        panel.appendChild(bar); panel.appendChild(g);
+        panel.addEventListener('click', function (ev) {
+          if (ev.target.closest && ev.target.closest('[data-close]')) { closePanel(); return; }
+          var t = ev.target.closest ? ev.target.closest('.sq-dps-thumb') : null;
+          if (t) openView(parseInt(t.getAttribute('data-i'), 10) || 0);
+        });
+        OPEN.boys = true;
+      }
+      panel.hidden = false;
+      try { panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    }
+
+    function closePanel() {
+      if (panel) panel.hidden = true;
+    }
+
+    function ensureView() {
+      if (view) return view;
+      view = document.createElement('div');
+      view.id = 'sq-dps-view'; view.hidden = true;
+      view.setAttribute('role', 'dialog'); view.setAttribute('aria-label', 'DP viewer');
+      view.innerHTML =
+        '<button type="button" class="sq-dps-vx" data-x="1" aria-label="Band karen">\u00d7</button>' +
+        '<button type="button" class="sq-dps-arrow sq-dps-prev" data-prev="1" aria-label="Pichli DP">\u2039</button>' +
+        '<img alt="">' +
+        '<button type="button" class="sq-dps-arrow sq-dps-next" data-next="1" aria-label="Agli DP">\u203a</button>' +
+        '<div class="sq-dps-vbar">' +
+        '<a class="sq-dps-vbtn sq-dps-primary" data-dl="1" download>Download</a>' +
+        '<button type="button" class="sq-dps-vbtn" data-share="1">Share</button>' +
+        '<button type="button" class="sq-dps-vbtn" data-copy="1">Link copy</button>' +
+        '<span class="sq-dps-vnum"></span>' +
+        '</div>';
+      document.body.appendChild(view);
+
+      view.addEventListener('click', function (ev) {
+        var t = ev.target;
+        if (!t || !t.closest) { return; }
+        if (t === view || t.closest('[data-x]')) { closeView(); return; }
+        if (t.closest('[data-prev]')) { step(-1); return; }
+        if (t.closest('[data-next]')) { step(1); return; }
+        if (t.closest('[data-copy]')) { copyLink(); return; }
+        if (t.closest('[data-share]')) { shareIt(); return; }
+      });
+      document.addEventListener('keydown', function (ev) {
+        if (view.hidden) return;
+        if (ev.key === 'Escape') closeView();
+        else if (ev.key === 'ArrowLeft') step(-1);
+        else if (ev.key === 'ArrowRight') step(1);
+      });
+      return view;
+    }
+
+    function render() {
+      var src = BOYS[IDX];
+      var im = view.querySelector('img');
+      im.src = src;
+      im.alt = 'Boys DP ' + (IDX + 1);
+      view.querySelector('.sq-dps-vnum').textContent = (IDX + 1) + ' / ' + BOYS.length;
+      var dl = view.querySelector('[data-dl]');
+      dl.setAttribute('href', src);
+      dl.setAttribute('download', 'Saqib-Iqbal-DP-' + (IDX + 1) + '.jpg');
+    }
+
+    function openView(i) {
+      ensureView();
+      IDX = Math.max(0, Math.min(BOYS.length - 1, i));
+      render();
+      view.hidden = false;
+      try { document.documentElement.style.overflow = 'hidden'; } catch (e) {}
+    }
+
+    function closeView() {
+      if (!view) return;
+      view.hidden = true;
+      try { document.documentElement.style.overflow = ''; } catch (e) {}
+    }
+
+    function step(d) {
+      IDX = (IDX + d + BOYS.length) % BOYS.length;
+      render();
+    }
+
+    function copyLink() {
+      var url = new URL(BOYS[IDX], location.href).href;
+      var done = function () { if (window.sqToast) window.sqToast('Link copy ho gaya', 'ok'); };
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done, function () { window.prompt('Link copy karen:', url); });
+        } else { window.prompt('Link copy karen:', url); }
+      } catch (e) { try { window.prompt('Link copy karen:', url); } catch (e2) {} }
+    }
+
+    function shareIt() {
+      var url = new URL(BOYS[IDX], location.href).href;
+      var title = 'Saqib Iqbal \u2014 WhatsApp DP';
+      try {
+        if (navigator.share) {
+          navigator.share({ title: title, url: url }).catch(function () {});
+          return;
+        }
+      } catch (e) {}
+      try { window.open('https://wa.me/?text=' + encodeURIComponent(title + ' ' + url), '_blank'); } catch (e) {}
+    }
+
     function ensureSection() {
-      // home view render hone ka intezar: #quote (05 \u2014 Quote of the day) tabhi mojood hota hai
+      // home view render hone ka intezar: #quote (05 — Quote of the day) tabhi mojood hota hai
       var quote = document.getElementById('quote');
       if (!quote || !quote.parentNode) return;
       injectCss();
@@ -5120,10 +5319,11 @@
         if (quote.nextSibling) quote.parentNode.insertBefore(sec, quote.nextSibling);
         else quote.parentNode.appendChild(sec);
       } else if (sec.previousElementSibling !== quote) {
-        // React re-render ne idhar udhar kar diya \u2014 wapas quote ke foran baad
+        // React re-render ne idhar udhar kar diya — wapas quote ke foran baad
         if (quote.nextSibling) quote.parentNode.insertBefore(sec, quote.nextSibling);
         else quote.parentNode.appendChild(sec);
       }
+      if (!panel) panel = document.getElementById('sq-dps-panel');
     }
     setInterval(function () { try { ensureSection(); } catch (e) {} }, 1200);
   } catch (e) {}
