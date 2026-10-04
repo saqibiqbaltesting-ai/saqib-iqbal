@@ -131,7 +131,10 @@
   function placeNav(wrap) {
     var app = document.getElementById('app');
     if (PAGE === 'home') {
-      var anchor = q('#contact .footer-note') || q('#contact .logout-row');
+      /* Target the copyright line specifically. Falling back to .logout-row
+         would park the pill ABOVE the welcome/logout row, which is not what
+         we want; better to wait a tick until .footer-note exists. */
+      var anchor = q('#contact .footer-note');
       if (anchor && anchor.parentNode) {
         if (wrap.nextSibling !== anchor) anchor.parentNode.insertBefore(wrap, anchor);
       } else if (app) {
