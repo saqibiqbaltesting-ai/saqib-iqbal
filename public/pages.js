@@ -137,11 +137,22 @@
     var target;
 
     if (PAGE === 'home') {
-      /* Keep the pill OUTSIDE the Preact-managed footer. Preact re-renders the
-         footer's children on its own schedule and will evict a foreign node
-         that we parked inside it, which is what made the pill and the logout
-         row trade places. #app is ours to append to, and appending to it puts
-         the pill after the whole footer, i.e. below the copyright line. */
+      /* Desired spot: inside the contact footer, immediately AFTER the
+         copyright line, i.e. welcome/logout -> copyright -> pill.
+
+         Preact owns the footer's children and re-renders them, so we re-assert
+         our position on every tick. The important part is the guard: we only
+         touch the DOM when the pill is genuinely out of place. Re-inserting
+         every tick is what previously made the pill and the logout row swap. */
+      var note = q('#contact .footer-note');
+      if (note && note.parentNode) {
+        if (wrap.parentNode !== note.parentNode || wrap.previousSibling !== note) {
+          note.parentNode.insertBefore(wrap, note.nextSibling);
+        }
+        return;
+      }
+      /* Footer not built yet: park the pill at the end of #app and try again
+         on the next tick. */
       target = app || document.body;
       if (wrap.parentNode !== target || wrap !== target.lastElementChild) {
         target.appendChild(wrap);
