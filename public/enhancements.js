@@ -2612,7 +2612,7 @@
 
 /* ===== Section order (user-chosen): bio, achievements, My Memories, Poetry, Quote, Music, Aap ka Sher, [CV], Guestbook, Quiz, Q&A, Deewar e Dil, Contact ===== */
 (function reorderSections(){
-  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-music','music','sq-user-sher','sq-daily-sher','guestbook','quiz','qa','sq-hearts','sq-zone','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-status','contact'];
+  var ORDER = ['bio','achievements','gallery','sq-poetry','quote','sq-dps','sq-music','music','sq-user-sher','sq-daily-sher','guestbook','quiz','qa','sq-hearts','sq-zone','sq-funfacts','sq-working','sq-stack','sq-skills','sq-projects','sq-status','contact'];
   var tries = 0;
   var t = setInterval(function(){
     tries++;
@@ -5309,19 +5309,25 @@
     }
 
     function ensureSection() {
-      // home view render hone ka intezar: #quote (05 — Quote of the day) tabhi mojood hota hai
+      /* Home view render hone ka intezar: #quote (05 — Quote of the day) tabhi mojood hota hai.
+         NOTE: do dusre scripts is page par sections ko idhar udhar karte rehte hain —
+         reorderSections() (appendChild se ORDER lagata hai) aur contactLast() (growth-hub ko
+         contact se pehle rakhta hai). Is liye hum sirf ek dafa insert karte hain aur phir
+         reorderSections ke ORDER array par bharosa karte hain, warna dono ek dusre se ladte hain. */
       var quote = document.getElementById('quote');
       if (!quote || !quote.parentNode) return;
       injectCss();
       var sec = document.getElementById('sq-dps');
       if (!sec) {
         sec = build();
+        /* quote ke foran baad, lekin quote ke apne parent ke andar hi */
         if (quote.nextSibling) quote.parentNode.insertBefore(sec, quote.nextSibling);
         else quote.parentNode.appendChild(sec);
-      } else if (sec.previousElementSibling !== quote) {
-        // React re-render ne idhar udhar kar diya — wapas quote ke foran baad
-        if (quote.nextSibling) quote.parentNode.insertBefore(sec, quote.nextSibling);
-        else quote.parentNode.appendChild(sec);
+      }
+      /* Agar reorderSections ne isay kisi aur parent mein bhej diya ho to wapas lao.
+         Sirf parent badalne par — position ka faisla ORDER array karta hai. */
+      if (sec.parentNode !== quote.parentNode && quote.parentNode) {
+        quote.parentNode.insertBefore(sec, quote.nextSibling || null);
       }
       if (!panel) panel = document.getElementById('sq-dps-panel');
     }
