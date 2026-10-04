@@ -108,8 +108,9 @@
   }
 
   function buildNav() {
-    if (q('#sq-page-nav')) return;
-    var wrap = document.createElement('nav');
+    var wrap = q('#sq-page-nav');
+    if (wrap) { placeNav(wrap); return; }
+    wrap = document.createElement('nav');
     wrap.id = 'sq-page-nav';
     var a = document.createElement('a');
     if (PAGE === 'home') {
@@ -121,13 +122,25 @@
       a.innerHTML = '<span aria-hidden="true">\u2190</span><span>Back to home</span>';
     }
     wrap.appendChild(a);
+    placeNav(wrap);
+  }
 
-    /* Explore More sits at the TOP of the home page; the more page keeps it at the bottom. */
+  /* Both pages keep the pill at the bottom. On home it slots in just above the
+     footer block, so the tail of the page reads: contact form ->
+     welcome/logout -> Explore More -> copyright. Re-run until the anchor exists. */
+  function placeNav(wrap) {
     var app = document.getElementById('app');
-    if (PAGE === 'home' && app) {
-      app.insertBefore(wrap, app.firstChild);
+    if (PAGE === 'home') {
+      var anchor = q('#contact .footer-note') || q('#contact .logout-row');
+      if (anchor && anchor.parentNode) {
+        if (wrap.nextSibling !== anchor) anchor.parentNode.insertBefore(wrap, anchor);
+      } else if (app) {
+        app.appendChild(wrap);
+      } else {
+        document.body.appendChild(wrap);
+      }
     } else if (app) {
-      app.appendChild(wrap);
+      if (wrap.parentNode !== app) app.appendChild(wrap);
     } else {
       document.body.appendChild(wrap);
     }
@@ -147,5 +160,8 @@
   }
 
   /* The app and enhancements.js inject sections over time — keep re-applying. */
-  setInterval(function () { try { hideSections(); } catch (e) {} }, 1000);
+  setInterval(function () {
+    try { hideSections(); } catch (e) {}
+    try { var n = q('#sq-page-nav'); if (n) placeNav(n); } catch (e) {}
+  }, 1000);
 })();
