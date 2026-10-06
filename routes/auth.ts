@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { loadJSON, saveJSON } from "./blob-store.js";
-import { sendMail, approvalEmail, esc } from "./mailer.js";
+import { sendMail, approvalEmail, notifyAddress } from "./mailer.js";
 
 // Stateless signed tokens (HMAC) — no server-side session storage needed,
 // so login/refresh work instantly even with eventually-consistent blob storage.
@@ -168,7 +168,7 @@ export async function POST(req: Request): Promise<Response> {
         email,
         when: new Date().toLocaleString("en-GB", { timeZone: "Asia/Karachi" }) + " (PKT)",
       });
-      const r = await sendMail({ to: OWNER, ...mail });
+      const r = await sendMail({ to: notifyAddress(), ...mail });
       mailed = r.sent;
       mailError = r.error;
     }
@@ -270,7 +270,7 @@ export async function POST(req: Request): Promise<Response> {
       email,
       when: new Date().toLocaleString("en-GB", { timeZone: "Asia/Karachi" }) + " (PKT)",
     });
-    const r = await sendMail({ to: OWNER, ...mail });
+    const r = await sendMail({ to: notifyAddress(), ...mail });
     return ok({ mailed: r.sent, ...(r.error ? { mailError: r.error } : {}) });
   }
 

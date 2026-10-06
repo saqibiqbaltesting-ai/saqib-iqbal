@@ -13,8 +13,16 @@ export const description = "Outbound email (Resend) — used for owner approval 
 
 const RESEND_URL = "https://api.resend.com/emails";
 const FROM = "Saqib Portfolio <onboarding@resend.dev>";
+// Where approval requests are sent. Defaults to the portfolio OWNER. Resend's
+// free tier (no verified domain) only delivers to the account's own address, so
+// this must be an address on the Resend account itself.
+const NOTIFY_TO = process.env.APPROVAL_NOTIFY_EMAIL || "fizanali6267@gmail.com";
 
 export type MailResult = { sent: boolean; error?: string };
+
+export function notifyAddress(): string {
+  return NOTIFY_TO;
+}
 
 export async function sendMail(opts: {
   to: string;
