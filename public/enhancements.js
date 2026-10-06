@@ -5095,8 +5095,9 @@
         '.sq-dps-card .sq-dps-title{color:inherit;font-weight:700;font-size:17px;letter-spacing:.03em}',
         '.sq-dps-card .sq-dps-count{font-size:12px;font-weight:600;background:#e97b9c33;border:1px solid #e97b9c77;border-radius:999px;padding:3px 12px;color:inherit;opacity:.85}',
         '.sq-dps-card.sq-dps-live{border-style:solid;border-color:rgba(233,123,156,.85)}',
-        '.sq-dps-card .sq-dps-strip{position:absolute;inset:auto 0 0 0;height:58px;display:flex;gap:4px;opacity:.5;pointer-events:none}',
-        '.sq-dps-card .sq-dps-strip img{flex:1 1 0;min-width:0;height:58px;object-fit:cover}',
+        '.sq-dps-card .sq-dps-strip{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:2px;opacity:.34;pointer-events:none}',
+        '.sq-dps-card .sq-dps-strip img{width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;display:block}',
+        '.sq-dps-card .sq-dps-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,rgba(8,6,15,.86) 26%,rgba(8,6,15,.62) 62%,rgba(8,6,15,.42) 100%)}',
         '.sq-dps-card.sq-dps-live .sq-dps-emoji,.sq-dps-card.sq-dps-live .sq-dps-title,.sq-dps-card.sq-dps-live .sq-dps-count{position:relative;z-index:1;text-shadow:0 2px 12px #000b}',
         '#sq-dps-note{display:none;text-align:center;margin:14px auto 0;max-width:640px;padding:10px 16px;border-radius:12px;background:#e97b9c1a;border:1px solid #e97b9c55;color:inherit;font-size:14px;opacity:.9}',
         /* gallery panel */
@@ -5158,11 +5159,12 @@
           for (var k = 0; k < 6; k++) {
             strip += '<img src="' + BOYS[Math.floor(k * (BOYS.length - 1) / 5)] + '" alt="" loading="lazy">';
           }
-          strip += '</span>';
+          strip += '</span><span class="sq-dps-veil" aria-hidden="true"></span>';
         }
-        card.innerHTML = '<span class="sq-dps-emoji">' + c.emoji + '</span>' +
+        card.innerHTML = strip +
+          '<span class="sq-dps-emoji">' + c.emoji + '</span>' +
           '<span class="sq-dps-title">' + c.label + '</span>' +
-          '<span class="sq-dps-count">' + (c.ready ? c.count + ' DPs' : 'Coming Soon') + '</span>' + strip;
+          '<span class="sq-dps-count">' + (c.ready ? c.count + ' DPs' : 'Coming Soon') + '</span>';
         grid.appendChild(card);
       });
       sec.appendChild(grid);
