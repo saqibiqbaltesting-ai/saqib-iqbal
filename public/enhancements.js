@@ -202,14 +202,14 @@
           }
           return _fetch.call(window, input, init).then(function (res) {
             res.clone().json().then(function (j) {
-              if (j && j.ok) window.sqToast('Message mil gaya, shukriya!', 'ok');
-              else if (j && j.error === 'bad_email') window.sqToast('Sahih email likhen', 'err');
-              else if (j && j.error === 'slow_down') window.sqToast('Bohat jaldi jaldi bhej rahe hain, thodi der baad koshish karen', 'err');
-              else window.sqToast('Message nahi pohncha, dobara koshish karen', 'err');
+              if (j && j.ok) window.sqToast('✅ Message mil gaya, shukriya!', 'ok');
+              else if (j && j.error === 'bad_email') window.sqToast('⚠️ Sahih email likhen', 'err');
+              else if (j && j.error === 'slow_down') window.sqToast('⚠️ Bohat jaldi jaldi bhej rahe hain, thodi der baad koshish karen', 'err');
+              else window.sqToast('⚠️ Message nahi pohncha, dobara koshish karen', 'err');
             }).catch(function () {});
             return res;
           }, function (err) {
-            window.sqToast('Internet masla — message nahi gaya', 'err');
+            window.sqToast('⚠️ Internet masla — message nahi gaya', 'err');
             throw err;
           });
         }
@@ -251,13 +251,13 @@
           var email = (q('input[placeholder*="mail"]', form) || {}).value || '';
           if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) {
             e.preventDefault(); e.stopPropagation();
-            window.sqToast('Sahih email likhen (ya khali chhod dein)', 'err');
+            window.sqToast('⚠️ Sahih email likhen (ya khali chhod dein)', 'err');
             return;
           }
           var msg = (ta || {}).value || '';
           if (!msg.trim()) {
             e.preventDefault(); e.stopPropagation();
-            window.sqToast('Pehle message likhen', 'err');
+            window.sqToast('⚠️ Pehle message likhen', 'err');
           }
         }, true);
       } catch (e) { clearInterval(cfTimer); }
@@ -288,7 +288,7 @@
       document.body.appendChild(ov);
       ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
 
-      var tabs = { profile: 'Profile', history: 'History', settings: 'Settings', alerts: 'Alerts' };
+      var tabs = { profile: '👤 Profile', history: '🕓 History', settings: '⚙️ Settings', alerts: '🔔 Alerts' };
       function render(tab) {
         card.innerHTML = '';
         var h = document.createElement('h3'); h.textContent = 'Dashboard'; card.appendChild(h);
@@ -312,9 +312,9 @@
             '</div>' +
             '<div class="sq-dash-row"><b>Naam</b><span>' + escapeHtml(m.name || '—') + '</span></div>' +
             '<div class="sq-dash-row"><b>Email</b><span>' + escapeHtml(m.email || '—') + '</span></div>' +
-            '<div class="sq-dash-row"><b>Account</b><span>' + (isOwner() ? 'Owner (Admin)' : 'Visitor') + '</span></div>' +
+            '<div class="sq-dash-row"><b>Account</b><span>' + (isOwner() ? '👑 Owner (Admin)' : 'Visitor') + '</span></div>' +
             '<div class="sq-dash-row"><b>Gallery</b><span>Password se locked hai — card par click karen</span></div>' +
-            '<button class="sq-dash-btn sq-ghost" type="button" id="sq-dash-vcard">Digital Business Card download</button>' +
+            '<button class="sq-dash-btn sq-ghost" type="button" id="sq-dash-vcard">💼 Digital Business Card download</button>' +
             '<button class="sq-dash-btn sq-ghost" type="button" id="sq-dash-logout">Logout</button>' +
             '<p class="sq-dash-note">Profile details, notes, favorites aur projects Growth Hub (profile card) mein hain.</p>';
           q('#sq-dash-logout', pane).addEventListener('click', function () {
@@ -343,7 +343,7 @@
               ll.forEach(function (l) {
                 var d = new Date(l.ts);
                 var ua = String(l.ua || '');
-                var dev = /mobile/i.test(ua) ? 'Mobile' : /android/i.test(ua) ? 'Android' : 'Desktop';
+                var dev = /mobile/i.test(ua) ? '📱 Mobile' : /android/i.test(ua) ? '📱 Android' : '💻 Desktop';
                 var brw = /chrome|crios/i.test(ua) ? 'Chrome' : /firefox/i.test(ua) ? 'Firefox' : /safari/i.test(ua) ? 'Safari' : /edg/i.test(ua) ? 'Edge' : 'Browser';
                 rows += '<div class="sq-dash-alert">' + dev + ' · ' + brw + '<br><span style="opacity:.65">' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString() + (l.ip ? ' · IP ' + escapeHtml(l.ip) : '') + '</span></div>';
               });
@@ -451,14 +451,14 @@
             b.textContent = 'Saving…';
             fetch('/v1/x/admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: token(), action: 'save-settings', accent: c }) })
               .then(function (r) { return r.json(); })
-              .then(function (j) { window.sqToast(j && j.ok ? 'Settings save ho gayin' : 'Sirf owner ke liye save hota hai', j && j.ok ? 'ok' : 'err'); b.textContent = 'Save settings'; })
+              .then(function (j) { window.sqToast(j && j.ok ? '✅ Settings save ho gayin' : 'Sirf owner ke liye save hota hai', j && j.ok ? 'ok' : 'err'); b.textContent = 'Save settings'; })
               .catch(function () { window.sqToast('Save nahi hua', 'err'); b.textContent = 'Save settings'; });
           });
         } else {
           pane.innerHTML =
-            '<div class="sq-dash-alert">Naye features: search (Ctrl+K), dashboard, contact form aur animated background ab live hain.</div>' +
-            '<div class="sq-dash-alert">Gallery dekhne ke liye kisi gallery card par click karen — password lagta hai.</div>' +
-            '<div class="sq-dash-alert">Saqib AI chat bottom-right bubble mein hai.</div>';
+            '<div class="sq-dash-alert">🎉 Naye features: search (Ctrl+K), dashboard, contact form aur animated background ab live hain.</div>' +
+            '<div class="sq-dash-alert">📸 Gallery dekhne ke liye kisi gallery card par click karen — password lagta hai.</div>' +
+            '<div class="sq-dash-alert">🤖 Saqib AI chat bottom-right bubble mein hai.</div>';
         }
         card.appendChild(pane);
       }
@@ -565,7 +565,7 @@
       var b = document.createElement('div');
       b.id = 'sq-maint-bar';
       b.setAttribute('role', 'status');
-      b.textContent = 'Maintenance mode ON — visitors ke liye notice dikhta hai (site chalti rahegi).';
+      b.textContent = '🔧 Maintenance mode ON — visitors ke liye notice dikhta hai (site chalti rahegi).';
       document.body.appendChild(b);
     }
   };
@@ -594,20 +594,20 @@
 
   /* ---- content data ---- */
   var FUN = [
-    'Ye website maine khud banai — design bhi mera, code bhi mera, bugs bhi mere ',
-    '9th class mein 483/545 marks (88.62%) — 1st position ke saath!',
-    '1st position ki aadat Old The Cambridge Kids Campus Layyah se shuru hui',
-    'Night owl hoon — raat ko sab se achi coding hoti hai',
-    'Naat sun kar focus karna meri secret power hai',
-    'Layyah se hoon — chhota shehar, bare sapne',
-    'Neeche AI chatbot sach mein baat karta hai — Gemini AI se chalta hai, jaadu nahi ',
-    'English practice kar raha hoon — galtiyan bhi hoti hain, magar seekh raha hoon',
+    '💻 Ye website maine khud banai — design bhi mera, code bhi mera, bugs bhi mere 😎',
+    '🥇 9th class mein 483/545 marks (88.62%) — 1st position ke saath!',
+    '🏆 1st position ki aadat Old The Cambridge Kids Campus Layyah se shuru hui',
+    '🌙 Night owl hoon — raat ko sab se achi coding hoti hai',
+    '🎵 Naat sun kar focus karna meri secret power hai',
+    '📍 Layyah se hoon — chhota shehar, bare sapne',
+    '🤖 Neeche AI chatbot sach mein baat karta hai — Gemini AI se chalta hai, jaadu nahi 😄',
+    '✍️ English practice kar raha hoon — galtiyan bhi hoti hain, magar seekh raha hoon',
   ];
   var WORKING = [
-    'ICS part 1 — studies par full focus',
-    'Web development seekh rahe hain (HTML, CSS, JavaScript)',
-    'AI tools explore kar rahe hain — ye site Gemini AI chat se chalti hai',
-    'English communication improve kar rahe hain',
+    '📚 ICS part 1 — studies par full focus',
+    '🌐 Web development seekh rahe hain (HTML, CSS, JavaScript)',
+    '🤖 AI tools explore kar rahe hain — ye site Gemini AI chat se chalti hai',
+    '✍️ English communication improve kar rahe hain',
   ];
   var STACK = [
     ['HTML', '#e34f26'], ['CSS', '#2965f1'], ['JavaScript', '#f0db4f'], ['React', '#61dafb'],
@@ -667,7 +667,7 @@
         '<div class="sq-pj-tools">' +
         '<input type="text" id="sq-pj-q" placeholder="Project dhonden…" aria-label="Filter projects">' +
         '<select id="sq-pj-sort" aria-label="Sort projects"><option value="updated">Recently updated</option><option value="stars">Stars</option><option value="name">Naam (A-Z)</option></select>' +
-        '<button type="button" id="sq-pj-cmp-btn" disabled>Compare (0/2)</button>' +
+        '<button type="button" id="sq-pj-cmp-btn" disabled>⚖️ Compare (0/2)</button>' +
         '</div><div id="sq-pj-list"><p class="sq-dash-note">Repos load ho rahi hain…</p></div>'
       ));
       frag.appendChild(s5);
@@ -721,7 +721,7 @@
         list.innerHTML = arr.map(function (r, i) {
           return '<div class="sq-pj"><input type="checkbox" class="sq-pj-check" data-i="' + repos.indexOf(r) + '" aria-label="Compare ' + esc(r.name) + '">' +
             '<div><b>' + esc(r.name) + '</b>' + (r.desc ? '<span>' + esc(r.desc) + '</span>' : '') +
-            '<span class="sq-pj-meta">' + (r.lang ? ' ' + esc(r.lang) + ' · ' : '') + ' ' + r.stars + ' · ' + new Date(r.pushed).toLocaleDateString() + '</span></div>' +
+            '<span class="sq-pj-meta">' + (r.lang ? '💻 ' + esc(r.lang) + ' · ' : '') + '⭐ ' + r.stars + ' · ' + new Date(r.pushed).toLocaleDateString() + '</span></div>' +
             '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">View ↗</a></div>';
         }).join('');
         qa('.sq-pj-check', list).forEach(function (c) {
@@ -732,7 +732,7 @@
       function updateCmp() {
         cmpSel = qa('.sq-pj-check').filter(function (c) { return c.checked; }).map(function (c) { return +c.getAttribute('data-i'); }).slice(0, 2);
         var btn = q('#sq-pj-cmp-btn');
-        if (btn) { btn.disabled = cmpSel.length !== 2; btn.textContent = 'Compare (' + cmpSel.length + '/2)'; }
+        if (btn) { btn.disabled = cmpSel.length !== 2; btn.textContent = '⚖️ Compare (' + cmpSel.length + '/2)'; }
       }
       var cmpBtn = q('#sq-pj-cmp-btn');
       if (cmpBtn) cmpBtn.addEventListener('click', function () {
@@ -1011,60 +1011,60 @@
   var q = function (s) { return document.querySelector(s); };
 
   var CATS = [
-    ['love','','محبت',[
-      'تیری آنکھوں میں جو جادو ہے | ہر نظر میں نئی داستان لکھی ہے ',
+    ['love','❤️','محبت',[
+      'تیری آنکھوں میں جو جادو ہے | ہر نظر میں نئی داستان لکھی ہے ❤️',
       'دل نے تجھ کو چن لیا ہے | اب کوئی اور سوجھتا ہی نہیں',
-      'تیرے نام سے شروع ہوتی ہے | ہر صبح، ہر دعا میری ',
-      'عشق وہ آگ ہے جو | جلاتی بھی ہے، روشن بھی کرتی ہے ',
-      'تم ہنسو تو لگتا ہے | بہاروں نے گھر کر لیا ',
+      'تیرے نام سے شروع ہوتی ہے | ہر صبح، ہر دعا میری 🌅',
+      'عشق وہ آگ ہے جو | جلاتی بھی ہے، روشن بھی کرتی ہے 🔥',
+      'تم ہنسو تو لگتا ہے | بہاروں نے گھر کر لیا 🌸',
       'تیری ایک مسکراہٹ کے لیے | میں دنیا سے لڑ جاؤں گا',
       'محبت اپنی کم نہیں | سب سے بڑی دولت ہے',
-      'دل کی گہرائیوں میں | تیرا ہی نام لکھا ہے ',
+      'دل کی گہرائیوں میں | تیرا ہی نام لکھا ہے ✍️',
       'تیرے بنا تو زندگی | آدھی سی لگتی ہے',
-      'نظر جہاں سے اٹھتی ہے | تیری تصویر وہاں ملتی ہے ',
-      'چاند کو دیکھ کر تجھے یاد آتا ہے | یہ عشق کا اثر ہے ',
+      'نظر جہاں سے اٹھتی ہے | تیری تصویر وہاں ملتی ہے 🖼️',
+      'چاند کو دیکھ کر تجھے یاد آتا ہے | یہ عشق کا اثر ہے 🌙',
       'تیرا ہونا ہی کافی ہے | باقی سب دنیا کی مرضی',
-      'محبت وہ نہیں کہ مل جائے | محبت وہ ہے کہ نہ ٹوٹ جائے ',
+      'محبت وہ نہیں کہ مل جائے | محبت وہ ہے کہ نہ ٹوٹ جائے 💗',
       'تیری باتوں میں وہ بات ہے | جو کہیں اور نہیں ملتی',
-      'دل نے تجھ سے ہی پوچھا ہے | یہ پیار کیا ہوتا ہے ',
-      'تم آ جاؤ تو | کلیاں بھی کھل جائیں ',
-      'عشق میں ڈوبنے کا مزا | ڈوب کر ہی پتا چلتا ہے ',
+      'دل نے تجھ سے ہی پوچھا ہے | یہ پیار کیا ہوتا ہے 💞',
+      'تم آ جاؤ تو | کلیاں بھی کھل جائیں 🌷',
+      'عشق میں ڈوبنے کا مزا | ڈوب کر ہی پتا چلتا ہے 🌊',
       'تیرے نام کی خاک بھی | میرے لیے زیور ہے',
-      'پیار وہ جو نظروں سے | دل تک جاتا ہے ',
+      'پیار وہ جو نظروں سے | دل تک جاتا ہے 👀',
       'تیری کمی بھلتی ہے | ہر خوشی میں تھوڑی سی',
-      'تو جو ملے تو | منزلیں خود چلیں آئیں ',
+      'تو جو ملے تو | منزلیں خود چلیں آئیں 🛤️',
       'ایک تم ہو جو سب ہو | ایک یہ دنیا ہے جس میں کچھ نہیں',
-      'محبت میں سب کچھ دینا | مگر اپنا ہونا سب سے پیارا ہے ',
-      'تیرے ہونے سے ہی | گھر کو گھر کہتے ہیں ',
-      'دل کی دنیا بسی ہے | تیرے نام کے نگر میں ',
-      'وہ شخص میری دعاؤں میں | سب سے گہری جگہ رکھتا ہے ',
-      'عشق بن کر رہ جاتا ہے | جو دل میں اتر جائے ',
-      'تیرے ساتھ ہر رات | جیسے چاندنی کا شتاب ہو ',
-      'محبت پڑھتی نہیں | محبت کر دکھائی جاتی ہے ',
+      'محبت میں سب کچھ دینا | مگر اپنا ہونا سب سے پیارا ہے 🎁',
+      'تیرے ہونے سے ہی | گھر کو گھر کہتے ہیں 🏡',
+      'دل کی دنیا بسی ہے | تیرے نام کے نگر میں 🏰',
+      'وہ شخص میری دعاؤں میں | سب سے گہری جگہ رکھتا ہے 🤲',
+      'عشق بن کر رہ جاتا ہے | جو دل میں اتر جائے 💓',
+      'تیرے ساتھ ہر رات | جیسے چاندنی کا شتاب ہو ✨',
+      'محبت پڑھتی نہیں | محبت کر دکھائی جاتی ہے 📖',
       'مجھے تم جیسا کوئی | دوسرا نہیں چاہیے تھا کبھی',
     ]],
     ['sad','','اداس',[
-      'آنسو بھی عجیب ہوتے ہیں | اکثر تنہائی میں نکلتے ہیں ',
+      'آنسو بھی عجیب ہوتے ہیں | اکثر تنہائی میں نکلتے ہیں 😢',
       'خاموشی بھی بہت کچھ کہتی ہے | سننے والا کوئی ہوتا تو',
-      'درد کی حد وہ ہے | جب مسکرانا بھی مجبوری لگے ',
+      'درد کی حد وہ ہے | جب مسکرانا بھی مجبوری لگے 💔',
       'لوگ بدل نہیں جاتے | نظریہ بدل جاتا ہے',
       'وہ تو چلے گئے | یادیں پیچھے رہ گئیں',
       'دل ٹوٹا ہے ابھی | آواز بھی نہیں آئی',
       'زخم گہرے ہوتے ہیں | جو نظر نہیں آتے',
-      'تنہائی کا مزا وہی جانتا ہے | جس نے سب کو جاتے دیکھا ہو ',
-      'امید کا دیا نہ بجھنے دو | چاہے ہوا تیز ہو ',
+      'تنہائی کا مزا وہی جانتا ہے | جس نے سب کو جاتے دیکھا ہو 🌙',
+      'امید کا دیا نہ بجھنے دو | چاہے ہوا تیز ہو 🪔',
       'مسکرانا سیکھ لیا | مگر دل روتا رہ گیا',
       'جو اپنے ہوئے نہیں | ان کی یاد بھی اپنی نہیں ہوتی',
-      'کچھ لوگ جا کر | خالی جگہ چھوڑ جاتے ہیں ',
+      'کچھ لوگ جا کر | خالی جگہ چھوڑ جاتے ہیں 🪑',
       'درد بتانے کا کوئی حق نہیں | ہر کسی کو اپنا حال',
-      'راتوں کو نیند کہاں | آنکھیں آئیں تو سو جائیں ',
+      'راتوں کو نیند کہاں | آنکھیں آئیں تو سو جائیں 🌃',
       'غم بھی غریب ہوتا ہے | ساتھ کبھی کسی کا نہیں نبھاتا',
-      'دل نے چاہا جو | مقدر نے لکھا کچھ اور تھا ',
-      'ٹوٹ کر بھی کھڑا ہوں | یہ عادت اچھی نہیں ',
+      'دل نے چاہا جو | مقدر نے لکھا کچھ اور تھا ✍️',
+      'ٹوٹ کر بھی کھڑا ہوں | یہ عادت اچھی نہیں 🥀',
       'لوگ ملیں بھی تو | وفا ملتی نہیں',
       'اپنے ہی چہرے پر | پردہ پڑ گیا ہے اب',
-      'یہ درد بھی ساتھ چلتا ہے | جس کو چھوڑا اس کا نہیں ',
-      'بچھڑنے سے پہلے سوچ لیں | رشتوں کی قیمتیں ',
+      'یہ درد بھی ساتھ چلتا ہے | جس کو چھوڑا اس کا نہیں 🚶',
+      'بچھڑنے سے پہلے سوچ لیں | رشتوں کی قیمتیں 💸',
       'ہنسانا بھول گیا ہوں | آنسوؤں کے سوا کچھ نہیں',
       'رشتے کتابوں جیسے ہوتے ہیں | پڑھنے والا چاہیے',
       'کچھ لوگ ٹوٹ کر بھی | سب کے کام آتے ہیں',
@@ -1072,17 +1072,17 @@
       'شہر بھرا پڑا ہے | پھر بھی تنہا ہوں',
       'یادیں بن گئیں ساتھی | جب سب نے ہاتھ چھوڑا',
       'چہرے مسکرا رہے ہیں | منزلیں اجنبی ہیں',
-      'وقت سب کا دکھاتا ہے | اپنا وقت کہاں ',
-      'اداس شام سکھاتی ہے | صبر کی زبان ',
+      'وقت سب کا دکھاتا ہے | اپنا وقت کہاں 🕰️',
+      'اداس شام سکھاتی ہے | صبر کی زبان 🌥️',
     ]],
     ['romantic','','رومانوی',[
       'تیری سانسوں میں میری | دھڑکن کی آواز ہے',
       'تیرے قریب آ کر | میں نے سکون پایا ہے',
-      'چاند تیری اور | میں تیری رات ',
+      'چاند تیری اور | میں تیری رات 💫',
       'تیرے نام سے شروع | ہر خیال میرا',
       'تیری ہنسی میں بسا ہے | میرا دل',
       'پیار تیرا مجھ پر | موسموں جیسا ہے',
-      'تیرے ساتھ گزری شام | راتوں سے پیاری ہے ',
+      'تیرے ساتھ گزری شام | راتوں سے پیاری ہے 🌆',
       'تیری خوشبو سے | ماحول بھی جھومتا ہے',
       'تیرے ساتھ ہر موسم | سب سے پیارا لگتا ہے',
       'تیری نظروں میں اتر جاؤں | بس یہی ارادہ ہے',
@@ -1104,7 +1104,7 @@
       'میں نے چاہا تجھ کو | بے ساختہ دل سے',
       'تیرے نام کا پہلا حرف | میری پسند کا نشان',
       'ہر رات تیری باتوں کے | خوابوں میں گزرتی ہے',
-      'تم آؤ تو | چاند بھی دیکھتا رہے ',
+      'تم آؤ تو | چاند بھی دیکھتا رہے 🌙',
       'تیری محبت وہ دولت ہے | جو کبھی نہ ختم ہو',
     ]],
     ['happy','','خوشی',[
@@ -1120,7 +1120,7 @@
       'اداسی سے لڑنے کی دوا | ایک ہنسی ہے',
       'خوش رہو | دنیا خود خوش ہوگی',
       'بچوں جیسی خوشی | سچ والی ہے',
-      'چائے اور اچھا موڈ | دن بن دیتے ہیں ',
+      'چائے اور اچھا موڈ | دن بن دیتے ہیں ☕',
       'ہر مشکل کا جواب | ایک مسکراہٹ ہے',
       'اپنے قدموں پر چلو | راستے خود بن جائیں گے',
       'خوشی کی تلاش نہ کرو | بنو خوشی',
@@ -1200,7 +1200,7 @@
       'رات جتنی لمبی | صبح اتنی روشن',
       'میں اپنی منزل | اکیلے چلوں گا',
       'محنتی ہیں ہم | حادثوں سے نہیں ڈرتے',
-      'تاج اپنے سر | خود رکھا ہے ',
+      'تاج اپنے سر | خود رکھا ہے 👑',
       'جو مل گیا اس پر شکر | جو نہیں وہ کوشش',
     ]],
   ];
@@ -1269,7 +1269,7 @@
       'دنیا بھلے بھول جائے | یار نہیں بھولتا',
       'چاند سے بھی قریب ہے | یہ جو نام ہے',
     ]],
-    ['gh10','','یادیں',[
+    ['gh10','🖼️','یادیں',[
       'پرانی یادیں عجیب ہیں | ساتھ چلتی ہیں',
       'بچھڑے ہوئے لمحوں کو | پھر سے ملاتی ہیں',
       'ہر گلی، ہر موڑ پر | کچھ تو بچی ہے',
@@ -1701,7 +1701,7 @@
   'use strict';
   function q(s) { return document.querySelector(s); }
 
-  var SONGS = [{"id":"cerYfcoPnjI","title":"Oy Kamla Yar Tan Wat Yar Hondin | Slowed+Reverb Saraiki Song|Shafaullah Rokri Song | Saraiki Song"},{"id":"RfTeNHzyRuU","title":"Jinde Naal Dil laya { Slowed+Reverb } || Super Hits Saraiki Songs || slowed new song 2024 | Saraiki"},{"id":"5ZtlnftpXTg","title":"Akhiyan Mila Ke Dhola {Slowed & Reverb} | Slowed Saraiki Song || Duniya to Sohna Mahi | Saraiki song"},{"id":"DbIRbTUHquU","title":"Jay Disya Na Manu Mukh Tera {Slowed +Reverb} | Hathan Diya Lakeera Punjabi Song | Rahat Fateh Ali"},{"id":"cZAYAkC2k6A","title":"Dhola Ty Main Haan Kathey {Slowed &Reverb } Song || Slowed Saraiki Song || New Saraiki Song 2024"},{"id":"8B8L18Z-FEM","title":"Chitty Waal Thi Gay {Slowed +Reverb} |Shafa Ullah Khan Rokhri Saraiki Song | Slowed Saraiki Hit Song"},{"id":"sb8iqa9XB60","title":"Thaki Thaiyan Aan { Slowed & Reverb}|Zeeshan Rokhri Song |Slowed And Reverb Saraiki Songs"},{"id":"7EK_XWy82fA","title":"Dhola Jo bewafa He { Slowed + Reverb } | Shafa Ullah Khan Rokhri #SaraikiSong | #ReverbSaraikiSongs"},{"id":"axrrqmLFuM8","title":"Sajna Ve mil powen hai { Slowed & Reverb }|| Sajna jay Mil paway a Song | Slowed Reverb Punjabi Song"},{"id":"yGtrZlBRNNs","title":"Vighar Gai Ae Thore Dina Toun {SLOWED +REVERB} | New Saraiki Song | Best Saraiki Song #SaraikiSong"},{"id":"Ip4lonaaSLk","title":"Dhola Manu Janda Aye (Slowed & Reverb) Saraiki Song || Saraiki Slowed and Reverb Songs| Dhola song"},{"id":"f1hpQc7ubms","title":"Yar Waal Aya ae {Slowed+Reverb}Song| New Saraiki Song | Kamli Kamli hoi wadi a | Slowed Saraiki song"},{"id":"fbeXgsoE-Iw","title":"Tere Hundiya Pende nahi sa {Slowed & Reverb}|Shafaullah Khan Rokhri saraiki Song|Slowed Saraiki Song"},{"id":"KAoo4fIMJnU","title":"Zamane di na Man Dhola Slowed+Reverb Lofi | Punjabi Song | Shafa Ullah Khan Rokhari"},{"id":"SaKdd8roBvk","title":"Soniayan Akhaian Kajlay Bharya | Shafaullah Khan Rokhri Song | Slowed and Reverb song |Saraiki Songs"},{"id":"qK8kDhEQNWY","title":"Chal Dowan Chaliye Sunary Kol (Slowed+Reverb)| #ChalDowanChaliye #ChalDowanChaliyeSlowed #reverbsong"},{"id":"zylrW4dzbiQ","title":"Aik Howay To { Slowed + Reverb } Aik Howay Main || Shafaullah Khan Rokhri | Saraiki Slowed Song"},{"id":"PgnJSfOSVOY","title":"Kitni Makhmoor Hai Tumhari Ankhain (Slowed & Reverb ) || Shafaullah Khan Rokhri Songs | Reverb Songs"},{"id":"dyRJEDWRkZs","title":"Sari Duniya Bholai betha ho { Slowed + Reverb } Song | kitni Chahat Chupaye betha ho |Sajjad Solangi"},{"id":"T-ghMbRaoYo","title":"Chalray Chalray waal {Slowed + Reverb}| Shafaullah Khan Rokhri |Slowed and Reverb song |Saraiki song"},{"id":"gMTo_j73Wvs","title":"Chal Bottle Chaa Dildar {Slowed+Reverb}Song | Shafaullah Khan Rokhri Song|Saraiki Slowed Reverb Song"},{"id":"xNkpPyTCgJw","title":"Assalam o Alaikum aoo g {Slowed +Reverb} |Zeeshan Rokhri New Song |TikTok Viral Songs | Punjab songs"},{"id":"GVFHiFoqe6w","title":"Meda Dil Pia Thendy ( Slowed + Reverb ) | Ahmad Nawaz Chena | Saraiki Slowed and Reverb #saraikisong"},{"id":"IBm_Pmz_Xgk","title":"Jy Ghar Mere To Away ( Slowed+Reverb ) | Phulay dy haar pawesa Jy Ghar mere to awy song"},{"id":"QfkGDSpkMRM","title":"Shala Sardari Qaim Hovi | Musafir Tede Watna Tun | Basit Naeemi | Saraiki Slow Sad Song #saraikisong"},{"id":"S_if4gi0hcM","title":"Main Suti Paii Nu (Slowed+Reverb)|Shafaullah khan rokhri Song |#SaraikiSongSlowed | Rokhari songs"},{"id":"DzToNraltY4","title":"Ay Gali Be Wafawa Di ( Slowed & Reverb )| Punjabi Song #punjabisong #punjabislowedreverb #Naseebolal"},{"id":"pWRXph0UH3s","title":"Gila Teda Kariye (Slowed & Reverb) Asa Mar na Jaiye | Shafaullah Khan Rokhri Song #saraikisong"},{"id":"DyZHR0cUiBQ","title":"Mekho So Chowa lay Phol Main Ni Taroray { Slowed+Reverb }| Saraiki Slowed Song | Reverb song Saraiki"},{"id":"5mvn3QXTFm4","title":"Kawra Kawra ( Slowed + Reverb ) Shafaullah Khan Rokhri"},{"id":"EhoShqTLr-w","title":"Mar Mar Ke Taa Milay c (Slowed + Reverb) | Punjabi Sad Song #amrindergillsongs"},{"id":"F14ZAD0_U-0","title":"Rab Sain Likh Chori Rozi Vich Pardesan De ( Slowed + Reverb ) | New Saraiki song Punjabi Slowed Song"},{"id":"GblFVNWTAAE","title":"Meda Ranjhna (Slowed + Reverb) Zeeshan Rokhri | Slowed + Reverb song | Saraiki Song Slowed Reverb"},{"id":"duDLDKUgxdw","title":"Rab Di Zaat To Dar Na Kar Maghrori Aye (TikTok Viral Song) | New Punjabi Song"},{"id":"Ycjsc1iwJjY","title":"kamli Nal laa Akhaiyan (Slowed + Reverb) | Onchi dokana ty pekhe pakwan hundan #SaraikiSong"},{"id":"rJtmyk5zcXA","title":"Way Kamla Yar Ta Wat Yar Hudan { Slowed+ Reverb } | Saraiki Song"},{"id":"WVmO64Amdn4","title":"Main Haan Garibni Ji - Shafaullah Khan Rokhri | Saraiki Song Slowed Reverb"},{"id":"1gJ1P7KggFI","title":"Tu Banse Dhola kain Naseeban Walay Da ( Slowed + Reverb ) | Shafaullah Khan Rokhri"},{"id":"3X2OFwy5d_I","title":"\"Meray Sajan Ko Akho Na Enj Khafa(Slowed Reverb) | Shafaullah khan rokhri song | Saraiki Slowed Song"}];
+  var SONGS = [{"id":"cerYfcoPnjI","title":"Oy Kamla Yar Tan Wat Yar Hondin | Slowed+Reverb Saraiki Song|Shafaullah Rokri Song | Saraiki Song"},{"id":"RfTeNHzyRuU","title":"Jinde Naal Dil laya { Slowed+Reverb } || Super Hits Saraiki Songs || slowed new song 2024 | Saraiki"},{"id":"5ZtlnftpXTg","title":"Akhiyan Mila Ke Dhola {Slowed & Reverb} | Slowed Saraiki Song || Duniya to Sohna Mahi | Saraiki song"},{"id":"DbIRbTUHquU","title":"Jay Disya Na Manu Mukh Tera {Slowed +Reverb} | Hathan Diya Lakeera Punjabi Song | Rahat Fateh Ali"},{"id":"cZAYAkC2k6A","title":"Dhola Ty Main Haan Kathey {Slowed &Reverb } Song || Slowed Saraiki Song || New Saraiki Song 2024"},{"id":"8B8L18Z-FEM","title":"Chitty Waal Thi Gay {Slowed +Reverb} |Shafa Ullah Khan Rokhri Saraiki Song | Slowed Saraiki Hit Song"},{"id":"sb8iqa9XB60","title":"Thaki Thaiyan Aan { Slowed & Reverb}|Zeeshan Rokhri Song |Slowed And Reverb Saraiki Songs"},{"id":"7EK_XWy82fA","title":"Dhola Jo bewafa He { Slowed + Reverb } | Shafa Ullah Khan Rokhri #SaraikiSong | #ReverbSaraikiSongs"},{"id":"axrrqmLFuM8","title":"Sajna Ve mil powen hai { Slowed & Reverb }|| Sajna jay Mil paway a Song | Slowed Reverb Punjabi Song"},{"id":"yGtrZlBRNNs","title":"Vighar Gai Ae Thore Dina Toun {SLOWED +REVERB} | New Saraiki Song | Best Saraiki Song #SaraikiSong"},{"id":"Ip4lonaaSLk","title":"Dhola Manu Janda Aye (Slowed & Reverb) Saraiki Song || Saraiki Slowed and Reverb Songs| Dhola song"},{"id":"f1hpQc7ubms","title":"Yar Waal Aya ae {Slowed+Reverb}Song| New Saraiki Song | Kamli Kamli hoi wadi a | Slowed Saraiki song"},{"id":"fbeXgsoE-Iw","title":"Tere Hundiya Pende nahi sa {Slowed & Reverb}|Shafaullah Khan Rokhri saraiki Song|Slowed Saraiki Song"},{"id":"KAoo4fIMJnU","title":"Zamane di na Man Dhola Slowed+Reverb Lofi | Punjabi Song | Shafa Ullah Khan Rokhari"},{"id":"SaKdd8roBvk","title":"Soniayan Akhaian Kajlay Bharya | Shafaullah Khan Rokhri Song | Slowed and Reverb song |Saraiki Songs"},{"id":"qK8kDhEQNWY","title":"Chal Dowan Chaliye Sunary Kol (Slowed+Reverb)| #ChalDowanChaliye #ChalDowanChaliyeSlowed #reverbsong"},{"id":"zylrW4dzbiQ","title":"Aik Howay To { Slowed + Reverb } Aik Howay Main || Shafaullah Khan Rokhri | Saraiki Slowed Song"},{"id":"PgnJSfOSVOY","title":"Kitni Makhmoor Hai Tumhari Ankhain (Slowed & Reverb ) || Shafaullah Khan Rokhri Songs | Reverb Songs"},{"id":"dyRJEDWRkZs","title":"Sari Duniya Bholai betha ho { Slowed + Reverb } Song | kitni Chahat Chupaye betha ho |Sajjad Solangi"},{"id":"T-ghMbRaoYo","title":"Chalray Chalray waal {Slowed + Reverb}| Shafaullah Khan Rokhri |Slowed and Reverb song |Saraiki song"},{"id":"gMTo_j73Wvs","title":"Chal Bottle Chaa Dildar {Slowed+Reverb}Song | Shafaullah Khan Rokhri Song|Saraiki Slowed Reverb Song"},{"id":"xNkpPyTCgJw","title":"Assalam o Alaikum aoo g {Slowed +Reverb} |Zeeshan Rokhri New Song |TikTok Viral Songs | Punjab songs"},{"id":"GVFHiFoqe6w","title":"Meda Dil Pia Thendy ( Slowed + Reverb ) | Ahmad Nawaz Chena | Saraiki Slowed and Reverb #saraikisong"},{"id":"IBm_Pmz_Xgk","title":"Jy Ghar Mere To Away ( Slowed+Reverb ) | Phulay dy haar pawesa Jy Ghar mere to awy song"},{"id":"QfkGDSpkMRM","title":"Shala Sardari Qaim Hovi | Musafir Tede Watna Tun | Basit Naeemi | Saraiki Slow Sad Song #saraikisong"},{"id":"S_if4gi0hcM","title":"Main Suti Paii Nu (Slowed+Reverb)|Shafaullah khan rokhri Song |#SaraikiSongSlowed | Rokhari songs"},{"id":"DzToNraltY4","title":"Ay Gali Be Wafawa Di ( Slowed & Reverb )| Punjabi Song #punjabisong #punjabislowedreverb #Naseebolal"},{"id":"pWRXph0UH3s","title":"Gila Teda Kariye (Slowed & Reverb) Asa Mar na Jaiye | Shafaullah Khan Rokhri Song #saraikisong"},{"id":"DyZHR0cUiBQ","title":"Mekho So Chowa lay Phol Main Ni Taroray { Slowed+Reverb }| Saraiki Slowed Song | Reverb song Saraiki"},{"id":"5mvn3QXTFm4","title":"Kawra Kawra ( Slowed + Reverb ) Shafaullah Khan Rokhri"},{"id":"EhoShqTLr-w","title":"Mar Mar Ke Taa Milay c (Slowed + Reverb) | Punjabi Sad Song 💔 #amrindergillsongs"},{"id":"F14ZAD0_U-0","title":"Rab Sain Likh Chori Rozi Vich Pardesan De ( Slowed + Reverb ) | New Saraiki song Punjabi Slowed Song"},{"id":"GblFVNWTAAE","title":"Meda Ranjhna (Slowed + Reverb) Zeeshan Rokhri | Slowed + Reverb song | Saraiki Song Slowed Reverb"},{"id":"duDLDKUgxdw","title":"Rab Di Zaat To Dar Na Kar Maghrori Aye (TikTok Viral Song) | New Punjabi Song"},{"id":"Ycjsc1iwJjY","title":"kamli Nal laa Akhaiyan (Slowed + Reverb) | Onchi dokana ty pekhe pakwan hundan #SaraikiSong"},{"id":"rJtmyk5zcXA","title":"Way Kamla Yar Ta Wat Yar Hudan { Slowed+ Reverb } | Saraiki Song"},{"id":"WVmO64Amdn4","title":"Main Haan Garibni Ji - Shafaullah Khan Rokhri | Saraiki Song Slowed Reverb"},{"id":"1gJ1P7KggFI","title":"Tu Banse Dhola kain Naseeban Walay Da ( Slowed + Reverb ) | Shafaullah Khan Rokhri"},{"id":"3X2OFwy5d_I","title":"\"Meray Sajan Ko Akho Na Enj Khafa(Slowed Reverb) | Shafaullah khan rokhri song | Saraiki Slowed Song"}];
   var PARAS = [{"id":"Zbnq02nVDF8","label":"Para 1","title":"Al Quran Full Terjemahan Bahasa Indonesia dan Inggris | PARA 1 | JUZUK 1"},{"id":"BU_mhUfx3yw","label":"Para 2","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 2 | JUZUK 2"},{"id":"qFKqSO6-37o","label":"Para 3","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 3 | JUZUK 3"},{"id":"noyQ265xtUk","label":"Para 4","title":"Quran Full Translation in Indonesian and English | QURAN PARA 4 | JUZ 4"},{"id":"vB7thMibR50","label":"Para 5","title":"Full Quran with Indonesian and English Translation | QURAN PARA 5 | JUZ 5"},{"id":"1Q7oW_XEdSI","label":"Para 6","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris| QURAN PARA 6 | JUZUK 6"},{"id":"1NfXabv2CJI","label":"Para 7","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 7 | JUZUK 7"},{"id":"UI0AM_lUmsc","label":"Para 8","title":"Quran Full Indonesian and English Translation | QURAN PARA 8 | JUZ 8"},{"id":"yDIvf8jw4Dc","label":"Para 9","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 9 | JUZUK 9"},{"id":"HLbA07pDWEU","label":"Para 10","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 10 | JUZUK 10"},{"id":"3w_kp9dFat0","label":"Para 11","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 11 | JUZUK 11"},{"id":"2T7VL8A9XIk","label":"Para 12","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 12 | JUZUK 12"},{"id":"rEFuNihNDCo","label":"Para 13","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 13 | JUZUK 13"},{"id":"r0SoEmKNZlg","label":"Para 14","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 14 | JUZUK 14"},{"id":"F1iIhvi5LDw","label":"Para 15","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 15 | JUZUK 15"},{"id":"uSRRwvXEy7I","label":"Para 16","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 16 | JUZUK 16"},{"id":"hxIuXlS3nLM","label":"Para 17","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 17 | JUZUK 17"},{"id":"d6EgV-Hn81g","label":"Para 18","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 18 | JUZUK 18"},{"id":"KF9YV_sssr4","label":"Para 19","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 19 | JUZUK 19"},{"id":"5UP2z0ZNFfY","label":"Para 20","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 20 | JUZUK 20"},{"id":"nSa6W-k61dM","label":"Para 21","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 21 | JUZUK 21"},{"id":"Bm_Awst_Ozk","label":"Para 22","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 22 | JUZUK 22"},{"id":"8sX7dD_cgC0","label":"Para 23","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 23 | JUZUK 23"},{"id":"CCM_Wg_nbU0","label":"Para 24","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 24 | JUZUK 24"},{"id":"M_d9eUVWCrM","label":"Para 25","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 25 | JUZUK 25"},{"id":"2X8sm49VdC4","label":"Para 26","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 26 | JUZUK 26"},{"id":"DvYBQ0wu7Ic","label":"Para 27","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 27 | JUZUK 27"},{"id":"riLnZmLx4_8","label":"Para 28","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 28 | JUZUK 28"},{"id":"zeSd2MtpMfk","label":"Para 29","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 29 | JUZUK 29"},{"id":"T-2F4wtWjpw","label":"Para 30","title":"Quran Full Terjemahan Bahasa Indonesia dan Inggris | QURAN PARA 30 | JUZUK 30"}];
 
   var CATS = [
@@ -1711,7 +1711,7 @@
     ['qawwali', '\uD83C\uDFB6 Qawwali', 'Nusrat Fateh Ali Khan — hazri kalam']
   ];
   var NAATS = [{"id":"JLkCad_qAng","title":"New Naat - Ghulam Mustafa Qadri - Kabay Ki Ronaq - Official Video - Heera Gold"},{"id":"vgmgAdAu2ew","title":"Jagha Ji Lagane ki Duniya Nhi Hai - Ghulam Mustafa Qadri"},{"id":"qTGu_ZpNEH0","title":"Meri Baat Ban Gayi Hai - Ghulam Mustafa Qadri - Naat - M Media Gold"},{"id":"GIrrG1fznBU","title":"New Naat Sharif | Ghulam Mustafa Qadri | Gham Ho Gaye Beshumar | Heera Gold | Hou Karam Sarkar Ab"},{"id":"F1eGsxVr7Po","title":"Hara Gumbad Jo Dekhoge Zamana Bhool Jaoge Naat | Heart Touching Naat | Ghulam Mustafa Qadri| Studio5"},{"id":"2EkYCgqRt5M","title":"Menu Shoq Madine Jawan Da - Ghulam Mustafa Qadri - Official video"},{"id":"uKPb4Tq_klA","title":"New Rabi Ul Awal Title Naat 2020 | Pukaro Ya Rasool Allah صلى الله عليه وسلم | Ghulam Mustafa Qadri"},{"id":"POQFRfV3by8","title":"Heart Touching Naat - Ghulam Mustafa Qadri - Haal e Dil - Official Video - M Media Gold"},{"id":"TLFXHiyGV_o","title":"Dar e Nabi Par | Ghulam Mustafa Qadri | 2021 Heart Touching Naat | Kids Naat | Studio5"},{"id":"05mLbp5yyzQ","title":"Ankhon Ka Tara Naam e Mohammad - Ghulam Mustafa Qadri - Heart Touching Naat"},{"id":"OSoQVyAlOOU","title":"Rabi Ul Awal Naat | Ghulam Mustafa Qadri | Gali Gali Saj Gayi - Hum Apne Nabi Pak Se | Studio5"},{"id":"uRhLDd7pnho","title":"New Heart Touching Naat - Mustafa Apke Jesa - Ghulam Mustafa Qadri - Official Video - Heera Gold"},{"id":"ELsBOmfW-nM","title":"New Naat - Sukoon Paya - Ghulam Mustafa Qadri - Official Video - Safa Islamic"},{"id":"M9PIEjsg_5I","title":"Ghulam Mustafa - Eid Mubarak - Hajj Kalam - Qurbani Ka Mausam - RWDS"},{"id":"QKwVG4KoY-8","title":"Jashn e Amad e Rasool Allah he Allah || Bibi Amna ke Phool | Ghulam Mustafa Qadri | New Milad Album"},{"id":"EvsrF0IrAkg","title":"New Naat - Hum Ko Bulana Ya Rasool Allah - Ghulam Mustafa Qadri - Official Video -Safa Islamic"},{"id":"I6r2nRufiZM","title":"2021 Milad Special Nasheed | Noor Wala Aaya Hai | Ghulam Mustafa Qadri | New Rabi Ul Awal Kids"},{"id":"vmJ4AMo_sXc","title":"Wajay Allah Wali Taar - Ghulam Mustafa Qadri - Arfana Kalam 2021 - Meem Production"},{"id":"HRwL70lzixc","title":"Meraj ko Chalay Dulha || Meraj Shareef Super hit kalam || Ghulam Mustafa Qadri"},{"id":"OlLVclhLD8Q","title":"2024 Ramadan Best Special Nasheed | Ghulam Mustafa Qadri Mah e Ramzan Hai | Hi-Tech Islamic Naats"},{"id":"bdoThhh4-8o","title":"Ramadan Nasheed | Mustafa Mustafa | Ramzan Naat | Ahmed Raza Qadri & Ghulam Mustafa Qadri | Studio5"},{"id":"6vjLjM3TaV4","title":"Beautiful Naat - Ghulam Mustafa Qadri - Zameen Maili Nahi Hoti - Official Video - Heera Gold"},{"id":"tqiF-3Q16HE","title":"Tu Kuja Man Kuja • Ghulam Mustafa Qadri • New Very Beautiful Nasheed 2021• Naat Update"},{"id":"m81jvJ1Ezkw","title":"New Rabi Ul Awal Title Naat 2020 | Aa Gaye Rasoolallah | Ghulam Mustafa Qadri | Milad Special"},{"id":"xBqDaiH_cTg","title":"Manqabat 2022 | Taj Ul Shariyya | Ghulam Mustafa Qadri"},{"id":"Jt4yyyHwK4U","title":"Dam Mast Qalandar Umar Umar | New Manqabat 2021 | Ghulam Mustafa Qadri"},{"id":"SXquwYQeZjI","title":"Warafana Laka Zikrak | Ghulam Mustafa Qadri | New Naat"},{"id":"wzcmMjt30AM","title":"New Rabiulawal Naat - Ghulam Mustafa Qadri - Amna K Laal Aye - Official Video - Heera Gold"},{"id":"fokdo9obdBo","title":"Best & Most Beautiful Naat 2022 | Woh Mera Nabi Hai | Ghulam Mustafa Qadri | Kids Special Nasheed"},{"id":"J_D6QPdOhEM","title":"Har Waqt Tassawur Main Madinay Ki Gali | Ghulam Mustafa Qadri | Naat 2024"},{"id":"g86BJIOFg34","title":"Ab to Bas ek hi dhun hai ke Madina Dekhon | Ghulam Mustafa Qadri | Official Video"},{"id":"MvKf8x3woRI","title":"New Manqabat Aala Hazrat - Raza Baadshah - Ghulam Mustafa Qadri | 4K Video |"},{"id":"MYNjWzIctDA","title":"New Rabi Ul Awal Title Kalam | Jashn e Milad | Ghulam Mustafa Qadri"},{"id":"Bl5HGq_8XE0","title":"2021 Ramadan Kids Special Naat | Ghulam Mustafa Qadri | Aye Sabz Gumbad Wale"},{"id":"r7vGnH0Pag0","title":"Phir K Gali Gali | Ghulam Mustafa Qadri | Official Video"},{"id":"9CwLSy-amZ0","title":"Emotional kalam || Unka Mangta hoon || Ghulam Mustafa Qadri"},{"id":"nPExoPYxU64","title":"New Hajj Kalam 2021 || Hara Gumbad - Ghulam Mustafa Qadri"},{"id":"Ne9KIbZ7c6U","title":"Qaseeda Burda Shareef - Ghulam Mustafa Qadri - Official Video"},{"id":"EV5jeUg0y9o","title":"New Manqabat Imam Hussain | Badshah Ya Hussain | Ghulam Mustafa Qadri |"},{"id":"2tOykgj7hlc","title":"Tere Sadqay mein Aaqa || New Kalam 2022 || Hasbi rabbi jallallah || Ghulam Mustafa Qadri"},{"id":"LYqTNn29GLw","title":"Kya Bataon K Kiya Madina Hai - Ghulam Mustafa Qadri - Official Video"},{"id":"7FMn5NFoY0Q","title":"Taiba Ke Jaane Wale - Ghulam Mustafa Qadri - Official Video"},{"id":"Tvuh068s1O8","title":"New Beautiful Manqbat 2020 | Nazr e Karam Jillani | Ghulam Mustafa Qadri"},{"id":"civysHwcRsw","title":"New Manqabat 2022 || Hazrat Abu Bakrr Siddique || Ghulam Mustafa Qadri"},{"id":"AAP--01ICpY","title":"Ghous Ka Karam Ghous Ki Ata || Gyarvi Sharif - Ghulam Mustafa Qadri - Manqabat 2021"},{"id":"OXG-g5xUTMw","title":"Na Cricket Sharart kay liay aaya hay | Mah e Ramzan Ibadat kay liay Aaya hay - Ghulam Mustafa Qadri-"},{"id":"e5sfvQAIU-0","title":"Tajdar e Haram || Super Hit Kalam 2022 || Ghulam Mustafa Qadri - New Style"},{"id":"f1g1lWVPkcc","title":"Tanam Farsooda Jaan Para - Ghulam Mustafa Qadri | Official Video |"},{"id":"8v-6THqssQI","title":"Chan do Tukday ho Janda aye || Ghulam Mustafa Qadri || 2022 ||"},{"id":"LZfjnI6TVUc","title":"Dama Dam Mast Qalandar - Manqabat Hazrat Umar Farooq - Ghulam Mustafa Qadri | Muharram ul Haram"},{"id":"DxfWXt47g04","title":"Mein Madinay Chala | Complete Video Shoot in Madina Pak | Ghulam Mustafa Qadri"},{"id":"p0YHksb96OU","title":"Almadad Ya Ghous ul Azam - Ghulam Mustafa Qadri - Official video"},{"id":"GgMw49P3OBU","title":"Dil Sey Milad Hum Manaien Gey - Milad Titel Kalam - Ghulam Mustafa Qadri"},{"id":"FhMMRQs7J_w","title":"Kab Gunahon Se Kinara Main Karunga Ya Rab || Moral Story || Emotional Munajat | Ghulam Mustafa Qadri"},{"id":"FYc_KTB6OFs","title":"Haidri Rang | Manqabat | Mola Ali A.S. | 13 Rajab | Jashn e Wiladat | Ghulam Mustafa Qadri"},{"id":"07SkgSGj6l0","title":"Lakhon Darood aur Lakhon Sallam - Shab e Meraj - Ghulam Mustafa Qadri"},{"id":"lBT0GhEcpUs","title":"|| Sahaba Sahaba Hamare Sahaba || NEW KALAM 2022 || Ghulam Mustafa Qadri"},{"id":"YULjg44pyZE","title":"New Milad Special Kalam - Jashan Manaien Gey Hum Mil Kar - Ghulam Mustafa Qadri - Official Video"},{"id":"-nigswgMN3U","title":"New Ramzan Naat 2023 - Jab Gumbad e Khazra Pe Wo Pehli Nazar Gai -Ghulam Mustafa Qadri"},{"id":"QHG6-qNzHTY","title":"Pohanchon Dar e Sarkar صلى الله عليه وسلم pay | Ghulam Mustafa Qadri | Official Video"},{"id":"22xSPenylx0","title":"Konain Dey Wali Da Darbar Bara Sohna | Ghulam Mustafa Qadri"},{"id":"PKzemQ5t6BI","title":"Dar hey kitna pyaara pyaara || NEW KALAM 2022 || Ghulam Mustafa Qadri"}];
-  var QAWALIS = [{"id":"k9plOYAmpBU","title":"Shah-e-Mardane Ali ( Remix ) || Nusrat Fateh Ali Khan Full Remix Qawali || Atiq's Creations"},{"id":"50pkaaM-YnA","title":"Othe Amlan De Hony Ne Navede || Nusrat Fateh Ali Khan ||Best Qwali ||#NFAK"},{"id":"AffgSkmDFgk","title":"Unke Andaz e karam Nusrat Fateh Ali Khan Best Qawwali"},{"id":"WzlO79d3S8c","title":"Coke Studio Season 11| Piya Ghar Aaya| Fareed Ayaz| Abu Muhammad Qawwal and Brothers"},{"id":"Nqwmh4WXMmo","title":"Allah hu Allah hu ,Qawali by Nusrat Fateh ali Khan,One of the greatest Qawali"},{"id":"VyvlJoV_q8s","title":"Je Tu Rab Nu Manuna Phly Yaar Nu Mana Ustad Nusrat Fateh Ali Khan RGH HD Video (hafizabadi)"},{"id":"29kYSbMUSuA","title":"Woh Bhi Apne Na Hue (NFAK Remix) | Unke Andaz-e-Karam"},{"id":"TBxtqzGsI7U","title":"Je Tu Akhiyan De Samne Nahi Rehna | Nusrat Fateh Ali Khan | NFAK Qawwali | Sufi Kalam"},{"id":"q4NVp-aFZSw","title":"Tumhein Dillagi Bhool Jani Paray Gi| Ustad Nusrat Fateh Ali Khan| Best Ever|"},{"id":"2Rz5cZjvBzU","title":"Dam Dam Ali Ali Kar | Nusrat Fateh Ali Khan | Powerful Original Qawwali | Bazm-e-Nusrat"},{"id":"9YByMu_W7E8","title":"Kali Kali Zulfon Ke Phande Na Dalo | Nusrat Fateh Ali Khan | Qawwali | NFAK"},{"id":"zk0-f92gg9A","title":"'Bhar Do Jholi Meri' FULL VIDEO Song - Adnan Sami | Bajrangi Bhaijaan | Salman Khan Pritam"}];
+  var QAWALIS = [{"id":"k9plOYAmpBU","title":"Shah-e-Mardane Ali ( Remix ) || Nusrat Fateh Ali Khan Full Remix Qawali || Atiq's Creations"},{"id":"50pkaaM-YnA","title":"Othe Amlan De Hony Ne Navede || Nusrat Fateh Ali Khan ||Best Qwali ||#NFAK"},{"id":"AffgSkmDFgk","title":"Unke Andaz e karam Nusrat Fateh Ali Khan Best Qawwali"},{"id":"WzlO79d3S8c","title":"Coke Studio Season 11| Piya Ghar Aaya| Fareed Ayaz| Abu Muhammad Qawwal and Brothers"},{"id":"Nqwmh4WXMmo","title":"Allah hu Allah hu ,Qawali by Nusrat Fateh ali Khan,One of the greatest Qawali"},{"id":"VyvlJoV_q8s","title":"Je Tu Rab Nu Manuna Phly Yaar Nu Mana Ustad Nusrat Fateh Ali Khan RGH HD Video (hafizabadi)"},{"id":"29kYSbMUSuA","title":"Woh Bhi Apne Na Hue (NFAK Remix) | Unke Andaz-e-Karam"},{"id":"TBxtqzGsI7U","title":"🎶 Je Tu Akhiyan De Samne Nahi Rehna | Nusrat Fateh Ali Khan | NFAK Qawwali ❤️ | Sufi Kalam"},{"id":"q4NVp-aFZSw","title":"Tumhein Dillagi Bhool Jani Paray Gi| Ustad Nusrat Fateh Ali Khan| Best Ever|"},{"id":"2Rz5cZjvBzU","title":"Dam Dam Ali Ali Kar | Nusrat Fateh Ali Khan | Powerful Original Qawwali | Bazm-e-Nusrat"},{"id":"9YByMu_W7E8","title":"Kali Kali Zulfon Ke Phande Na Dalo | Nusrat Fateh Ali Khan | Qawwali | NFAK"},{"id":"zk0-f92gg9A","title":"'Bhar Do Jholi Meri' FULL VIDEO Song - Adnan Sami | Bajrangi Bhaijaan | Salman Khan Pritam"}];
 
   var active = 'songs';
   var player = null;
@@ -4487,7 +4487,7 @@
   /* ---------- CSS (body ke end par inject — sab se aakhri word) ---------- */
   var css = [
     '/* --- v34 fixes --- */',
-    /* dots (ab categories) — cursor icon ke baad, Aa uske baad */
+    /* dots (ab ☰ categories) — cursor icon ke baad, Aa uske baad */
     'html body #sq-dots-btn{inset-inline-end:56px!important;right:56px!important;z-index:12;flex-shrink:0;font-size:15px!important}',
     'html body .font-toggle{inset-inline-end:104px!important;right:104px!important}',
     /* left widgets default chhupi — dock khulne par nikalti hain */
@@ -4567,7 +4567,7 @@
     /* bottom-left column: left edge se lage (44px dock center = 22, magic 40 center = 22) */
     'html body #sq-dock-left-btn{left:0px!important;inset-inline-start:0px!important}',
     'html body #sq-magic-btn{top:auto!important;bottom:130px!important;left:auto!important;right:2px!important;inset-inline-start:auto!important;inset-inline-end:2px!important}',
-    /* v54: magic ab LEFT column mein — left ke upar (bottom:74, left:2) */
+    /* v54: magic ◐ ab LEFT column mein — left ✦ ke upar (bottom:74, left:2) */
     'html body #sq-magic-btn{top:auto!important;bottom:74px!important;left:10px!important;inset-inline-start:10px!important;right:auto!important;inset-inline-end:auto!important;width:44px!important;height:44px!important;font-size:18px!important}',
     /* v54: + (dock) open hone par upar ke permanent column icons hide — x dabane par wapas */
     'html body.sq-dock-open #sq-hub-btn,html body.sq-dock-open #sq-top-btn,html body.sq-dock-open #sq-bottom-btn{display:none!important}',
