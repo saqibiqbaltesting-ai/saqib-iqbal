@@ -275,9 +275,17 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   // Owner-only: who is waiting on approval?
+  // The OWNER constant is the portfolio identity; the admin may sign in with
+  // either that address or the account address the approval emails go to.
+  const isOwnerToken = (t: unknown) => {
+    const p = readToken(String(t ?? ""));
+    if (!p) return false;
+    const e = p.email.toLowerCase();
+    return e === OWNER.toLowerCase() || e === notifyAddress().toLowerCase();
+  };
   if (action === "pending-list") {
     const p = readToken(String(body?.token ?? ""));
-    if (!p || p.email.toLowerCase() !== OWNER.toLowerCase())
+    if (!isOwnerToken(body?.token))
       return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
     const pending = db.users
       .filter((u) => !isActive(u))
@@ -288,8 +296,7 @@ export async function POST(req: Request): Promise<Response> {
 
   // Owner-only: approve or deny a pending account directly from the site.
   if (action === "decide") {
-    const p = readToken(String(body?.token ?? ""));
-    if (!p || p.email.toLowerCase() !== OWNER.toLowerCase())
+    if (!isOwnerToken(body?.token))
       return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
     const email = String(body?.email ?? "").trim().toLowerCase();
     const approve = body?.approve !== false;
