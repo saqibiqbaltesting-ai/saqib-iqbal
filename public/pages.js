@@ -32,6 +32,13 @@
     'sq-dps'
   ];
 
+  /* Roz ka Sher belongs to BOTH pages — it must never be hidden by the
+     page split. It is listed here only so the intent is explicit; the
+     hide loop skips anything in SHARED_IDS. */
+  var SHARED_IDS = [
+    'sq-daily-sher'  /* Roz ka Sher — home aur explore dono par */
+  ];
+
   /* Home-only blocks that are injected without a stable section id */
   var HOME_EXTRA_TEXT = ['Download CV', 'Contact me', 'Filter projects'];
 
@@ -66,6 +73,7 @@
   function hideSections() {
     var ids = PAGE === 'home' ? MORE_IDS : HOME_IDS;
     ids.forEach(function (id) {
+      if (SHARED_IDS.indexOf(id) !== -1) return;
       var el = document.getElementById(id);
       if (!el) return;
       /* On the more page the plain #music section is the SOURCE the rich
