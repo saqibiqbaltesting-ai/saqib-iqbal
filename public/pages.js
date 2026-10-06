@@ -24,19 +24,13 @@
     'music',         /* 06 — Music (Preact section — hidden once the rich player exists) */
     'sq-music',      /* 06 — Music (enhancements.js rich player) */
     'sq-user-sher',  /* 07 — Aap ka Sher */
+    'sq-daily-sher', /* 07 — Roz ka Sher — sirf explore page par */
     'guestbook',     /* 09 — Guestbook */
     'quiz',          /* 10 — Quiz */
     'qa',            /* 11 — Q&A */
     'sq-hearts',     /* 12 — Deewar e Dil */
     'sq-zone',       /* 13 — Saqib Zone */
     'sq-dps'
-  ];
-
-  /* Roz ka Sher belongs to BOTH pages — it must never be hidden by the
-     page split. It is listed here only so the intent is explicit; the
-     hide loop skips anything in SHARED_IDS. */
-  var SHARED_IDS = [
-    'sq-daily-sher'  /* Roz ka Sher — home aur explore dono par */
   ];
 
   /* Home-only blocks that are injected without a stable section id */
@@ -73,7 +67,6 @@
   function hideSections() {
     var ids = PAGE === 'home' ? MORE_IDS : HOME_IDS;
     ids.forEach(function (id) {
-      if (SHARED_IDS.indexOf(id) !== -1) return;
       var el = document.getElementById(id);
       if (!el) return;
       /* On the more page the plain #music section is the SOURCE the rich
@@ -116,62 +109,31 @@
   }
 
   function buildNav() {
+    /* The Explore More pill lives ONLY on the explore (/more) page — it links
+       back to home. It never appears on the home page itself. */
+    if (PAGE !== 'more') {
+      var old = q('#sq-page-nav');
+      if (old && old.parentNode) old.parentNode.removeChild(old);
+      return;
+    }
     var wrap = q('#sq-page-nav');
     if (wrap) { placeNav(wrap); return; }
     wrap = document.createElement('nav');
     wrap.id = 'sq-page-nav';
     var a = document.createElement('a');
-    if (PAGE === 'home') {
-      a.href = '/more';
-      a.innerHTML = '<span>Explore More</span><span aria-hidden="true">\u2192</span>';
-    } else {
-      a.href = '/';
-      a.className = 'sq-ghost';
-      a.innerHTML = '<span aria-hidden="true">\u2190</span><span>Back to home</span>';
-    }
+    a.href = '/';
+    a.className = 'sq-ghost';
+    a.innerHTML = '<span aria-hidden="true">\u2190</span><span>Back to home</span>';
     wrap.appendChild(a);
     placeNav(wrap);
   }
 
-  /* Both pages keep the pill at the bottom. On home it slots in just above the
-     footer block, so the tail of the page reads: contact form ->
-     welcome/logout -> Explore More -> copyright. Re-run until the anchor exists. */
-  /* Put the pill where we want it, and ONLY touch the DOM when it is in the
-     wrong place. The old version re-ran insertBefore every tick, which fought
-     with Preact re-rendering the footer and made the pill and the logout row
-     swap positions at random. */
+  /* The pill lives on the explore (/more) page only. Keep it parked at the end
+     of #app. Only touch the DOM when it is genuinely in the wrong place, so we
+     never fight Preact's re-renders. */
   function placeNav(wrap) {
-    var app = document.getElementById('app');
-    var target;
-
-    if (PAGE === 'home') {
-      /* Required tail order, top to bottom:
-           contact form -> Explore More pill -> welcome/logout -> copyright
-         The pill therefore anchors to the welcome/logout row and sits directly
-         ABOVE it. If that row is absent (visitor not logged in) we fall back to
-         the copyright line, which still keeps the pill above the copyright.
-
-         Preact owns the footer's children and re-renders them on its own
-         schedule, so we re-assert the position on every tick — but only when
-         the pill is genuinely out of place. Re-inserting unconditionally every
-         tick is what previously made the pill and the logout row swap. */
-      var anchor = q('#contact .logout-row') || q('#contact .footer-note');
-      if (anchor && anchor.parentNode) {
-        if (wrap.parentNode !== anchor.parentNode || wrap.nextSibling !== anchor) {
-          anchor.parentNode.insertBefore(wrap, anchor);
-        }
-        return;
-      }
-      /* Footer not built yet: park the pill at the end of #app and try again
-         on the next tick. */
-      target = app || document.body;
-      if (wrap.parentNode !== target || wrap !== target.lastElementChild) {
-        target.appendChild(wrap);
-      }
-      return;
-    }
-
-    target = app || document.body;
+    if (PAGE !== 'more') return;
+    var target = document.getElementById('app') || document.body;
     if (wrap.parentNode !== target) target.appendChild(wrap);
   }
 
