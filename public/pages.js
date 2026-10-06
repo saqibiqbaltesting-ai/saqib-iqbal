@@ -109,21 +109,20 @@
   }
 
   function buildNav() {
-    /* The Explore More pill lives ONLY on the explore (/more) page — it links
-       back to home. It never appears on the home page itself. */
-    if (PAGE !== 'more') {
-      var old = q('#sq-page-nav');
-      if (old && old.parentNode) old.parentNode.removeChild(old);
-      return;
-    }
+    /* Home shows "Explore More" (goes to /more); /more shows "Back to home". */
     var wrap = q('#sq-page-nav');
     if (wrap) { placeNav(wrap); return; }
     wrap = document.createElement('nav');
     wrap.id = 'sq-page-nav';
     var a = document.createElement('a');
-    a.href = '/';
-    a.className = 'sq-ghost';
-    a.innerHTML = '<span aria-hidden="true">\u2190</span><span>Back to home</span>';
+    if (PAGE === 'home') {
+      a.href = '/more';
+      a.innerHTML = '<span>Explore More</span><span aria-hidden="true">\u2192</span>';
+    } else {
+      a.href = '/';
+      a.className = 'sq-ghost';
+      a.innerHTML = '<span aria-hidden="true">\u2190</span><span>Back to home</span>';
+    }
     wrap.appendChild(a);
     placeNav(wrap);
   }
@@ -132,8 +131,25 @@
      of #app. Only touch the DOM when it is genuinely in the wrong place, so we
      never fight Preact's re-renders. */
   function placeNav(wrap) {
-    if (PAGE !== 'more') return;
-    var target = document.getElementById('app') || document.body;
+    var app = document.getElementById('app');
+    if (PAGE === 'home') {
+      /* Tail order top to bottom:
+           contact form -> Explore More pill -> welcome/logout -> copyright
+         Anchor to the welcome/logout row and sit directly ABOVE it; fall back
+         to the copyright line when that row is absent. Only touch the DOM when
+         the pill is genuinely out of place, so we never fight Preact. */
+      var anchor = q('#contact .logout-row') || q('#contact .footer-note');
+      if (anchor && anchor.parentNode) {
+        if (wrap.parentNode !== anchor.parentNode || wrap.nextSibling !== anchor) {
+          anchor.parentNode.insertBefore(wrap, anchor);
+        }
+        return;
+      }
+      var t = app || document.body;
+      if (wrap.parentNode !== t || wrap !== t.lastElementChild) t.appendChild(wrap);
+      return;
+    }
+    var target = app || document.body;
     if (wrap.parentNode !== target) target.appendChild(wrap);
   }
 
