@@ -16,6 +16,7 @@ import * as hearts from "../routes/hearts.js";
 import * as userShers from "../routes/user-shers.js";
 import * as visitorGeo from "../routes/visitor-geo.js";
 import * as sherLikes from "../routes/sher-likes.js";
+import * as approve from "../routes/approve.js";
 
 const DATA_ROOT = process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data";
 const DATA_DIR = join(DATA_ROOT, "data");
@@ -108,7 +109,7 @@ const routes: Record<string, { GET?: (req: Request) => Response | Promise<Respon
   auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
   "photo-reactions": photoReactions, qa, quiz, ratings, visitors,
   "visitor-geo": visitorGeo, hearts, "user-shers": userShers,
-  "sher-likes": sherLikes,
+  "sher-likes": sherLikes, approve,
 };
 
 async function handle(req: Request): Promise<Response> {
@@ -124,6 +125,10 @@ async function handle(req: Request): Promise<Response> {
   const parts0 = u.pathname.split("/").filter(Boolean);
   const idx0 = parts0.indexOf("x");
   const name0 = idx0 >= 0 ? parts0[idx0 + 1] : parts0[1];
+  // GET on the approve route must return HTML, and an email client will not
+  // send a JSON content-type — so it bypasses the sync/persist wrapper entirely
+  // and talks to the data store itself (see routes/approve.ts).
+  if (name0 === "approve") return approve.GET(req);
   // chat is read-only and high-frequency — never sync or persist around it
   const SYNC_SKIP = action === "me" || action === "logout" || name0 === "chat";
   if (req.method === "POST" && !SYNC_SKIP) {
