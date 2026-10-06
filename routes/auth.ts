@@ -1,6 +1,5 @@
 import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { loadJSON, saveJSON } from "./blob-store.js";
-import { sendMail, approvalEmail, notifyAddress } from "./mailer.js";
 
 // Stateless signed tokens (HMAC) — no server-side session storage needed,
 // so login/refresh work instantly even with eventually-consistent blob storage.
@@ -31,71 +30,15 @@ export function readToken(token: string): TokenPayload | null {
 
 export const description = "Portfolio auth — email signup/login with token sessions";
 
-// Owner-approval links. Reuses the same HMAC signing as session tokens but with
-// a distinct context string and a 7-day TTL, so an approval link can never be
-// replayed as a login token (or vice versa).
-export function issueApprovalToken(email: string): string {
-  if (!SECRET) throw new Error("AUTH_SECRET not configured");
-  const body = Buffer.from(
-    JSON.stringify({ email, ctx: APPROVAL_CONTEXT, exp: Date.now() + APPROVAL_TTL })
-  ).toString("base64url");
-  return `${body}.${sig(body)}`;
-}
-export function readApprovalToken(token: string): string | null {
-  if (!SECRET) return null;
-  const parts = String(token || "").split(".");
-  if (parts.length !== 2) return null;
-  const expected = sig(parts[0]);
-  if (parts[1].length !== expected.length || !timingSafeEqual(Buffer.from(parts[1]), Buffer.from(expected)))
-    return null;
-  try {
-    const p = JSON.parse(Buffer.from(parts[0], "base64url").toString("utf8"));
-    if (p?.ctx !== APPROVAL_CONTEXT || typeof p.exp !== "number" || p.exp < Date.now()) return null;
-    return typeof p.email === "string" ? p.email.toLowerCase() : null;
-  } catch { return null; }
-}
-const isActive = (u: User) => (u.status ?? "active") === "active";
-
-// Approve/deny by email — used by the email link (routes/approve.ts), which is a
-// separate request from the normal dispatcher and therefore loads the store
-// itself. Union-by-lowercased-email, exactly like api/[...path].ts does, so a
-// stale read can never drop an account created in the meantime.
-export async function decideByEmail(
-  email: string,
-  approve: boolean
-): Promise<{ ok: boolean; error?: string }> {
-  const target = String(email || "").trim().toLowerCase();
-  if (!target) return { ok: false, error: "bad details" };
-  const db = await load();
-  const idx = db.users.findIndex((u) => u.email.toLowerCase() === target);
-  if (idx === -1) return { ok: false, error: "not_found" };
-  if (approve) {
-    db.users[idx].status = "active";
-    db.users[idx].approvedAt = Date.now();
-  } else {
-    db.users.splice(idx, 1);
-  }
-  await save(db);
-  return { ok: true };
-}
 
 const OWNER = "fizanali6267@gmail.com";
-// Accounts are approved by the owner, NOT by email verification. Resend's free
-// tier cannot send to arbitrary addresses without a verified domain, so instead
-// of "prove you own this inbox" we do "the owner says yes" — which is stronger
-// anyway: nobody gets in without Saqib allowing it. New signups are created with
-// status "pending"; only "active" accounts can log in.
-const SITE_URL = (process.env.SITE_URL || "https://saqib-iqbal.vercel.app").replace(/\/+$/, "");
-const APPROVAL_TTL = 1000 * 60 * 60 * 24 * 7; // 7 days
-const APPROVAL_CONTEXT = "account-approval";
 
 // Persistent user storage via the GitHub-backed data store (same backend as
 // guestbook etc.). The old /tmp file died with every serverless instance,
 // which made "signup works, immediate login says account not found".
 const FILE_NAME = "portfolio-users.json";
 type LoginRec = { ts: number; ip?: string; ua?: string };
-type Status = "pending" | "active";
-type User = { name: string; email: string; salt: string; hash: string; lastLogins?: LoginRec[]; joined?: number; status?: Status; approvedAt?: number };
+type User = { name: string; email: string; salt: string; hash: string; lastLogins?: LoginRec[]; joined?: number; status?: string };
 type Session = { token: string; email: string; createdAt: string };
 type DB = { users: User[]; sessions: Session[] };
 
@@ -140,44 +83,18 @@ export async function POST(req: Request): Promise<Response> {
     const password = String(body?.password ?? "");
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8)
       return Response.json({ ok: false, error: "bad details" }, { status: 400 });
-    const existing = db.users.find((u) => u.email === email);
-    if (existing)
-      return Response.json(
-        { ok: false, error: "exists", status: existing.status ?? "active" },
-        { status: 400 }
-      );
+    if (db.users.some((u) => u.email === email))
+      return Response.json({ ok: false, error: "exists" }, { status: 400 });
     const rl = rateLimit(req, db, "signup", 6, 60 * 60 * 1000);
     if (!rl.ok) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
     const salt = randomBytes(16).toString("hex");
-    const isOwner = email === OWNER;
-    db.users.push({
-      name, email, salt, hash: hashPw(password, salt), lastLogins: [], joined: Date.now(),
-      status: isOwner ? "active" : "pending",
-      ...(isOwner ? { approvedAt: Date.now() } : {}),
-    });
+    // Signup activates immediately — no approval step, no waiting, no owner email.
+    // Security still holds: 8-char minimum, per-IP rate limit, unique email, and the
+    // duplicate-signup message tells people to log in instead.
+    db.users.push({ name, email, salt, hash: hashPw(password, salt), lastLogins: [], joined: Date.now() });
     await save(db);
-
-    // Owner's own account skips approval, otherwise tell the owner.
-    let mailed = false;
-    let mailError: string | undefined;
-    if (!isOwner) {
-      const mail = approvalEmail({
-        siteUrl: SITE_URL,
-        token: issueApprovalToken(email),
-        name,
-        email,
-        when: new Date().toLocaleString("en-GB", { timeZone: "Asia/Karachi" }) + " (PKT)",
-      });
-      const r = await sendMail({ to: notifyAddress(), ...mail });
-      mailed = r.sent;
-      mailError = r.error;
-    }
-    return ok({
-      pending: !isOwner,
-      mailed,
-      ...(mailError ? { mailError } : {}),
-      ...(isOwner ? { token: issueToken(email, name), user: { name, email } } : {}),
-    });
+    const token = issueToken(email, name);
+    return ok({ token, user: { name, email } });
   }
 
   if (action === "login") {
@@ -190,14 +107,6 @@ export async function POST(req: Request): Promise<Response> {
       return Response.json({ ok: false, error: "not_found" }, { status: 404 });
     if (user.hash !== hashPw(password, user.salt))
       return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
-    // Owner approval gate: a correct password on an unapproved account must NOT
-    // issue a session. Checked AFTER the password so it never leaks which emails
-    // exist to someone guessing.
-    if (!isActive(user))
-      return Response.json(
-        { ok: false, error: "pending_approval", name: user.name },
-        { status: 403 }
-      );
     // login history — latest 10 (device management / session info)
     if (!Array.isArray(user.lastLogins)) user.lastLogins = [];
     user.lastLogins.unshift({
@@ -219,7 +128,6 @@ export async function POST(req: Request): Promise<Response> {
       email: p.email,
       name: p.name,
       joined: user?.joined ?? null,
-      status: user ? (user.status ?? "active") : null,
       lastLogins: (user?.lastLogins ?? []).slice(0, 10),
     });
   }
@@ -254,62 +162,6 @@ export async function POST(req: Request): Promise<Response> {
       { ok: false, error: "reset_unavailable" },
       { status: 503 }
     );
-  }
-
-  if (action === "resend-approval") {
-    const email = String(body?.email ?? "").trim().toLowerCase();
-    const rl = rateLimit(req, db, "resend-approval", 3, 60 * 60 * 1000);
-    if (!rl.ok) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
-    const user = db.users.find((u) => u.email === email);
-    if (!user || isActive(user))
-      return Response.json({ ok: false, error: "bad details" }, { status: 400 });
-    const mail = approvalEmail({
-      siteUrl: SITE_URL,
-      token: issueApprovalToken(email),
-      name: user.name,
-      email,
-      when: new Date().toLocaleString("en-GB", { timeZone: "Asia/Karachi" }) + " (PKT)",
-    });
-    const r = await sendMail({ to: notifyAddress(), ...mail });
-    return ok({ mailed: r.sent, ...(r.error ? { mailError: r.error } : {}) });
-  }
-
-  // Owner-only: who is waiting on approval?
-  // The OWNER constant is the portfolio identity; the admin may sign in with
-  // either that address or the account address the approval emails go to.
-  const isOwnerToken = (t: unknown) => {
-    const p = readToken(String(t ?? ""));
-    if (!p) return false;
-    const e = p.email.toLowerCase();
-    return e === OWNER.toLowerCase() || e === notifyAddress().toLowerCase();
-  };
-  if (action === "pending-list") {
-    const p = readToken(String(body?.token ?? ""));
-    if (!isOwnerToken(body?.token))
-      return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
-    const pending = db.users
-      .filter((u) => !isActive(u))
-      .map((u) => ({ name: u.name, email: u.email, joined: u.joined ?? null }))
-      .sort((a, b) => (b.joined ?? 0) - (a.joined ?? 0));
-    return ok({ pending });
-  }
-
-  // Owner-only: approve or deny a pending account directly from the site.
-  if (action === "decide") {
-    if (!isOwnerToken(body?.token))
-      return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
-    const email = String(body?.email ?? "").trim().toLowerCase();
-    const approve = body?.approve !== false;
-    const idx = db.users.findIndex((u) => u.email === email);
-    if (idx === -1) return Response.json({ ok: false, error: "not_found" }, { status: 404 });
-    if (approve) {
-      db.users[idx].status = "active";
-      db.users[idx].approvedAt = Date.now();
-    } else {
-      db.users.splice(idx, 1);
-    }
-    await save(db);
-    return ok({ approved: approve });
   }
 
   if (action === "me") {
