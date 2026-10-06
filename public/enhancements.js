@@ -2064,7 +2064,7 @@
     sec.id = 'sq-daily-sher';
     var head = document.createElement('div');
     head.className = 'section-header';
-    head.innerHTML = '<h2>\uD83C\uDFB2 Roz ka Sher</h2>';
+    head.innerHTML = '<h2>Roz ka Sher</h2>';
     var p = document.createElement('p');
     p.className = 'sq-sec-sub';
     p.textContent = 'Har roz ek naya sher — aaj: ' + pick.cat;
@@ -2477,7 +2477,7 @@
     panel.className = 'sq-hub-panel';
     var head = document.createElement('div');
     head.className = 'sq-hub-head';
-    head.innerHTML = '<h3>\uD83C\uDFE0 Saqib World</h3>';
+    head.innerHTML = '<h3>Saqib World</h3>';
     var sub = document.createElement('p');
     sub.className = 'sq-hub-sub';
     sub.textContent = 'Saqib ki duniya \u2014 dekho, suno, enjoy karo';
@@ -2697,7 +2697,7 @@
     ov.id = 'sq-app-overlay';
     ov.innerHTML = '<div id="sq-app-card">' +
       '<button class="sq-app-x" type="button" aria-label="Band karein">\u00D7</button>' +
-      '<h3>\uD83D\uDCF2 App ban jayen \u2014 10 second mein</h3>' +
+      '<h3>App ban jayen \u2014 10 second mein</h3>' +
       '<ol style="padding-left:18px">' + steps + '</ol>' +
       '<div class="sq-app-note">Ye website aap ke phone par app ki tarah install ho jayegi \u2014 apna icon, full screen, bilkul app jaisi.</div>' +
       '</div>';
@@ -5140,7 +5140,7 @@
       var sec = document.createElement('section');
       sec.className = 'section sq-sec'; sec.id = 'sq-dps';
       var head = document.createElement('div'); head.className = 'section-header';
-      head.innerHTML = '<h2>\ud83d\udcf1 WhatsApp DPs</h2>';
+      head.innerHTML = '<h2>WhatsApp DPs</h2>';
       var p = document.createElement('p'); p.className = 'sq-sec-sub';
       p.textContent = 'Profile pictures \u2014 Boys aur Girls ke liye alag alag collections';
       head.appendChild(p); sec.appendChild(head);
