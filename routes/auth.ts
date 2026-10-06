@@ -52,6 +52,20 @@ const load = async (): Promise<DB> => {
 const save = (db: DB): Promise<void> =>
   saveJSON(FILE_NAME, { users: db.users, sessions: db.sessions });
 
+// Per-IP sliding-window rate limit. The map lives in memory per instance
+// (not persisted), which is enough to stop casual brute force.
+const _rl: Record<string, number[]> = {};
+function rateLimit(req: Request, _db: DB, key: string, max: number, windowMs: number) {
+  const ip = String(req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "local";
+  const k = `${key}:${ip}`;
+  const now = Date.now();
+  const hits = (_rl[k] || []).filter((t) => now - t < windowMs);
+  if (hits.length >= max) return { ok: false };
+  hits.push(now);
+  _rl[k] = hits;
+  return { ok: true };
+}
+
 const hashPw = (pw: string, salt: string) =>
   createHash("sha256").update(`${salt}:${pw}`).digest("hex");
 
@@ -66,10 +80,12 @@ export async function POST(req: Request): Promise<Response> {
     const name = String(body?.name ?? "").trim().slice(0, 60);
     const email = String(body?.email ?? "").trim().toLowerCase();
     const password = String(body?.password ?? "");
-    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 6)
+    if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8)
       return Response.json({ ok: false, error: "bad details" }, { status: 400 });
     if (db.users.some((u) => u.email === email))
       return Response.json({ ok: false, error: "exists" }, { status: 400 });
+    const rl = rateLimit(req, db, "signup", 6, 60 * 60 * 1000);
+    if (!rl.ok) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
     const salt = randomBytes(16).toString("hex");
     db.users.push({ name, email, salt, hash: hashPw(password, salt), lastLogins: [], joined: Date.now() });
     const token = issueToken(email, name);
@@ -80,6 +96,8 @@ export async function POST(req: Request): Promise<Response> {
   if (action === "login") {
     const email = String(body?.email ?? "").trim().toLowerCase();
     const password = String(body?.password ?? "");
+    const rl = rateLimit(req, db, "login", 12, 10 * 60 * 1000);
+    if (!rl.ok) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
     const user = db.users.find((u) => u.email === email);
     if (!user)
       return Response.json({ ok: false, error: "not_found" }, { status: 404 });
@@ -113,6 +131,9 @@ export async function POST(req: Request): Promise<Response> {
   if (action === "delete-account") {
     const email = String(body?.email ?? "").trim().toLowerCase();
     const password = String(body?.password ?? "");
+    const p = readToken(String(body?.token ?? ""));
+    if (!p || p.email.toLowerCase() !== email)
+      return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
     const idx = db.users.findIndex((u) => u.email === email);
     if (idx === -1) return Response.json({ ok: false, error: "not_found" }, { status: 404 });
     const user = db.users[idx];
@@ -125,24 +146,18 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   if (action === "forgot") {
+    // Password reset without email verification is an account-takeover hole:
+    // anyone who knew an email could rewrite its password. Until a real reset
+    // email exists, this only records the request and tells the owner.
     const email = String(body?.email ?? "").trim().toLowerCase();
-    const newPassword = String(body?.password ?? "");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || newPassword.length < 6)
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return Response.json({ ok: false, error: "bad details" }, { status: 400 });
-    // simple per-IP rate limit: 10 resets/hour
-    const ip = req.headers.get("x-forwarded-for") || "local";
-    const now = Date.now();
-    const rl = (db as any)._rl || ((db as any)._rl = {} as Record<string, number[]>);
-    rl[ip] = (rl[ip] || []).filter((t: number) => now - t < 3600000);
-    if (rl[ip].length >= 10) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
-    rl[ip].push(now);
-    if (email === OWNER) return Response.json({ ok: false, error: "owner_protected" }, { status: 403 });
-    const user = db.users.find((u) => u.email === email);
-    if (!user) return Response.json({ ok: false, error: "not found" }, { status: 404 });
-    user.salt = randomBytes(16).toString("hex");
-    user.hash = hashPw(newPassword, user.salt);
-    await save(db);
-    return ok();
+    const rl = rateLimit(req, db, "forgot", 5, 60 * 60 * 1000);
+    if (!rl.ok) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
+    return Response.json(
+      { ok: false, error: "reset_unavailable" },
+      { status: 503 }
+    );
   }
 
   if (action === "me") {
