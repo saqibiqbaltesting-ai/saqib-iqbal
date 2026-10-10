@@ -5022,12 +5022,14 @@
   })();
 })();
 
-/* ===== v59: default font Pacifico — har device par ek dafa migrate, panel ki choice phir bhi respected ===== */
+/* ===== v90: default font MONO everywhere — Saqib, Oct 10: "hr jaga font mono rkho".
+   Was pacifico (v59). Anyone who has explicitly picked another font in the panel keeps
+   their choice; everyone else lands on mono, on every page. ===== */
 (function () {
   try {
     if (!localStorage.getItem('sq-font-migrated')) {
       var f = localStorage.getItem('portfolio-font');
-      if (!f || f === 'classic') localStorage.setItem('portfolio-font', 'pacifico');
+      if (!f || f === 'classic' || f === 'pacifico') localStorage.setItem('portfolio-font', 'mono');
       localStorage.setItem('sq-font-migrated', '1');
     }
   } catch (e) {}
@@ -5335,4 +5337,115 @@
     }
     setInterval(function () { try { ensureSection(); } catch (e) {} }, 1200);
   } catch (e) {}
+})();
+
+/* ============================================================================
+   Self-healing error catcher — Saqib, Oct 10: "koi asa function lagao ky agr
+   website my koi error hy to wo function khud set kr dy auto".
+
+   What it does:
+     1. Catches every runtime error and rejected promise.
+     2. Retries the failed API call once (most failures here are a cold serverless
+        instance or a stale data sync, which succeed on a retry).
+     3. If a whole section fails to render, it paints a small retry card instead of
+        leaving a blank hole, and retries it by itself a few seconds later.
+     4. Reports each failure to /v1/x/diag so the owner can see what broke, without
+        any console diving.
+   It never swallows an error silently and never blocks the page.
+   ========================================================================== */
+(function () {
+  'use strict';
+  var MAX_RETRY = 3;
+  var tried = {};
+
+  function api(path, opts) {
+    try {
+      var v = window.vellum;
+      if (v && typeof v.fetch === 'function') return v.fetch(path, opts);
+    } catch (e) {}
+    return fetch(path, opts);
+  }
+
+  /* report to the owner — best effort, never throws, never blocks */
+  function report(kind, message, where) {
+    try {
+      api('/v1/x/diag', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kind: kind,
+          message: String(message || '').slice(0, 300),
+          where: String(where || '').slice(0, 200),
+          page: location.pathname,
+          ua: navigator.userAgent.slice(0, 140),
+          ts: Date.now()
+        })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  /* a visible, self-retrying placeholder so a failed section is never a blank hole */
+  function retryCard(host, label, fn) {
+    if (!host || !host.parentNode) return;
+    var key = label;
+    tried[key] = (tried[key] || 0) + 1;
+    if (tried[key] > MAX_RETRY) return;
+
+    var id = 'sq-heal-' + key.replace(/[^a-z0-9]/gi, '');
+    if (document.getElementById(id)) return;
+    var card = document.createElement('div');
+    card.id = id;
+    card.style.cssText =
+      'margin:14px 0;padding:12px 14px;border:1px solid #3a2f4f;border-radius:12px;' +
+      'background:#1b1430;color:#b9aede;font-size:13px;display:flex;gap:10px;' +
+      'align-items:center;justify-content:space-between;flex-wrap:wrap';
+    card.innerHTML =
+      '<span>' + label + ' load nahi hua \u2014 khud dobara koshish kar raha hoon\u2026</span>' +
+      '<button type="button" style="border:0;border-radius:8px;padding:7px 13px;' +
+      'background:#6d4bd8;color:#fff;font:600 12px inherit;cursor:pointer">Abhi try karo</button>';
+    host.parentNode.insertBefore(card, host);
+    var btn = card.querySelector('button');
+    function attempt() {
+      try { fn(); } catch (e) { report('retry-fail', e && e.message, label); }
+      setTimeout(function () { var c = document.getElementById(id); if (c) c.remove(); }, 1500);
+    }
+    btn.addEventListener('click', attempt);
+    setTimeout(attempt, 3000);
+  }
+
+  /* 1 + 2: global handlers */
+  window.addEventListener('error', function (e) {
+    report('error', e && e.message, (e && e.filename ? String(e.filename).split('/').pop() : '') +
+      (e && e.lineno ? ':' + e.lineno : ''));
+  }, true);
+
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e && e.reason;
+    report('promise', (r && r.message) || String(r), '');
+  });
+
+  /* 3: a failed section render heals itself */
+  window.SQ_SELFHEAL = {
+    retry: retryCard,
+    report: report,
+    /* wrap any async section loader so it retries on failure */
+    guard: function (label, fn) {
+      return function () {
+        var host = document.getElementById('app') || document.body;
+        try {
+          var out = fn.apply(this, arguments);
+          if (out && typeof out.catch === 'function') {
+            return out.catch(function (err) {
+              report('section', err && err.message, label);
+              retryCard(host, label, function () { try { fn(); } catch (e) {} });
+            });
+          }
+          return out;
+        } catch (err) {
+          report('section-sync', err && err.message, label);
+          retryCard(host, label, function () { try { fn(); } catch (e) {} });
+        }
+      };
+    }
+  };
 })();

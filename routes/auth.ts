@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 import { loadJSON, saveJSON } from "./blob-store.js";
 
 // Stateless signed tokens (HMAC) — no server-side session storage needed,
@@ -67,8 +67,48 @@ function rateLimit(req: Request, _db: DB, key: string, max: number, windowMs: nu
   return { ok: true };
 }
 
-const hashPw = (pw: string, salt: string) =>
-  createHash("sha256").update(`${salt}:${pw}`).digest("hex");
+// Password hashing: PBKDF2-HMAC-SHA256, 210k iterations (OWASP 2023 guidance for
+// SHA-256). The old single-round SHA-256 was fast to brute-force: a leaked hash
+// could be cracked at billions of guesses/second. Stored format is
+//   pbkdf2$<iters>$<salt>$<hash>
+// so the iteration count travels with the hash and can be raised later without
+// breaking old accounts.
+const PBKDF2_ITERS = 210000;
+function hashPw(pw: string, salt: string): string {
+  const dk = pbkdf2Sync(pw, salt, PBKDF2_ITERS, 32, "sha256").toString("hex");
+  return `pbkdf2$${PBKDF2_ITERS}$${salt}$${dk}`;
+}
+// Constant-time verify that understands BOTH formats, so accounts created before
+// this change keep working and get upgraded on their next successful login.
+function verifyPw(pw: string, user: { salt: string; hash: string }): boolean {
+  const stored = String(user.hash || "");
+  if (stored.startsWith("pbkdf2$")) {
+    const parts = stored.split("$");
+    const iters = Number(parts[1]) || PBKDF2_ITERS;
+    const salt = parts[2] || user.salt;
+    const want = parts[3] || "";
+    const got = pbkdf2Sync(pw, salt, iters, 32, "sha256").toString("hex");
+    return want.length === got.length && timingSafeEqual(Buffer.from(want), Buffer.from(got));
+  }
+  // legacy single-round sha256 — still accepted, upgraded on next login
+  const legacy = createHash("sha256").update(`${user.salt}:${pw}`).digest("hex");
+  return stored.length === legacy.length && timingSafeEqual(Buffer.from(stored), Buffer.from(legacy));
+}
+
+// A short deny-list, not a strength meter: these are the passwords that show up in
+// every credential dump. Anything else with 8+ chars is the user's call.
+const COMMON_PW = new Set([
+  "password", "password1", "password123", "12345678", "123456789", "1234567890",
+  "qwertyui", "qwerty123", "iloveyou", "princess", "sunshine", "football",
+  "saqib123", "mateen123", "admin123", "letmein1", "welcome1", "abc12345",
+]);
+function isCommonPassword(pw: string): boolean {
+  const p = pw.toLowerCase();
+  if (COMMON_PW.has(p)) return true;
+  if (/^(.)\1+$/.test(p)) return true;          // aaaaaaaa
+  if (/^(0123|1234|2345|3456|4567|5678|6789|7890|abcd|qwer|asdf)/.test(p)) return true;
+  return false;
+}
 
 const ok = (extra: Record<string, unknown> = {}) => Response.json({ ok: true, ...extra });
 
@@ -82,6 +122,11 @@ export async function POST(req: Request): Promise<Response> {
     const email = String(body?.email ?? "").trim().toLowerCase();
     const password = String(body?.password ?? "");
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8)
+      return Response.json({ ok: false, error: "bad details" }, { status: 400 });
+    // reject the handful of passwords that defeat every other control here
+    if (isCommonPassword(password))
+      return Response.json({ ok: false, error: "weak_password" }, { status: 400 });
+    if (password.length > 200)
       return Response.json({ ok: false, error: "bad details" }, { status: 400 });
     if (db.users.some((u) => u.email === email))
       return Response.json({ ok: false, error: "exists" }, { status: 400 });
@@ -104,9 +149,16 @@ export async function POST(req: Request): Promise<Response> {
     if (!rl.ok) return Response.json({ ok: false, error: "slow down" }, { status: 429 });
     const user = db.users.find((u) => u.email === email);
     if (!user)
-      return Response.json({ ok: false, error: "not_found" }, { status: 404 });
-    if (user.hash !== hashPw(password, user.salt))
       return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
+    if (!verifyPw(password, user)) {
+      // same generic message for wrong-password and unknown-user-shaped errors
+      return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
+    }
+    // transparent upgrade: legacy hash verified -> re-store as PBKDF2 now
+    if (!String(user.hash).startsWith("pbkdf2$")) {
+      user.salt = randomBytes(16).toString("hex");
+      user.hash = hashPw(password, user.salt);
+    }
     // login history — latest 10 (device management / session info)
     if (!Array.isArray(user.lastLogins)) user.lastLogins = [];
     user.lastLogins.unshift({
@@ -142,7 +194,7 @@ export async function POST(req: Request): Promise<Response> {
     if (idx === -1) return Response.json({ ok: false, error: "not_found" }, { status: 404 });
     const user = db.users[idx];
     if (email === OWNER) return Response.json({ ok: false, error: "owner_protected" }, { status: 403 });
-    if (user.hash !== hashPw(password, user.salt))
+    if (!verifyPw(password, user))
       return Response.json({ ok: false, error: "bad credentials" }, { status: 401 });
     db.users.splice(idx, 1);
     await save(db);

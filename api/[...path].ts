@@ -15,6 +15,7 @@ import * as visitors from "../routes/visitors.js";
 import * as hearts from "../routes/hearts.js";
 import * as userShers from "../routes/user-shers.js";
 import * as visitorGeo from "../routes/visitor-geo.js";
+import * as diag from "../routes/diag.js";
 import * as sherLikes from "../routes/sher-likes.js";
 
 const DATA_ROOT = process.env.SAQIB_DATA_DIR || "/tmp/saqib-portfolio-data";
@@ -100,6 +101,7 @@ const ROUTE_FILES: Record<string, string[]> = {
   hearts: ["hearts.json"],
   "user-shers": ["user-shers.json"],
   "sher-likes": ["sher-likes.json"],
+  diag: ["client-errors.json"],
   // admin: only save-settings writes — and only site-settings.json
   admin: [],
 };
@@ -108,7 +110,7 @@ const routes: Record<string, { GET?: (req: Request) => Response | Promise<Respon
   auth, admin, chat, contact, "gallery-lock": galleryLock, guestbook,
   "photo-reactions": photoReactions, qa, quiz, ratings, visitors,
   "visitor-geo": visitorGeo, hearts, "user-shers": userShers,
-  "sher-likes": sherLikes,
+  "sher-likes": sherLikes, diag,
 };
 
 async function handle(req: Request): Promise<Response> {
